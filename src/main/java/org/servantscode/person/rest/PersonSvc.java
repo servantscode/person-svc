@@ -16,6 +16,11 @@ public class PersonSvc {
         return new PersonDB().getPeople();
     }
 
+    @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
+    public Person getPerson(@PathParam("id") int id) {
+        return new PersonDB().getPerson(id);
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Person createPerson(Person person) {

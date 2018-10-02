@@ -32,6 +32,27 @@ public class PersonDB extends DBAccess {
         return Collections.emptyList();
     }
 
+    public Person getPerson(int id) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("Select * from people where id=?");
+            ) {
+            stmt.setInt(1, id);
+            try ( ResultSet rs = stmt.executeQuery(); ){
+                if(rs.next()) {
+                    Person person = new Person(rs.getInt("id"), rs.getString("name"));
+                    person.setBirthdate(rs.getDate("birthdate"));
+                    person.setPhoneNumber(rs.getLong("phonenumber"));
+                    person.setEmail(rs.getString("email"));
+                    return person;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public void addPerson(Person person) {
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, phonenumber, email) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
