@@ -76,5 +76,27 @@ public class PersonDB extends DBAccess {
         }
     }
 
-    private java.sql.Date convert(Date input) { return new java.sql.Date(input.getTime()); };
+    public void updatePerson(Person person) {
+    try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, phonenumber=?, email=? WHERE id=?");
+            ){
+            stmt.setString(1, person.getName());
+            stmt.setDate(2, convert(person.getBirthdate()));
+            stmt.setLong(3, person.getPhoneNumber());
+            stmt.setString(4, person.getEmail());
+            stmt.setInt(5, person.getId());
+
+            if(stmt.executeUpdate() == 0) {
+                throw new RuntimeException("Could not update person: " + person.getName());
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private java.sql.Date convert(Date input) {
+        if(input == null) return null;
+        return new java.sql.Date(input.getTime());
+    };
 }

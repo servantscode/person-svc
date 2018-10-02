@@ -13,6 +13,8 @@
     <orderEntry type="library" name="Gradle: org.postgresql:postgresql:42.2.5" level="project" />
     <orderEntry type="library" name="Gradle: javax.activation:activation:1.1" level="project" />
     <orderEntry type="library" name="Gradle: javax.xml.bind:jaxb-api:2.3.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.xml.bind:jaxb-impl:2.3.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.sun.xml.bind:jaxb-core:2.3.0" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.27" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.27" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.core:jersey-server:2.27" level="project" />
