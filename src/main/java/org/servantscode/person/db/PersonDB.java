@@ -32,6 +32,46 @@ public class PersonDB extends DBAccess {
         return Collections.emptyList();
     }
 
+    public int getCount() {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("Select count(1) from people");
+            ) {
+            try ( ResultSet rs = stmt.executeQuery() ){
+                if(rs.next())
+                    return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public List<Person> getPeople(String sortField, int start, int count) {
+        String sql = String.format("SELECT * FROM people ORDER BY %s LIMIT ? OFFSET ?", sortField);
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement(sql);
+            ) {
+            stmt.setInt(1, count);
+            stmt.setInt(2, start);
+            try ( ResultSet rs = stmt.executeQuery(); ){
+                List<Person> people = new ArrayList<>();
+                while(rs.next()) {
+                    Person person = new Person(rs.getInt("id"), rs.getString("name"));
+                    person.setBirthdate(rs.getDate("birthdate"));
+                    person.setPhoneNumber(rs.getLong("phonenumber"));
+                    person.setEmail(rs.getString("email"));
+                    people.add(person);
+                }
+                return people;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
+    }
+
     public Person getPerson(int id) {
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement("Select * from people where id=?");

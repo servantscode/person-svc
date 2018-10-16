@@ -6,7 +6,7 @@ public class Person {
     private int id;
     private String name;
     private Date birthdate;
-    private Date memeberSince;
+    private Date memberSince;
     private long phoneNumber;
     private String email;
 
@@ -30,8 +30,8 @@ public class Person {
     public Date getBirthdate() { return birthdate; }
     public void setBirthdate(Date birthdate) { this.birthdate = birthdate; }
 
-    public Date getMemeberSince() { return memeberSince; }
-    public void setMemeberSince(Date memeberSince) { this.memeberSince = memeberSince; }
+    public Date getMemberSince() { return memberSince; }
+    public void setMemberSince(Date memberSince) { this.memberSince = memberSince; }
 
     public long getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(long phoneNumber) { this.phoneNumber = phoneNumber; }

@@ -5,23 +5,27 @@ import org.servantscode.person.db.PersonDB;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Path("/person")
 public class PersonSvc {
 
     @GET @Produces(MediaType.APPLICATION_JSON)
-    public List<Person> getPeople() {
+    public PersonQueryResponse getPeople(@QueryParam("start") @DefaultValue("0") int start,
+                                         @QueryParam("count") @DefaultValue("100") int count,
+                                         @QueryParam("sort_field") @DefaultValue("id") String sortField) {
+
         try {
-            System.out.println("Retrieving people");
-            return new PersonDB().getPeople();
+            System.out.println("Retrieving people (" + sortField + "page: " + start + "; " + count + ")");
+            PersonDB db = new PersonDB();
+            int totalPeople = db.getCount();
+            List<Person> results = db.getPeople(sortField, start, count);
+            return new PersonQueryResponse(start, results.size(), totalPeople, results);
         } catch (Throwable t) {
             System.out.println("Retrieving people failed:");
             t.printStackTrace();
         }
-        return Collections.emptyList();
+        return null;
     }
 
     @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
