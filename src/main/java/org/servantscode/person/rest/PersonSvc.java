@@ -10,16 +10,34 @@ import java.util.List;
 @Path("/person")
 public class PersonSvc {
 
+    @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getPeopleNames(@QueryParam("start") @DefaultValue("0") int start,
+                                       @QueryParam("count") @DefaultValue("100") int count,
+                                       @QueryParam("sort_field") @DefaultValue("id") String sortField,
+                                       @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
+
+        try {
+            System.out.println(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
+            PersonDB db = new PersonDB();
+            return db.getPeopleNames(nameSearch, count);
+        } catch (Throwable t) {
+            System.out.println("Retrieving people failed:");
+            t.printStackTrace();
+        }
+        return null;
+    }
+
     @GET @Produces(MediaType.APPLICATION_JSON)
     public PersonQueryResponse getPeople(@QueryParam("start") @DefaultValue("0") int start,
                                          @QueryParam("count") @DefaultValue("100") int count,
-                                         @QueryParam("sort_field") @DefaultValue("id") String sortField) {
+                                         @QueryParam("sort_field") @DefaultValue("id") String sortField,
+                                         @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
 
         try {
-            System.out.println("Retrieving people (" + sortField + "page: " + start + "; " + count + ")");
+            System.out.println(String.format("Retrieving people (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             PersonDB db = new PersonDB();
-            int totalPeople = db.getCount();
-            List<Person> results = db.getPeople(sortField, start, count);
+            int totalPeople = db.getCount(nameSearch);
+            List<Person> results = db.getPeople(nameSearch, sortField, start, count);
             return new PersonQueryResponse(start, results.size(), totalPeople, results);
         } catch (Throwable t) {
             System.out.println("Retrieving people failed:");
