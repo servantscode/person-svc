@@ -1,6 +1,8 @@
 package org.servantscode.person.rest;
 
 import org.servantscode.person.Person;
+import org.servantscode.person.db.FamilyDB;
+import org.servantscode.person.db.FamilyReconciler;
 import org.servantscode.person.db.PersonDB;
 
 import javax.ws.rs.*;
@@ -49,8 +51,7 @@ public class PersonSvc {
     @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
     public Person getPerson(@PathParam("id") int id) {
         try {
-            System.out.println("Retrieving person: " + id);
-            return new PersonDB().getPerson(id);
+            return getReconciler().getPerson(id);
         } catch (Throwable t) {
             System.out.println("Retrieving person failed:");
             t.printStackTrace();
@@ -58,13 +59,12 @@ public class PersonSvc {
         return null;
     }
 
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Person createPerson(Person person) {
         try {
-            System.out.println("Creating person");
-            new PersonDB().addPerson(person);
-            System.out.println("Created person: " + person.getId());
+            getReconciler().createPerson(person);
             return person;
         } catch (Throwable t) {
             System.out.println("Creating person failed:");
@@ -77,14 +77,17 @@ public class PersonSvc {
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Person updatePerson(Person person) {
         try {
-            System.out.println("Updating person: " + person.getId());
-            new PersonDB().updatePerson(person);
+            getReconciler().updatePerson(person);
             return person;
         } catch (Throwable t) {
             System.out.println("Updating person failed:");
             t.printStackTrace();
         }
-
         return null;
+    }
+
+    // ----- Private -----
+    private FamilyReconciler getReconciler() {
+        return new FamilyReconciler(new PersonDB(), new FamilyDB());
     }
 }

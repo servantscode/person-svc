@@ -1,5 +1,7 @@
 package org.servantscode.person;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class Person {
@@ -7,8 +9,13 @@ public class Person {
     private String name;
     private Date birthdate;
     private Date memberSince;
-    private long phoneNumber;
+    private String phoneNumber;
     private String email;
+    private Family family;
+    private boolean headOfHousehold;
+
+    @JsonIgnore
+    private int familyId;
 
     public Person() {}
     public Person(String name) {
@@ -20,7 +27,6 @@ public class Person {
     }
 
     // ----- Accessors -----
-
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -33,9 +39,18 @@ public class Person {
     public Date getMemberSince() { return memberSince; }
     public void setMemberSince(Date memberSince) { this.memberSince = memberSince; }
 
-    public long getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(long phoneNumber) { this.phoneNumber = phoneNumber; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
     public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) { this.email = email;}
+
+    public Family getFamily() { return family; }
+    public void setFamily(Family family) { this.family = family; }
+
+    public int getFamilyId() { return familyId; }
+    public void setFamilyId(int familyId) { this.familyId = familyId; }
+
+    public boolean isHeadOfHousehold() { return headOfHousehold; }
+    public void setHeadOfHousehold(boolean headOfHousehold) { this.headOfHousehold = headOfHousehold; }
 }

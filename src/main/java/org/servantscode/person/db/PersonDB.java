@@ -4,8 +4,6 @@ import org.servantscode.person.Person;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -16,16 +14,14 @@ public class PersonDB extends DBAccess {
     public int getCount(String search) {
         String sql = format("Select count(1) from people%s", optionalWhereClause(search));
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-            try ( ResultSet rs = stmt.executeQuery() ){
-                if(rs.next())
-                    return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
+            if (rs.next())
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not retrieve people count '" + search + "'", e);
+        }
         return 0;
     }
 
@@ -39,31 +35,26 @@ public class PersonDB extends DBAccess {
 
             return processPeopleResults(stmt);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not retrieve people containing '" + search + "'", e);
         }
-
-        return Collections.emptyList();
     }
 
     public List<String> getPeopleNames(String search, int count) {
         String sql = format("SELECT name FROM people%s", optionalWhereClause(search));
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-            try ( ResultSet rs = stmt.executeQuery()){
-                List<String> names = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-                while(rs.next())
-                    names.add(rs.getString(1));
+            List<String> names = new ArrayList<>();
 
-                names.sort(new AutoCompleteComparator(search));
-                return (count < names.size())? names: names.subList(0, count);
-            }
+            while (rs.next())
+                names.add(rs.getString(1));
+
+            names.sort(new AutoCompleteComparator(search));
+            return (count < names.size()) ? names : names.subList(0, count);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not retrieve names containing '" + search + "'", e);
         }
-
-        return Collections.emptyList();
     }
 
     public Person getPerson(int id) {
@@ -75,19 +66,32 @@ public class PersonDB extends DBAccess {
 
             return results.isEmpty()? null: results.get(0);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not find person by id " + id, e);
         }
-        return null;
     }
 
-    public void addPerson(Person person) {
+    public List<Person> getFamilyMembers(int familyId) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM people WHERE family_id=?")
+            ) {
+
+            stmt.setInt(1, familyId);
+            return processPeopleResults(stmt);
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not find family memebers for family id " + familyId, e);
+        }
+    }
+
+    public void create(Person person) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, phonenumber, email) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, phonenumber, email, family_id, head_of_house) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
             stmt.setDate(2, convert(person.getBirthdate()));
-            stmt.setLong(3, person.getPhoneNumber());
+            stmt.setString(3, person.getPhoneNumber());
             stmt.setString(4, person.getEmail());
+            stmt.setInt(5, person.getFamily().getId());
+            stmt.setBoolean(6, person.isHeadOfHousehold());
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -98,25 +102,55 @@ public class PersonDB extends DBAccess {
                     person.setId(rs.getInt(1));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not add person: " + person.getName(), e);
         }
     }
 
-    public void updatePerson(Person person) {
-    try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, phonenumber=?, email=? WHERE id=?")
+    public void update(Person person) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, phonenumber=?, email=?, family_id=?, head_of_house=? WHERE id=?")
             ){
+
             stmt.setString(1, person.getName());
             stmt.setDate(2, convert(person.getBirthdate()));
-            stmt.setLong(3, person.getPhoneNumber());
+            stmt.setString(3, person.getPhoneNumber());
             stmt.setString(4, person.getEmail());
-            stmt.setInt(5, person.getId());
+            stmt.setInt(5, person.getFamily().getId());
+            stmt.setBoolean(6, person.isHeadOfHousehold());
+            stmt.setInt(7, person.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update person: " + person.getName());
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not update person: " + person.getName(), e);
+        }
+    }
+
+    public void delete(Person person) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE id=?")
+        ){
+
+            stmt.setInt(1, person.getId());
+
+            if(stmt.executeUpdate() == 0)
+                throw new RuntimeException("Could not delete person: " + person.getName());
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not delete person: " + person.getName(), e);
+        }
+    }
+
+    public void deleteByFamilyId(int familyId) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE family_id=?")
+            ){
+
+            stmt.setInt(1, familyId);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not delete people by family id: " + familyId, e);
         }
     }
 
@@ -127,8 +161,10 @@ public class PersonDB extends DBAccess {
             while(rs.next()) {
                 Person person = new Person(rs.getInt("id"), rs.getString("name"));
                 person.setBirthdate(rs.getDate("birthdate"));
-                person.setPhoneNumber(rs.getLong("phonenumber"));
+                person.setPhoneNumber(rs.getString("phonenumber"));
                 person.setEmail(rs.getString("email"));
+                person.setFamilyId(rs.getInt("family_id"));
+                person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
                 people.add(person);
             }
             return people;
@@ -137,10 +173,5 @@ public class PersonDB extends DBAccess {
 
     private String optionalWhereClause(String search) {
         return !isEmpty(search)? format(" WHERE name ILIKE '%%%s%%'", search) : "";
-    }
-
-    private java.sql.Date convert(Date input) {
-        if(input == null) return null;
-        return new java.sql.Date(input.getTime());
     }
 }

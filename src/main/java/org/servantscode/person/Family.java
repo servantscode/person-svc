@@ -3,23 +3,26 @@ package org.servantscode.person;
 import java.util.List;
 
 public class Family {
+    private int id;
     private String surname;
-    private Person headOfHousehold;
     private List<Person> memebers;
     private Address address;
-    private String id;
+
+    public Family() {}
+
+    public Family(int id, String surname) {
+        this.id = id;
+        this.surname = surname;
+    }
 
     // ----- Accessors -----
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public String getSurname() { return surname; }
     public void setSurname(String surname) { this.surname = surname; }
 
-    public Person getHeadOfHousehold() { return headOfHousehold; }
-    public void setHeadOfHousehold(Person headOfHousehold) { this.headOfHousehold = headOfHousehold; }
-
-    public List<Person> getMemebers() { return memebers; }
+    public List<Person> getMembers() { return memebers; }
     public void setMemebers(List<Person> memebers) { this.memebers = memebers; }
 
     public Address getAddress() { return address; }

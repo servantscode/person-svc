@@ -3,8 +3,11 @@ package org.servantscode.person.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Date;
 
 public class DBAccess {
+
+    //TODO: Pool this!
     protected Connection getConnection() {
         try {
             Class.forName("org.postgresql.Driver");
@@ -20,5 +23,10 @@ public class DBAccess {
         } catch (SQLException e) {
             throw new RuntimeException("Could not connect to database.");
         }
+    }
+
+    protected java.sql.Date convert(Date input) {
+        if(input == null) return null;
+        return new java.sql.Date(input.getTime());
     }
 }
