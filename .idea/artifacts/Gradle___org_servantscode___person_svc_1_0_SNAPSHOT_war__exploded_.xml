@@ -21,6 +21,7 @@
           <element id="library" level="project" name="Gradle: javax.activation:activation:1.1" />
           <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.3.0" />
           <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-impl:2.3.0" />
+          <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-core:2.3.0" />
           <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.27" />
           <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.27" />
           <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.27" />
@@ -45,7 +46,6 @@
           <element id="library" level="project" name="Gradle: org.javassist:javassist:3.22.0-CR2" />
           <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.8.10" />
           <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0/d044c784e41d026778693fb44a8026c1fd9a7506/jaxb-core-2.3.0.jar" />
         </element>
       </element>
     </root>

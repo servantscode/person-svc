@@ -5,7 +5,7 @@ import java.util.List;
 public class Family {
     private int id;
     private String surname;
-    private List<Person> memebers;
+    private List<Person> members;
     private Address address;
 
     public Family() {}
@@ -22,8 +22,8 @@ public class Family {
     public String getSurname() { return surname; }
     public void setSurname(String surname) { this.surname = surname; }
 
-    public List<Person> getMembers() { return memebers; }
-    public void setMemebers(List<Person> memebers) { this.memebers = memebers; }
+    public List<Person> getMembers() { return members; }
+    public void setMembers(List<Person> members) { this.members = members; }
 
     public Address getAddress() { return address; }
     public void setAddress(Address address) { this.address = address; }

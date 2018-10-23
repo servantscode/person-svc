@@ -29,7 +29,9 @@ public class FamilyReconciler {
     public Person getPerson(int id) {
         Person person = personDb.getPerson(id);
         Family family = retrieveFamilyWithMembers(person.getFamilyId());
-        family.getMembers().removeIf((p) -> p.getId() == person.getId()); //Remove the returned person
+        if(family != null) {
+            family.getMembers().removeIf((p) -> p.getId() == person.getId()); //Remove the returned person
+        }
 
         person.setFamily(family);
         return person;
@@ -82,8 +84,9 @@ public class FamilyReconciler {
 
     private Family retrieveFamilyWithMembers(int familyId) {
         Family family = familyDb.getFamily(familyId);
-        family.setMemebers(personDb.getFamilyMembers(family.getId()));
+        if(family != null) {
+            family.setMembers(personDb.getFamilyMembers(family.getId()));
+        }
         return family;
     }
-
 }
