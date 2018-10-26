@@ -7,14 +7,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6712fad3-34f5-48f1-a21c-288d37bcb528" name="Default Changelist" comment="Initial UI integration">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilyQueryResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Gradle___org_servantscode___person_svc_1_0_SNAPSHOT_war__exploded_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Gradle___org_servantscode___person_svc_1_0_SNAPSHOT_war__exploded_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/Family.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/Family.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -81,7 +79,7 @@
           <entry key="bat" value="1" />
           <entry key="gradle" value="3" />
           <entry key="gradlew" value="1" />
-          <entry key="java" value="26" />
+          <entry key="java" value="27" />
           <entry key="jsp" value="2" />
           <entry key="properties" value="2" />
           <entry key="xml" value="5" />
@@ -90,7 +88,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Groovy" value="3" />
-          <entry key="JAVA" value="26" />
+          <entry key="JAVA" value="27" />
           <entry key="JSP" value="2" />
           <entry key="Manifest" value="2" />
           <entry key="PLAIN_TEXT" value="2" />
@@ -102,7 +100,7 @@
         <counts>
           <entry key="dummy" value="67" />
           <entry key="gradle" value="969" />
-          <entry key="java" value="27107" />
+          <entry key="java" value="28117" />
           <entry key="jsp" value="142" />
           <entry key="txt" value="22" />
           <entry key="xml" value="1061" />
@@ -111,7 +109,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="969" />
-          <entry key="JAVA" value="27107" />
+          <entry key="JAVA" value="28117" />
           <entry key="JSP" value="142" />
           <entry key="PLAIN_TEXT" value="89" />
           <entry key="XML" value="1061" />
@@ -124,7 +122,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="850">
+            <state>
               <caret line="54" column="4" selection-start-line="54" selection-start-column="4" selection-end-line="54" selection-end-column="4" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -134,19 +132,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
-              <caret line="43" column="40" selection-start-line="43" selection-start-column="40" selection-end-line="43" selection-end-column="40" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="493">
-              <caret line="32" column="9" selection-start-line="32" selection-start-column="9" selection-end-line="32" selection-end-column="9" />
+            <state relative-caret-position="768">
+              <caret line="70" column="14" selection-start-line="70" selection-start-column="14" selection-end-line="70" selection-end-column="14" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1850#1851#0" expanded="true" />
@@ -157,10 +146,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="241">
+              <caret line="124" column="17" selection-start-line="124" selection-start-column="17" selection-end-line="124" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
+            <state relative-caret-position="276">
+              <caret line="94" column="46" selection-start-line="94" selection-start-column="46" selection-end-line="94" selection-end-column="46" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -192,8 +190,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2329">
-              <caret line="144" column="22" selection-start-line="144" selection-start-column="22" selection-end-line="144" selection-end-column="22" />
+            <state relative-caret-position="611">
+              <caret line="136" column="44" selection-start-line="136" selection-start-column="44" selection-end-line="136" selection-end-column="44" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -201,11 +199,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Family.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+            <state relative-caret-position="306">
+              <caret line="18" column="36" selection-start-line="18" selection-start-column="36" selection-end-line="18" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -213,10 +211,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="23" column="12" selection-start-line="23" selection-start-column="12" selection-end-line="23" selection-end-column="12" />
+            <state relative-caret-position="424">
+              <caret line="89" selection-start-line="89" selection-end-line="89" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#3666#3667#0" expanded="true" />
+                <element signature="e#3741#3742#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -626,15 +626,15 @@
         <option value="$PROJECT_DIR$/src/test/java/org/servantscode/person/db/testAutoCompleteComparator.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/Address.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/DBAccess.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilyQueryResponse.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/CORSFilter.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/Family.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java" />
       </list>
     </option>
   </component>
@@ -960,7 +960,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1540312766282" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1540322823049" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -1264,7 +1264,7 @@
       <workItem from="1539095436571" duration="1850000" />
       <workItem from="1539719769267" duration="3391000" />
       <workItem from="1539785843538" duration="20537000" />
-      <workItem from="1540313917662" duration="1415000" />
+      <workItem from="1540313917662" duration="2682000" />
     </task>
     <servers />
   </component>
@@ -1301,13 +1301,12 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="55447000" />
+    <option name="totallyTimeSpent" value="56714000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1932" height="1047" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24252136" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24252136" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -1327,7 +1326,7 @@
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50053304" side_tool="true" weight="0.4273319" />
       <window_info anchor="bottom" id="Java Enterprise" order="11" />
       <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="13" weight="0.3115942" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="13" visible="true" weight="0.3107221" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -1507,64 +1506,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="850">
+        <state>
           <caret line="54" column="4" selection-start-line="54" selection-start-column="4" selection-end-line="54" selection-end-column="4" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="43" column="40" selection-start-line="43" selection-start-column="40" selection-end-line="43" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="32" column="9" selection-start-line="32" selection-start-column="9" selection-end-line="32" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1850#1851#0" expanded="true" />
-            <element signature="e#1902#1903#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Address.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="23" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2329">
-          <caret line="144" column="22" selection-start-line="144" selection-start-column="22" selection-end-line="144" selection-end-column="22" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="23" column="12" selection-start-line="23" selection-start-column="12" selection-end-line="23" selection-end-column="12" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1578,6 +1521,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Family.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="36" selection-start-line="18" selection-start-column="36" selection-end-line="18" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/CORSFilter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -1588,10 +1538,61 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Family.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Address.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+        <state relative-caret-position="272">
+          <caret line="16" column="23" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="611">
+          <caret line="136" column="44" selection-start-line="136" selection-start-column="44" selection-end-line="136" selection-end-column="44" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="124" column="17" selection-start-line="124" selection-start-column="17" selection-end-line="124" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="768">
+          <caret line="70" column="14" selection-start-line="70" selection-start-column="14" selection-end-line="70" selection-end-column="14" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1850#1851#0" expanded="true" />
+            <element signature="e#1902#1903#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="424">
+          <caret line="89" selection-start-line="89" selection-end-line="89" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3666#3667#0" expanded="true" />
+            <element signature="e#3741#3742#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="94" column="46" selection-start-line="94" selection-start-column="46" selection-end-line="94" selection-end-column="46" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -122,16 +122,14 @@ public class FamilyDB extends DBAccess {
         }
     }
 
-    public void delete(Family family) {
+    public boolean delete(Family family) {
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement("DELETE FROM families WHERE id=?")
             ){
 
             stmt.setInt(1, family.getId());
 
-            if(stmt.executeUpdate() == 0)
-                throw new RuntimeException("Could not update family: " + family.getSurname());
-
+            return stmt.executeUpdate() != 0;
         } catch (SQLException e) {
             throw new RuntimeException("Could not delete family: " + family.getSurname(), e);
         }

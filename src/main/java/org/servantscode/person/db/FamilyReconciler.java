@@ -40,11 +40,11 @@ public class FamilyReconciler {
     public boolean deletePerson(Person person) {
         List<Person> familyMembers = personDb.getFamilyMembers(person.getFamily().getId());
 
-        personDb.delete(person);
-        if(familyMembers.size() == 1 && familyMembers.get(0).getId() == person.getId())
-            familyDb.delete(person.getFamily());
+        boolean success = personDb.delete(person);
+        if(success && familyMembers.size() == 1 && familyMembers.get(0).getId() == person.getId())
+            success = familyDb.delete(person.getFamily());
 
-        return false;
+        return success;
     }
 
     public Family createFamily(Family family) {
@@ -69,8 +69,7 @@ public class FamilyReconciler {
 
     public boolean deleteFamily(Family family) {
         personDb.deleteByFamilyId(family.getId());
-        familyDb.delete(family);
-        return false;
+        return familyDb.delete(family);
     }
 
     // ----- Private -----

@@ -127,16 +127,14 @@ public class PersonDB extends DBAccess {
         }
     }
 
-    public void delete(Person person) {
+    public boolean delete(Person person) {
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE id=?")
         ){
 
             stmt.setInt(1, person.getId());
 
-            if(stmt.executeUpdate() == 0)
-                throw new RuntimeException("Could not delete person: " + person.getName());
-
+            return stmt.executeUpdate() != 0;
         } catch (SQLException e) {
             throw new RuntimeException("Could not delete person: " + person.getName(), e);
         }

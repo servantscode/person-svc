@@ -86,6 +86,20 @@ public class FamilySvc {
         return null;
     }
 
+    @DELETE @Path("/{id}")
+    public void deleteFamily(@PathParam("id") int id) {
+        if(id <= 0)
+            throw new NotFoundException();
+        try {
+            Family family = getReconciler().getFamily(id);
+            if(family == null || getReconciler().deleteFamily(family))
+                throw new NotFoundException();
+        } catch (Throwable t) {
+            System.out.println("Deleting family failed:");
+            t.printStackTrace();
+        }
+    }
+
     // ----- Private -----
     private FamilyReconciler getReconciler() {
         return new FamilyReconciler(new PersonDB(), new FamilyDB());

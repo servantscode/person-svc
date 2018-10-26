@@ -1,5 +1,6 @@
 package org.servantscode.person.rest;
 
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.servantscode.person.Person;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
@@ -84,6 +85,20 @@ public class PersonSvc {
             t.printStackTrace();
         }
         return null;
+    }
+
+    @DELETE @Path("/{id}")
+    public void deletePerson(@PathParam("id") int id) {
+        if(id <= 0)
+            throw new NotFoundException();
+        try {
+            Person person = getReconciler().getPerson(id);
+            if(person == null || getReconciler().deletePerson(person))
+                throw new NotFoundException();
+        } catch (Throwable t) {
+            System.out.println("Deleting person failed:");
+            t.printStackTrace();
+        }
     }
 
     // ----- Private -----
