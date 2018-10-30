@@ -49,16 +49,20 @@ public class FamilyReconciler {
 
     public Family createFamily(Family family) {
         familyDb.create(family);
-        for(Person person: family.getMembers()) {
-            personDb.create(person);
+        if(family.getMembers() != null) {
+            for (Person person : family.getMembers()) {
+                personDb.create(person);
+            }
         }
         return family;
     }
 
     public Family updateFamily(Family family) {
         familyDb.update(family);
-        for(Person person: family.getMembers()) {
-            personDb.update(person);
+        if(family.getMembers() != null) {
+            for (Person person : family.getMembers()) {
+                personDb.update(person);
+            }
         }
         return family;
     }
