@@ -1,5 +1,7 @@
 package org.servantscode.person.rest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.servantscode.person.Person;
 import org.servantscode.person.db.FamilyDB;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Path("/person")
 public class PersonSvc {
+    private static final Logger logger = LogManager.getLogger(PersonSvc.class);
 
     @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
     public List<String> getPeopleNames(@QueryParam("start") @DefaultValue("0") int start,
@@ -20,11 +23,11 @@ public class PersonSvc {
                                        @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
 
         try {
-            System.out.println(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
+            logger.trace(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             PersonDB db = new PersonDB();
             return db.getPeopleNames(nameSearch, count);
         } catch (Throwable t) {
-            System.out.println("Retrieving people failed:");
+            logger.error("Retrieving people failed:");
             t.printStackTrace();
         }
         return null;
@@ -37,13 +40,13 @@ public class PersonSvc {
                                          @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
 
         try {
-            System.out.println(String.format("Retrieving people (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
+            logger.trace(String.format("Retrieving people (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             PersonDB db = new PersonDB();
             int totalPeople = db.getCount(nameSearch);
             List<Person> results = db.getPeople(nameSearch, sortField, start, count);
             return new PersonQueryResponse(start, results.size(), totalPeople, results);
         } catch (Throwable t) {
-            System.out.println("Retrieving people failed:");
+            logger.error("Retrieving people failed:");
             t.printStackTrace();
         }
         return null;
@@ -54,7 +57,7 @@ public class PersonSvc {
         try {
             return getReconciler().getPerson(id);
         } catch (Throwable t) {
-            System.out.println("Retrieving person failed:");
+            logger.error("Retrieving person failed:");
             t.printStackTrace();
         }
         return null;
@@ -66,9 +69,10 @@ public class PersonSvc {
     public Person createPerson(Person person) {
         try {
             getReconciler().createPerson(person);
+            logger.info("Created parishoner: " + person.getName());
             return person;
         } catch (Throwable t) {
-            System.out.println("Creating person failed:");
+            logger.error("Creating person failed:");
             t.printStackTrace();
         }
         return null;
@@ -79,9 +83,10 @@ public class PersonSvc {
     public Person updatePerson(Person person) {
         try {
             getReconciler().updatePerson(person);
+            logger.info("Edited parishoner: " + person.getName());
             return person;
         } catch (Throwable t) {
-            System.out.println("Updating person failed:");
+            logger.error("Updating person failed:");
             t.printStackTrace();
         }
         return null;
@@ -95,8 +100,9 @@ public class PersonSvc {
             Person person = getReconciler().getPerson(id);
             if(person == null || getReconciler().deletePerson(person))
                 throw new NotFoundException();
+            logger.info("Deleted parishoner: " + person.getName());
         } catch (Throwable t) {
-            System.out.println("Deleting person failed:");
+            logger.error("Deleting person failed:");
             t.printStackTrace();
         }
     }

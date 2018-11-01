@@ -1,5 +1,7 @@
 package org.servantscode.person.rest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.servantscode.person.Family;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @Path("/family")
 public class FamilySvc {
+    private static final Logger logger = LogManager.getLogger(FamilySvc.class);
 
     @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
     public List<String> getFamilyNames(@QueryParam("start") @DefaultValue("0") int start,
@@ -19,11 +22,11 @@ public class FamilySvc {
                                        @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
 
         try {
-            System.out.println(String.format("Retrieving family names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
+            logger.trace(String.format("Retrieving family names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             FamilyDB db = new FamilyDB();
             return db.getFamilySurnames(nameSearch, count);
         } catch (Throwable t) {
-            System.out.println("Retrieving families failed:");
+            logger.error("Retrieving families failed:");
             t.printStackTrace();
         }
         return null;
@@ -36,13 +39,13 @@ public class FamilySvc {
                                          @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
 
         try {
-            System.out.println(String.format("Retrieving families (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
+            logger.trace(String.format("Retrieving families (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             FamilyDB db = new FamilyDB();
             int totalFamilies = db.getCount(nameSearch);
             List<Family> results = db.getFamilies(nameSearch, sortField, start, count);
             return new FamilyQueryResponse(start, results.size(), totalFamilies, results);
         } catch (Throwable t) {
-            System.out.println("Retrieving families failed:");
+            logger.error("Retrieving families failed:");
             t.printStackTrace();
         }
         return null;
@@ -53,7 +56,7 @@ public class FamilySvc {
         try {
             return getReconciler().getFamily(id);
         } catch (Throwable t) {
-            System.out.println("Retrieving family failed:");
+            logger.error("Retrieving family failed:");
             t.printStackTrace();
         }
         return null;
@@ -65,9 +68,10 @@ public class FamilySvc {
     public Family createFamily(Family family) {
         try {
             getReconciler().createFamily(family);
+            logger.info("Created family: " + family.getSurname());
             return family;
         } catch (Throwable t) {
-            System.out.println("Creating family failed:");
+            logger.error("Creating family failed:");
             t.printStackTrace();
         }
         return null;
@@ -78,9 +82,10 @@ public class FamilySvc {
     public Family updateFamily(Family family) {
         try {
             getReconciler().updateFamily(family);
+            logger.info("Edited family: " + family.getSurname());
             return family;
         } catch (Throwable t) {
-            System.out.println("Updating family failed:");
+            logger.error("Updating family failed:");
             t.printStackTrace();
         }
         return null;
@@ -94,8 +99,9 @@ public class FamilySvc {
             Family family = getReconciler().getFamily(id);
             if(family == null || getReconciler().deleteFamily(family))
                 throw new NotFoundException();
+            logger.info("Deleted family: " + family.getSurname());
         } catch (Throwable t) {
-            System.out.println("Deleting family failed:");
+            logger.error("Deleting family failed:");
             t.printStackTrace();
         }
     }
