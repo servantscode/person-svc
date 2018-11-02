@@ -7,10 +7,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6712fad3-34f5-48f1-a21c-288d37bcb528" name="Default Changelist" comment="Initial UI integration">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_zaxxer_HikariCP_2_7_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_slf4j_slf4j_api_1_7_25.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Gradle___org_servantscode___person_svc_1_0_SNAPSHOT_war__exploded_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Gradle___org_servantscode___person_svc_1_0_SNAPSHOT_war__exploded_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/person-svc_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/person-svc_main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/person-svc_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/person-svc_test.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j2.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j2.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/DBAccess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/DBAccess.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -77,7 +83,7 @@
           <entry key="bat" value="1" />
           <entry key="gradle" value="4" />
           <entry key="gradlew" value="1" />
-          <entry key="java" value="27" />
+          <entry key="java" value="28" />
           <entry key="jsp" value="2" />
           <entry key="properties" value="3" />
           <entry key="xml" value="5" />
@@ -86,7 +92,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Groovy" value="4" />
-          <entry key="JAVA" value="27" />
+          <entry key="JAVA" value="28" />
           <entry key="JSP" value="2" />
           <entry key="Manifest" value="2" />
           <entry key="PLAIN_TEXT" value="2" />
@@ -97,8 +103,8 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="67" />
-          <entry key="gradle" value="1097" />
-          <entry key="java" value="29136" />
+          <entry key="gradle" value="1166" />
+          <entry key="java" value="29697" />
           <entry key="json" value="2087" />
           <entry key="jsp" value="142" />
           <entry key="properties" value="46" />
@@ -108,8 +114,8 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Groovy" value="1097" />
-          <entry key="JAVA" value="29136" />
+          <entry key="Groovy" value="1166" />
+          <entry key="JAVA" value="29697" />
           <entry key="JSON" value="2087" />
           <entry key="JSP" value="142" />
           <entry key="PLAIN_TEXT" value="89" />
@@ -138,31 +144,22 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="19" column="90" selection-start-line="19" selection-start-column="90" selection-end-line="19" selection-end-column="90" />
+            <state relative-caret-position="136">
+              <caret line="8" column="25" lean-forward="true" selection-start-line="8" selection-start-column="25" selection-end-line="8" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/log4j2.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="51">
+              <caret line="3" column="24" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/resources/log4j2.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" column="41" selection-start-line="8" selection-start-column="41" selection-end-line="8" selection-end-column="41" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1921">
-              <caret line="124" column="17" selection-start-line="124" selection-start-column="17" selection-end-line="124" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1207">
@@ -423,9 +420,9 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="6152711333997" />
+        <entry key="$PROJECT_DIR$" value="6152796737017" />
         <entry key="$PROJECT_DIR$/.gradle" value="0" />
-        <entry key="$PROJECT_DIR$/build.gradle" value="97878198" />
+        <entry key="$PROJECT_DIR$/build.gradle" value="3306187616" />
         <entry key="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" value="2585518924" />
         <entry key="$PROJECT_DIR$/settings.gradle" value="1087802043" />
       </map>
@@ -631,18 +628,18 @@
         <option value="$PROJECT_DIR$/src/test/java/org/servantscode/person/db/testAutoCompleteComparator.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/Address.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/DBAccess.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilyQueryResponse.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/CORSFilter.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/Family.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java" />
-        <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/src/main/resources/log4j2.properties" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" />
         <option value="$PROJECT_DIR$/src/main/resources/log4j2.json" />
+        <option value="$PROJECT_DIR$/build.gradle" />
+        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/DBAccess.java" />
       </list>
     </option>
   </component>
@@ -975,7 +972,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541170943507" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541174854854" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -1280,7 +1277,7 @@
       <workItem from="1539719769267" duration="3391000" />
       <workItem from="1539785843538" duration="20537000" />
       <workItem from="1540313917662" duration="3567000" />
-      <workItem from="1540930606509" duration="11044000" />
+      <workItem from="1540930606509" duration="12910000" />
     </task>
     <servers />
   </component>
@@ -1317,7 +1314,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="68643000" />
+    <option name="totallyTimeSpent" value="70509000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1932" height="1047" extended-state="0" />
@@ -1349,7 +1346,7 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="right" id="Maven Projects" order="4" weight="0.32995737" />
-      <window_info anchor="right" id="Gradle" order="5" visible="true" weight="0.24839744" />
+      <window_info anchor="right" id="Gradle" order="5" weight="0.24839744" />
       <window_info anchor="right" id="Database" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="7" />
       <window_info anchor="right" id="Theme Preview" order="8" />
@@ -1507,13 +1504,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/DBAccess.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="9" column="21" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.ws.rs/javax.ws.rs-api/2.1/b693d737250f57da3bbc0fbfccf6917de18ae200/javax.ws.rs-api-2.1-sources.jar!/javax/ws/rs/container/ContainerResponseFilter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="612">
@@ -1574,13 +1564,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="90" selection-start-line="19" selection-start-column="90" selection-end-line="19" selection-end-column="90" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="611">
@@ -1601,6 +1584,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/log4j2.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="24" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="25" lean-forward="true" selection-start-line="8" selection-start-column="25" selection-end-line="8" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/DBAccess.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="612">
+          <caret line="43" column="55" selection-start-line="43" selection-start-column="55" selection-end-line="43" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1207">
@@ -1608,13 +1612,6 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/log4j2.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="41" selection-start-line="8" selection-start-column="41" selection-end-line="8" selection-end-column="41" />
         </state>
       </provider>
     </entry>
