@@ -7,18 +7,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6712fad3-34f5-48f1-a21c-288d37bcb528" name="Default Changelist" comment="Initial UI integration">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_api_2_11_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_core_2_11_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/log4j2.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.8/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Gradle___org_servantscode___person_svc_1_0_SNAPSHOT_war__exploded_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Gradle___org_servantscode___person_svc_1_0_SNAPSHOT_war__exploded_.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/person-svc_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/person-svc_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/person-svc_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/person-svc_test.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j2.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j2.json" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -107,7 +99,7 @@
           <entry key="dummy" value="67" />
           <entry key="gradle" value="1097" />
           <entry key="java" value="29136" />
-          <entry key="json" value="2011" />
+          <entry key="json" value="2087" />
           <entry key="jsp" value="142" />
           <entry key="properties" value="46" />
           <entry key="txt" value="22" />
@@ -118,7 +110,7 @@
         <counts>
           <entry key="Groovy" value="1097" />
           <entry key="JAVA" value="29136" />
-          <entry key="JSON" value="2011" />
+          <entry key="JSON" value="2087" />
           <entry key="JSP" value="142" />
           <entry key="PLAIN_TEXT" value="89" />
           <entry key="Properties" value="46" />
@@ -155,8 +147,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/resources/log4j2.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="30" selection-start-line="30" selection-end-line="30" />
+            <state relative-caret-position="136">
+              <caret line="8" column="41" selection-start-line="8" selection-start-column="41" selection-end-line="8" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -173,8 +165,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="84" column="30" selection-start-line="84" selection-start-column="30" selection-end-line="84" selection-end-column="30" />
+            <state relative-caret-position="1207">
+              <caret line="71" column="25" selection-start-line="71" selection-start-column="25" selection-end-line="71" selection-end-column="25" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -228,7 +220,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="459">
-              <caret line="93" lean-forward="true" selection-start-line="93" selection-end-line="93" />
+              <caret line="93" selection-start-line="93" selection-end-line="93" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -983,7 +975,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541100206513" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541170943507" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -1288,7 +1280,7 @@
       <workItem from="1539719769267" duration="3391000" />
       <workItem from="1539785843538" duration="20537000" />
       <workItem from="1540313917662" duration="3567000" />
-      <workItem from="1540930606509" duration="8947000" />
+      <workItem from="1540930606509" duration="11044000" />
     </task>
     <servers />
   </component>
@@ -1325,7 +1317,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="66546000" />
+    <option name="totallyTimeSpent" value="68643000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1932" height="1047" extended-state="0" />
@@ -1589,16 +1581,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="84" column="30" selection-start-line="84" selection-start-column="30" selection-end-line="84" selection-end-column="30" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="611">
@@ -1612,7 +1594,17 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
-          <caret line="93" lean-forward="true" selection-start-line="93" selection-end-line="93" />
+          <caret line="93" selection-start-line="93" selection-end-line="93" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1207">
+          <caret line="71" column="25" selection-start-line="71" selection-start-column="25" selection-end-line="71" selection-end-column="25" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1621,8 +1613,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/log4j2.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="30" selection-start-line="30" selection-end-line="30" />
+        <state relative-caret-position="136">
+          <caret line="8" column="41" selection-start-line="8" selection-start-column="41" selection-end-line="8" selection-end-column="41" />
         </state>
       </provider>
     </entry>

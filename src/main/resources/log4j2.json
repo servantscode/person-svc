@@ -6,7 +6,7 @@
     "properties": {
       "property": {
         "name": "logname",
-        "value" : "/var/lib/servantscode/person-svc"
+        "value" : "/usr/local/tomcat/logs/servantscode/person-svc"
       }
     },
 

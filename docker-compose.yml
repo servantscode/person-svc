@@ -15,3 +15,8 @@ services:
 
 volumes:
   postgres:
+
+networks:
+  default:
+    external:
+      name: docker-elk_elk
