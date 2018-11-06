@@ -1,5 +1,9 @@
 package org.servantscode.person.db;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.servantscode.commons.AutoCompleteComparator;
+import org.servantscode.commons.db.DBAccess;
 import org.servantscode.person.Person;
 
 import java.sql.*;
@@ -7,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static org.servantscode.person.StringUtils.isEmpty;
+import static org.servantscode.commons.StringUtils.isEmpty;
 
 public class PersonDB extends DBAccess {
+    private static final Logger LOG = LogManager.getLogger(PersonDB.class);
 
     public int getCount(String search) {
         String sql = format("Select count(1) from people%s", optionalWhereClause(search));
@@ -50,7 +55,10 @@ public class PersonDB extends DBAccess {
             while (rs.next())
                 names.add(rs.getString(1));
 
+            long start = System.currentTimeMillis();
             names.sort(new AutoCompleteComparator(search));
+            LOG.debug(String.format("Sorted %d names in %d ms.", names.size(), System.currentTimeMillis()-start));
+
             return (count < names.size()) ? names : names.subList(0, count);
         } catch (SQLException e) {
             throw new RuntimeException("Could not retrieve names containing '" + search + "'", e);
