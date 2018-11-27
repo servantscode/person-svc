@@ -156,6 +156,6 @@ public class FamilyDB extends DBAccess {
     }
 
     private String optionalWhereClause(String search) {
-        return !isEmpty(search)? format(" WHERE surname ILIKE '%%%s%%'", search) : "";
+    return !isEmpty(search)? format(" WHERE surname ILIKE '%%%s%%'", search.replace("'", "''")) : "";
     }
 }

@@ -178,6 +178,6 @@ public class PersonDB extends DBAccess {
     }
 
     private String optionalWhereClause(String search) {
-        return !isEmpty(search)? format(" WHERE name ILIKE '%%%s%%'", search) : "";
+        return !isEmpty(search)? format(" WHERE name ILIKE '%%%s%%'", search.replace("'", "''")) : "";
     }
 }
