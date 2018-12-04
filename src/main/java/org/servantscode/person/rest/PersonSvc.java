@@ -35,15 +35,23 @@ public class PersonSvc {
 
     @GET @Produces(MediaType.APPLICATION_JSON)
     public PersonQueryResponse getPeople(@QueryParam("start") @DefaultValue("0") int start,
-                                         @QueryParam("count") @DefaultValue("100") int count,
+                                         @QueryParam("count") @DefaultValue("10") int count,
                                          @QueryParam("sort_field") @DefaultValue("id") String sortField,
-                                         @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
+                                         @QueryParam("partial_name") @DefaultValue("") String nameSearch,
+                                         @QueryParam("families") @DefaultValue("false") boolean includeFamilies) {
 
         try {
-            logger.trace(String.format("Retrieving people (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
+            logger.trace(String.format("Retrieving people (%s, %s, page: %d; %d, families: %b)", nameSearch, sortField, start, count, includeFamilies));
             PersonDB db = new PersonDB();
             int totalPeople = db.getCount(nameSearch);
-            List<Person> results = db.getPeople(nameSearch, sortField, start, count);
+
+            List<Person> results ;
+            if(!includeFamilies) {
+                results = db.getPeople(nameSearch, sortField, start, count);
+            } else {
+                results = db.getPeopleWithFamilies(nameSearch, sortField, start, count);
+            }
+
             return new PersonQueryResponse(start, results.size(), totalPeople, results);
         } catch (Throwable t) {
             logger.error("Retrieving people failed:");

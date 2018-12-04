@@ -21,7 +21,14 @@ public class FamilyReconciler {
     }
 
     public Person updatePerson(Person person) {
-        resolveFamily(person.getFamily());
+        Family family = person.getFamily();
+        if(family != null) {
+            resolveFamily(family);
+
+            family.setMembers(personDb.getFamilyMembers(family.getId()));
+            family.getMembers().removeIf((p) -> p.getId() == person.getId()); //Remove the returned person
+        }
+
         personDb.update(person);
         return person;
     }

@@ -3,7 +3,10 @@ package org.servantscode.person.db;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.AutoCompleteComparator;
+import org.servantscode.commons.StringUtils;
 import org.servantscode.commons.db.DBAccess;
+import org.servantscode.person.Address;
+import org.servantscode.person.Family;
 import org.servantscode.person.Person;
 
 import java.sql.*;
@@ -39,6 +42,23 @@ public class PersonDB extends DBAccess {
             stmt.setInt(2, start);
 
             return processPeopleResults(stmt);
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not retrieve people containing '" + search + "'", e);
+        }
+    }
+
+    public List<Person> getPeopleWithFamilies(String search, String sortField, int start, int count) {
+        String sql = format("SELECT p.*, f.surname, f.addr_street1, f.addr_street2, f.addr_city, f.addr_state, f.addr_zip FROM people p " +
+                            "LEFT JOIN families f ON p.family_id=f.id" +
+                            "%s ORDER BY %s LIMIT ? OFFSET ?",
+                optionalWhereClause(search), sortField);
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, count);
+            stmt.setInt(2, start);
+
+            return processPeopleResultsWithFamilies(stmt);
         } catch (SQLException e) {
             throw new RuntimeException("Could not retrieve people containing '" + search + "'", e);
         }
@@ -171,6 +191,39 @@ public class PersonDB extends DBAccess {
                 person.setEmail(rs.getString("email"));
                 person.setFamilyId(rs.getInt("family_id"));
                 person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
+                people.add(person);
+            }
+            return people;
+        }
+    }
+
+    private List<Person> processPeopleResultsWithFamilies(PreparedStatement stmt) throws SQLException {
+        LOG.debug("Processing people with family information");
+        try (ResultSet rs = stmt.executeQuery()){
+            List<Person> people = new ArrayList<>();
+            while(rs.next()) {
+                Person person = new Person(rs.getInt("id"), rs.getString("name"));
+                person.setBirthdate(rs.getDate("birthdate"));
+                person.setPhoneNumber(rs.getString("phonenumber"));
+                person.setEmail(rs.getString("email"));
+                person.setFamilyId(rs.getInt("family_id"));
+                person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
+
+                String surname = rs.getString("surname");
+                if(!isEmpty(surname)) {
+                    Family family = new Family(rs.getInt("family_id"), surname);
+                    person.setFamily(family);
+
+                    String street1 = rs.getString("addr_street1");
+                    if(!isEmpty(street1)) {
+                        Address addr = new Address(street1,
+                                rs.getString("addr_street2"),
+                                rs.getString("addr_city"),
+                                rs.getString("addr_state"),
+                                rs.getInt("addr_zip"));
+                        family.setAddress(addr);
+                    }
+                }
                 people.add(person);
             }
             return people;
