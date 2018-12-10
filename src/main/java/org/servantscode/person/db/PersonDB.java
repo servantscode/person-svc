@@ -112,7 +112,7 @@ public class PersonDB extends DBAccess {
 
     public void create(Person person) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, phonenumber, email, family_id, head_of_house) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, phonenumber, email, family_id, head_of_house, member_since) values (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
             stmt.setDate(2, convert(person.getBirthdate()));
@@ -120,6 +120,7 @@ public class PersonDB extends DBAccess {
             stmt.setString(4, person.getEmail());
             stmt.setInt(5, person.getFamily().getId());
             stmt.setBoolean(6, person.isHeadOfHousehold());
+            stmt.setDate(7, convert(person.getMemberSince()));
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -136,7 +137,7 @@ public class PersonDB extends DBAccess {
 
     public void update(Person person) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, phonenumber=?, email=?, family_id=?, head_of_house=? WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=? WHERE id=?")
             ){
 
             stmt.setString(1, person.getName());
@@ -145,7 +146,8 @@ public class PersonDB extends DBAccess {
             stmt.setString(4, person.getEmail());
             stmt.setInt(5, person.getFamily().getId());
             stmt.setBoolean(6, person.isHeadOfHousehold());
-            stmt.setInt(7, person.getId());
+            stmt.setDate(7, convert(person.getMemberSince()));
+            stmt.setInt(8, person.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update person: " + person.getName());
@@ -191,6 +193,7 @@ public class PersonDB extends DBAccess {
                 person.setEmail(rs.getString("email"));
                 person.setFamilyId(rs.getInt("family_id"));
                 person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
+                person.setMemberSince(rs.getDate("member_since"));
                 people.add(person);
             }
             return people;

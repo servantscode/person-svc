@@ -1,5 +1,6 @@
 package org.servantscode.person;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
@@ -7,12 +8,17 @@ import java.util.Date;
 public class Person {
     private int id;
     private String name;
-    private Date birthdate;
-    private Date memberSince;
+
     private String phoneNumber;
     private String email;
     private Family family;
     private boolean headOfHousehold;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date birthdate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date memberSince;
 
     @JsonIgnore
     private int familyId;

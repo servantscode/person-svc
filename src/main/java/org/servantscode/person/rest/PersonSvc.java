@@ -10,6 +10,7 @@ import org.servantscode.person.db.PersonDB;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.Date;
 import java.util.List;
 
 @Path("/person")
@@ -76,6 +77,9 @@ public class PersonSvc {
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Person createPerson(Person person) {
         try {
+            if(person.getMemberSince() == null)
+                person.setMemberSince(new Date());
+
             getReconciler().createPerson(person);
             logger.info("Created parishoner: " + person.getName());
             return person;
