@@ -7,11 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6712fad3-34f5-48f1-a21c-288d37bcb528" name="Default Changelist" comment="Initial UI integration">
-      <change afterPath="$PROJECT_DIR$/src/main/db/servantscode.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/db/servantscode.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/db/servantscode.sql" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -66,11 +63,12 @@
     <session id="-182345515">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="6" />
+          <entry key="project.closed" value="7" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.11" value="4" />
+          <entry key="project.open.time.16" value="1" />
           <entry key="project.open.time.18" value="1" />
-          <entry key="project.open.time.2" value="1" />
+          <entry key="project.open.time.2" value="2" />
           <entry key="project.open.time.24" value="1" />
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.32" value="1" />
@@ -78,7 +76,7 @@
           <entry key="project.open.time.6" value="1" />
           <entry key="project.open.time.7" value="1" />
           <entry key="project.open.time.9" value="3" />
-          <entry key="project.opened" value="16" />
+          <entry key="project.opened" value="18" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -88,7 +86,7 @@
           <entry key="class" value="1" />
           <entry key="gradle" value="4" />
           <entry key="gradlew" value="1" />
-          <entry key="java" value="41" />
+          <entry key="java" value="42" />
           <entry key="jsp" value="2" />
           <entry key="properties" value="3" />
           <entry key="sql" value="1" />
@@ -99,7 +97,7 @@
         <counts>
           <entry key="CLASS" value="1" />
           <entry key="Groovy" value="4" />
-          <entry key="JAVA" value="41" />
+          <entry key="JAVA" value="42" />
           <entry key="JSP" value="2" />
           <entry key="Manifest" value="2" />
           <entry key="PLAIN_TEXT" value="2" />
@@ -112,10 +110,11 @@
         <counts>
           <entry key="dummy" value="67" />
           <entry key="gradle" value="1472" />
-          <entry key="java" value="33406" />
+          <entry key="java" value="33548" />
           <entry key="json" value="2087" />
           <entry key="jsp" value="142" />
           <entry key="properties" value="46" />
+          <entry key="sql" value="55" />
           <entry key="txt" value="22" />
           <entry key="xml" value="1061" />
         </counts>
@@ -123,11 +122,12 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="1472" />
-          <entry key="JAVA" value="33406" />
+          <entry key="JAVA" value="33548" />
           <entry key="JSON" value="2087" />
           <entry key="JSP" value="142" />
           <entry key="PLAIN_TEXT" value="89" />
           <entry key="Properties" value="46" />
+          <entry key="SQL" value="55" />
           <entry key="XML" value="1061" />
         </counts>
       </usages-collector>
@@ -135,6 +135,18 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1326">
+              <caret line="91" selection-start-line="91" selection-end-line="91" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilyQueryResponse.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -159,8 +171,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3808">
-              <caret line="238" selection-start-line="238" selection-end-line="238" />
+            <state relative-caret-position="2057">
+              <caret line="135" selection-start-line="135" selection-end-line="135" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -171,8 +183,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1190">
-              <caret line="81" selection-start-line="81" selection-end-line="81" />
+            <state relative-caret-position="221">
+              <caret line="24" selection-start-line="24" selection-end-line="24" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -192,20 +204,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/db/servantscode.sql">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" selection-start-line="16" selection-end-line="16" />
+            <state relative-caret-position="631">
+              <caret line="222" column="1" selection-end-line="254" selection-end-column="2" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="43">
-              <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+            <state relative-caret-position="68">
+              <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -638,9 +650,10 @@
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyReconciler.java" />
         <option value="$PROJECT_DIR$/src/main/servantscode.sql" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/JsonProvider.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java" />
+        <option value="$PROJECT_DIR$/src/main/db/servantscode.sql" />
       </list>
     </option>
   </component>
@@ -664,8 +677,7 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="391" />
-    <option name="y" value="181" />
+    <option name="x" value="-7" />
     <option name="width" value="1932" />
     <option name="height" value="1047" />
   </component>
@@ -877,7 +889,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -969,12 +980,13 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1544453848106" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1544563682472" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../permission-svc" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
@@ -1326,7 +1338,9 @@
       <workItem from="1543338387003" duration="2441000" />
       <workItem from="1543507605708" duration="1196000" />
       <workItem from="1543854838990" duration="7716000" />
-      <workItem from="1544212920138" duration="3354000" />
+      <workItem from="1544212920138" duration="8238000" />
+      <workItem from="1544635724840" duration="3235000" />
+      <workItem from="1544716660316" duration="5551000" />
     </task>
     <servers />
   </component>
@@ -1363,13 +1377,13 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="98594000" />
+    <option name="totallyTimeSpent" value="112264000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="391" y="181" width="1932" height="1047" extended-state="0" />
+    <frame x="-7" y="0" width="1932" height="1047" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.258547" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2638889" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -1378,7 +1392,7 @@
       <window_info id="Web" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.32932165" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49946696" visible="true" weight="0.45076588" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49946696" weight="0.45076588" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -1529,20 +1543,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1122">
-          <caret line="79" column="150" selection-start-line="79" selection-start-column="150" selection-end-line="79" selection-end-column="150" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/FamilySvc.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.8.10/f7b83cb2bc4b88d53961e749e1ad32f49ef017b7/jackson-databind-2.8.10.jar!/com/fasterxml/jackson/databind/SerializationConfig.class">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/JsonProvider.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/FamilyDB.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1326">
+          <caret line="91" selection-start-line="91" selection-end-line="91" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1568,8 +1583,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/db/PersonDB.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3808">
-          <caret line="238" selection-start-line="238" selection-end-line="238" />
+        <state relative-caret-position="2057">
+          <caret line="135" selection-start-line="135" selection-end-line="135" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1578,8 +1593,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/PersonSvc.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1190">
-          <caret line="81" selection-start-line="81" selection-end-line="81" />
+        <state relative-caret-position="221">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1596,10 +1611,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/db/servantscode.sql">
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        <state relative-caret-position="68">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -1610,25 +1625,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.8.10/f7b83cb2bc4b88d53961e749e1ad32f49ef017b7/jackson-databind-2.8.10.jar!/com/fasterxml/jackson/databind/SerializationConfig.class">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/rest/JsonProvider.java">
+    <entry file="file://$PROJECT_DIR$/src/main/db/servantscode.sql">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1261#1262#0" expanded="true" />
-            <element signature="e#1306#1307#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/servantscode/person/Person.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="43">
-          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+        <state relative-caret-position="631">
+          <caret line="222" column="1" selection-end-line="254" selection-end-column="2" />
         </state>
       </provider>
     </entry>

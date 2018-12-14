@@ -144,7 +144,8 @@ CREATE TABLE public.people (
   email text,
   phonenumber text,
   head_of_house boolean,
-  family_id integer
+  family_id integer,
+  member_since date
 );
 
 
@@ -230,7 +231,7 @@ ALTER TABLE ONLY public.people
 --
 
 ALTER TABLE ONLY public.logins
-  ADD CONSTRAINT logins_person_id_fkey FOREIGN KEY (person_id) REFERENCES public.people(id);
+  ADD CONSTRAINT logins_person_id_fkey FOREIGN KEY (person_id) REFERENCES public.people(id) ON DELETE CASCADE;
 
 
 --
@@ -238,7 +239,7 @@ ALTER TABLE ONLY public.logins
 --
 
 ALTER TABLE ONLY public.ministry_enrollments
-  ADD CONSTRAINT ministry_enrollments_ministry_id_fkey FOREIGN KEY (ministry_id) REFERENCES public.ministries(id);
+  ADD CONSTRAINT ministry_enrollments_ministry_id_fkey FOREIGN KEY (ministry_id) REFERENCES public.ministries(id) ON DELETE CASCADE;
 
 
 --
@@ -246,7 +247,7 @@ ALTER TABLE ONLY public.ministry_enrollments
 --
 
 ALTER TABLE ONLY public.ministry_enrollments
-  ADD CONSTRAINT ministry_enrollments_person_id_fkey FOREIGN KEY (person_id) REFERENCES public.people(id);
+  ADD CONSTRAINT ministry_enrollments_person_id_fkey FOREIGN KEY (person_id) REFERENCES public.people(id) ON DELETE CASCADE;
 
 
 --
