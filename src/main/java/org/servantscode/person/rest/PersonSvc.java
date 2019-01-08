@@ -2,7 +2,6 @@ package org.servantscode.person.rest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.servantscode.person.Person;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
@@ -15,7 +14,7 @@ import java.util.List;
 
 @Path("/person")
 public class PersonSvc {
-    private static final Logger logger = LogManager.getLogger(PersonSvc.class);
+    private static final Logger LOG = LogManager.getLogger(PersonSvc.class);
 
     @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
     public List<String> getPeopleNames(@QueryParam("start") @DefaultValue("0") int start,
@@ -24,14 +23,13 @@ public class PersonSvc {
                                        @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
 
         try {
-            logger.trace(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
+            LOG.trace(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             PersonDB db = new PersonDB();
             return db.getPeopleNames(nameSearch, count);
         } catch (Throwable t) {
-            logger.error("Retrieving people failed:");
-            t.printStackTrace();
+            LOG.error("Retrieving people failed:", t);
+            throw t;
         }
-        return null;
     }
 
     @GET @Produces(MediaType.APPLICATION_JSON)
@@ -42,7 +40,7 @@ public class PersonSvc {
                                          @QueryParam("families") @DefaultValue("false") boolean includeFamilies) {
 
         try {
-            logger.trace(String.format("Retrieving people (%s, %s, page: %d; %d, families: %b)", nameSearch, sortField, start, count, includeFamilies));
+            LOG.trace(String.format("Retrieving people (%s, %s, page: %d; %d, families: %b)", nameSearch, sortField, start, count, includeFamilies));
             PersonDB db = new PersonDB();
             int totalPeople = db.getCount(nameSearch);
 
@@ -55,10 +53,9 @@ public class PersonSvc {
 
             return new PersonQueryResponse(start, results.size(), totalPeople, results);
         } catch (Throwable t) {
-            logger.error("Retrieving people failed:");
-            t.printStackTrace();
+            LOG.error("Retrieving people failed:", t);
+            throw t;
         }
-        return null;
     }
 
     @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
@@ -66,10 +63,9 @@ public class PersonSvc {
         try {
             return getReconciler().getPerson(id);
         } catch (Throwable t) {
-            logger.error("Retrieving person failed:");
-            t.printStackTrace();
+            LOG.error("Retrieving person failed:", t);
+            throw t;
         }
-        return null;
     }
 
 
@@ -81,13 +77,12 @@ public class PersonSvc {
                 person.setMemberSince(new Date());
 
             getReconciler().createPerson(person);
-            logger.info("Created parishoner: " + person.getName());
+            LOG.info("Created parishoner: " + person.getName());
             return person;
         } catch (Throwable t) {
-            logger.error("Creating person failed:");
-            t.printStackTrace();
+            LOG.error("Creating person failed:", t);
+            throw t;
         }
-        return null;
     }
 
     @PUT
@@ -95,13 +90,12 @@ public class PersonSvc {
     public Person updatePerson(Person person) {
         try {
             getReconciler().updatePerson(person);
-            logger.info("Edited parishoner: " + person.getName());
+            LOG.info("Edited parishoner: " + person.getName());
             return person;
         } catch (Throwable t) {
-            logger.error("Updating person failed:");
-            t.printStackTrace();
+            LOG.error("Updating person failed:", t);
+            throw t;
         }
-        return null;
     }
 
     @DELETE @Path("/{id}")
@@ -112,10 +106,10 @@ public class PersonSvc {
             Person person = getReconciler().getPerson(id);
             if(person == null || getReconciler().deletePerson(person))
                 throw new NotFoundException();
-            logger.info("Deleted parishoner: " + person.getName());
+            LOG.info("Deleted parishoner: " + person.getName());
         } catch (Throwable t) {
-            logger.error("Deleting person failed:");
-            t.printStackTrace();
+            LOG.error("Deleting person failed:", t);
+            throw t;
         }
     }
 
