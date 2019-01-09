@@ -1,15 +1,19 @@
-version: '3'
+version: '2.4'
 services:
   person-svc:
     image: "servantscode/person-svc:latest"
     ports:
      - "80:8080"
+    mem_limit: 128m
+    environment:
+      ES_JAVA_OPTS: "-Xmx128m -Xms128m"
   postgres:
     image: "postgres"
     ports:
      - "5432:5432"
     volumes:
      - postgres:/var/lib/postgresql/data
+    mem_limit: 256m
     environment:
       POSTGRES_PASSWORD: "SuperSecret"
 
