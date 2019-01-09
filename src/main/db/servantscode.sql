@@ -7,4 +7,4 @@ CREATE TABLE ministries (id SERIAL PRIMARY KEY, name TEXT, description TEXT);
 CREATE TABLE ministry_enrollments (person_id INTEGER REFERENCES people(id) ON DELETE CASCADE, ministry_id INTEGER REFERENCES ministries(id) ON DELETE CASCADE, role TEXT);
 CREATE TABLE pledges (id SERIAL, family_id INTEGER REFERENCES families(id), pledge_type TEXT, envelope_number INTEGER, pledge_date TIMESTAMP, pledge_start TIMESTAMP, pledge_end TIMESTAMP, frequency TEXT, pledge_increment FLOAT, total_pledge FLOAT);
 CREATE TABLE donations (id BIGSERIAL, family_id INTEGER REFERENCES families(id), amount FLOAT, date TIMESTAMP, type TEXT, check_number INTEGER, transaction_id bigint);
-CREATE TABLE events (id SERIAL, event_datetime TIMESTAMP, description TEXT, scheduler_id INTEGER REFERENCES people(id), ministry_id INTEGER REFERENCES ministries(id));
+CREATE TABLE events (id SERIAL, start_time TIMESTAMP, end_time TIMESTAMP, description TEXT, scheduler_id INTEGER REFERENCES people(id), ministry_id INTEGER REFERENCES ministries(id));
