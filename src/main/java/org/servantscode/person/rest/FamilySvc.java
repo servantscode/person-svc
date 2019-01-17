@@ -2,6 +2,7 @@ package org.servantscode.person.rest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.servantscode.commons.rest.PaginatedResponse;
 import org.servantscode.person.Family;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
@@ -33,7 +34,7 @@ public class FamilySvc {
     }
 
     @GET @Produces(MediaType.APPLICATION_JSON)
-    public FamilyQueryResponse getFamilies(@QueryParam("start") @DefaultValue("0") int start,
+    public PaginatedResponse<Family> getFamilies(@QueryParam("start") @DefaultValue("0") int start,
                                          @QueryParam("count") @DefaultValue("100") int count,
                                          @QueryParam("sort_field") @DefaultValue("id") String sortField,
                                          @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
@@ -43,7 +44,7 @@ public class FamilySvc {
             FamilyDB db = new FamilyDB();
             int totalFamilies = db.getCount(nameSearch);
             List<Family> results = db.getFamilies(nameSearch, sortField, start, count);
-            return new FamilyQueryResponse(start, results.size(), totalFamilies, results);
+            return new PaginatedResponse<>(start, results.size(), totalFamilies, results);
         } catch (Throwable t) {
             logger.error("Retrieving families failed:");
             t.printStackTrace();

@@ -2,6 +2,7 @@ package org.servantscode.person.rest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.servantscode.commons.rest.PaginatedResponse;
 import org.servantscode.person.Person;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
@@ -33,11 +34,11 @@ public class PersonSvc {
     }
 
     @GET @Produces(MediaType.APPLICATION_JSON)
-    public PersonQueryResponse getPeople(@QueryParam("start") @DefaultValue("0") int start,
-                                         @QueryParam("count") @DefaultValue("10") int count,
-                                         @QueryParam("sort_field") @DefaultValue("id") String sortField,
-                                         @QueryParam("partial_name") @DefaultValue("") String nameSearch,
-                                         @QueryParam("families") @DefaultValue("false") boolean includeFamilies) {
+    public PaginatedResponse<Person> getPeople(@QueryParam("start") @DefaultValue("0") int start,
+                                       @QueryParam("count") @DefaultValue("10") int count,
+                                       @QueryParam("sort_field") @DefaultValue("id") String sortField,
+                                       @QueryParam("partial_name") @DefaultValue("") String nameSearch,
+                                       @QueryParam("families") @DefaultValue("false") boolean includeFamilies) {
 
         try {
             LOG.trace(String.format("Retrieving people (%s, %s, page: %d; %d, families: %b)", nameSearch, sortField, start, count, includeFamilies));
@@ -51,7 +52,7 @@ public class PersonSvc {
                 results = db.getPeopleWithFamilies(nameSearch, sortField, start, count);
             }
 
-            return new PersonQueryResponse(start, results.size(), totalPeople, results);
+            return new PaginatedResponse<>(start, results.size(), totalPeople, results);
         } catch (Throwable t) {
             LOG.error("Retrieving people failed:", t);
             throw t;
