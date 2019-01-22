@@ -4,12 +4,9 @@ import org.servantscode.commons.AutoCompleteComparator;
 import org.servantscode.commons.db.DBAccess;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
-import org.servantscode.person.Person;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static java.lang.String.format;

@@ -10,7 +10,7 @@ import org.servantscode.person.db.PersonDB;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Path("/person")
@@ -75,7 +75,7 @@ public class PersonSvc {
     public Person createPerson(Person person) {
         try {
             if(person.getMemberSince() == null)
-                person.setMemberSince(new Date());
+                person.setMemberSince(ZonedDateTime.now());
 
             getReconciler().createPerson(person);
             LOG.info("Created parishoner: " + person.getName());

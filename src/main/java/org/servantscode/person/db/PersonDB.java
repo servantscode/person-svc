@@ -3,7 +3,6 @@ package org.servantscode.person.db;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.AutoCompleteComparator;
-import org.servantscode.commons.StringUtils;
 import org.servantscode.commons.db.DBAccess;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
@@ -115,12 +114,12 @@ public class PersonDB extends DBAccess {
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, phonenumber, email, family_id, head_of_house, member_since) values (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
-            stmt.setDate(2, convert(person.getBirthdate()));
+            stmt.setTimestamp(2, convert(person.getBirthdate()));
             stmt.setString(3, person.getPhoneNumber());
             stmt.setString(4, person.getEmail());
             stmt.setInt(5, person.getFamily().getId());
             stmt.setBoolean(6, person.isHeadOfHousehold());
-            stmt.setDate(7, convert(person.getMemberSince()));
+            stmt.setTimestamp(7, convert(person.getMemberSince()));
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -141,12 +140,12 @@ public class PersonDB extends DBAccess {
             ){
 
             stmt.setString(1, person.getName());
-            stmt.setDate(2, convert(person.getBirthdate()));
+            stmt.setTimestamp(2, convert(person.getBirthdate()));
             stmt.setString(3, person.getPhoneNumber());
             stmt.setString(4, person.getEmail());
             stmt.setInt(5, person.getFamily().getId());
             stmt.setBoolean(6, person.isHeadOfHousehold());
-            stmt.setDate(7, convert(person.getMemberSince()));
+            stmt.setTimestamp(7, convert(person.getMemberSince()));
             stmt.setInt(8, person.getId());
 
             if(stmt.executeUpdate() == 0)
@@ -188,12 +187,12 @@ public class PersonDB extends DBAccess {
             List<Person> people = new ArrayList<>();
             while(rs.next()) {
                 Person person = new Person(rs.getInt("id"), rs.getString("name"));
-                person.setBirthdate(rs.getDate("birthdate"));
+                person.setBirthdate(convert(rs.getTimestamp("birthdate")));
                 person.setPhoneNumber(rs.getString("phonenumber"));
                 person.setEmail(rs.getString("email"));
                 person.setFamilyId(rs.getInt("family_id"));
                 person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
-                person.setMemberSince(rs.getDate("member_since"));
+                person.setMemberSince(convert(rs.getTimestamp("member_since")));
                 people.add(person);
             }
             return people;
@@ -206,11 +205,12 @@ public class PersonDB extends DBAccess {
             List<Person> people = new ArrayList<>();
             while(rs.next()) {
                 Person person = new Person(rs.getInt("id"), rs.getString("name"));
-                person.setBirthdate(rs.getDate("birthdate"));
+                person.setBirthdate(convert(rs.getTimestamp("birthdate")));
                 person.setPhoneNumber(rs.getString("phonenumber"));
                 person.setEmail(rs.getString("email"));
                 person.setFamilyId(rs.getInt("family_id"));
                 person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
+                person.setMemberSince(convert(rs.getTimestamp("member_since")));
 
                 String surname = rs.getString("surname");
                 if(!isEmpty(surname)) {

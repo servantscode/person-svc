@@ -1,9 +1,8 @@
 package org.servantscode.person;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 public class Person {
     private int id;
@@ -13,12 +12,8 @@ public class Person {
     private String email;
     private Family family;
     private boolean headOfHousehold;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date birthdate;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date memberSince;
+    private ZonedDateTime birthdate;
+    private ZonedDateTime memberSince;
 
     @JsonIgnore
     private int familyId;
@@ -39,11 +34,11 @@ public class Person {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public Date getBirthdate() { return birthdate; }
-    public void setBirthdate(Date birthdate) { this.birthdate = birthdate; }
+    public ZonedDateTime getBirthdate() { return birthdate; }
+    public void setBirthdate(ZonedDateTime birthdate) { this.birthdate = birthdate; }
 
-    public Date getMemberSince() { return memberSince; }
-    public void setMemberSince(Date memberSince) { this.memberSince = memberSince; }
+    public ZonedDateTime getMemberSince() { return memberSince; }
+    public void setMemberSince(ZonedDateTime memberSince) { this.memberSince = memberSince; }
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
