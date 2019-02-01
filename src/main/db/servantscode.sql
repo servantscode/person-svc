@@ -11,4 +11,4 @@ CREATE TABLE events (id SERIAL, start_time TIMESTAMP WITH TIME ZONE, recurring_m
 CREATE TABLE rooms (id SERIAL, name TEXT, type TEXT, capacity INTEGER);
 CREATE TABLE equipment (id SERIAL, name TEXT, manufacturer TEXT, description TEXT);
 CREATE TABLE reservations (id BIGSERIAL, resource_type TEXT, resource_id INTEGER, reserving_person_id INTEGER, event_id INTEGER, start_time TIMESTAMP WITH TIME ZONE, end_time TIMESTAMP WITH TIME ZONE);
-CREATE TABLE recurrences(id SERIAL, cycle TEXT, frequency INTEGER, end_date TIMESTAMP WITH TIME ZONE);
+CREATE TABLE recurrences(id SERIAL, cycle TEXT, frequency INTEGER, end_date TIMESTAMP WITH TIME ZONE, weekly_days INTEGER);
