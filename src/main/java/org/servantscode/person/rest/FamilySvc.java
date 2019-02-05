@@ -3,6 +3,7 @@ package org.servantscode.person.rest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.rest.PaginatedResponse;
+import org.servantscode.commons.rest.SCServiceBase;
 import org.servantscode.person.Family;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
@@ -13,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("/family")
-public class FamilySvc {
+public class FamilySvc extends SCServiceBase {
     private static final Logger logger = LogManager.getLogger(FamilySvc.class);
 
     @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
@@ -22,6 +23,7 @@ public class FamilySvc {
                                        @QueryParam("sort_field") @DefaultValue("id") String sortField,
                                        @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
 
+        verifyUserAccess("family.list");
         try {
             logger.trace(String.format("Retrieving family names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             FamilyDB db = new FamilyDB();
@@ -39,6 +41,7 @@ public class FamilySvc {
                                          @QueryParam("sort_field") @DefaultValue("id") String sortField,
                                          @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
 
+        verifyUserAccess("family.list");
         try {
             logger.trace(String.format("Retrieving families (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             FamilyDB db = new FamilyDB();
@@ -54,6 +57,7 @@ public class FamilySvc {
 
     @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
     public Family getFamily(@PathParam("id") int id) {
+        verifyUserAccess("family.read");
         try {
             return getReconciler().getFamily(id);
         } catch (Throwable t) {
@@ -67,6 +71,7 @@ public class FamilySvc {
     @POST
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Family createFamily(Family family) {
+        verifyUserAccess("family.create");
         try {
             getReconciler().createFamily(family);
             logger.info("Created family: " + family.getSurname());
@@ -81,6 +86,7 @@ public class FamilySvc {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Family updateFamily(Family family) {
+        verifyUserAccess("family.update");
         try {
             getReconciler().updateFamily(family);
             logger.info("Edited family: " + family.getSurname());
@@ -94,6 +100,7 @@ public class FamilySvc {
 
     @DELETE @Path("/{id}")
     public void deleteFamily(@PathParam("id") int id) {
+        verifyUserAccess("family.delete");
         if(id <= 0)
             throw new NotFoundException();
         try {

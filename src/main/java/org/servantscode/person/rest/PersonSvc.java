@@ -3,6 +3,7 @@ package org.servantscode.person.rest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.rest.PaginatedResponse;
+import org.servantscode.commons.rest.SCServiceBase;
 import org.servantscode.person.Person;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
@@ -14,7 +15,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Path("/person")
-public class PersonSvc {
+public class PersonSvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(PersonSvc.class);
 
     @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
@@ -22,6 +23,8 @@ public class PersonSvc {
                                        @QueryParam("count") @DefaultValue("100") int count,
                                        @QueryParam("sort_field") @DefaultValue("id") String sortField,
                                        @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
+
+        verifyUserAccess("person.list");
 
         try {
             LOG.trace(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
@@ -39,6 +42,8 @@ public class PersonSvc {
                                        @QueryParam("sort_field") @DefaultValue("id") String sortField,
                                        @QueryParam("partial_name") @DefaultValue("") String nameSearch,
                                        @QueryParam("families") @DefaultValue("false") boolean includeFamilies) {
+
+        verifyUserAccess("person.list");
 
         try {
             LOG.trace(String.format("Retrieving people (%s, %s, page: %d; %d, families: %b)", nameSearch, sortField, start, count, includeFamilies));
@@ -61,6 +66,8 @@ public class PersonSvc {
 
     @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
     public Person getPerson(@PathParam("id") int id) {
+        verifyUserAccess("person.read");
+
         try {
             return getReconciler().getPerson(id);
         } catch (Throwable t) {
@@ -73,6 +80,7 @@ public class PersonSvc {
     @POST
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Person createPerson(Person person) {
+        verifyUserAccess("person.create");
         try {
             if(person.getMemberSince() == null)
                 person.setMemberSince(ZonedDateTime.now());
@@ -89,6 +97,7 @@ public class PersonSvc {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Person updatePerson(Person person) {
+        verifyUserAccess("person.update");
         try {
             getReconciler().updatePerson(person);
             LOG.info("Edited parishoner: " + person.getName());
@@ -101,6 +110,7 @@ public class PersonSvc {
 
     @DELETE @Path("/{id}")
     public void deletePerson(@PathParam("id") int id) {
+        verifyUserAccess("person.delete");
         if(id <= 0)
             throw new NotFoundException();
         try {
