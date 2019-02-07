@@ -52,7 +52,7 @@ public class FamilyDB extends DBAccess {
                     names.add(rs.getString(1));
 
                 names.sort(new AutoCompleteComparator(search));
-                return (count < names.size())? names: names.subList(0, count);
+                return (count < names.size())? names.subList(0, count): names;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Could not get family surnames containing " + search, e);
