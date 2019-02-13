@@ -8,6 +8,7 @@ import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
 
+import javax.ws.rs.NotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -181,19 +182,27 @@ public class PersonDB extends DBAccess {
         }
     }
 
+    public void attchPhoto(int id, String guid) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET photo_guid=? WHERE id=?");
+        ){
+            stmt.setString(1, guid);
+            stmt.setInt(2, id);
+
+            if(stmt.executeUpdate() == 0)
+                throw new NotFoundException("Could not attach photo to person: " + id);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not attach photo to person: " + id, e);
+        }
+    }
+
     // ----- Private ------
     private List<Person> processPeopleResults(PreparedStatement stmt) throws SQLException {
         try (ResultSet rs = stmt.executeQuery()){
             List<Person> people = new ArrayList<>();
             while(rs.next()) {
-                Person person = new Person(rs.getInt("id"), rs.getString("name"));
-                person.setBirthdate(convert(rs.getTimestamp("birthdate")));
-                person.setPhoneNumber(rs.getString("phonenumber"));
-                person.setEmail(rs.getString("email"));
-                person.setFamilyId(rs.getInt("family_id"));
-                person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
-                person.setMemberSince(convert(rs.getTimestamp("member_since")));
-                people.add(person);
+                people.add(extractPerson(rs));
             }
             return people;
         }
@@ -204,13 +213,7 @@ public class PersonDB extends DBAccess {
         try (ResultSet rs = stmt.executeQuery()){
             List<Person> people = new ArrayList<>();
             while(rs.next()) {
-                Person person = new Person(rs.getInt("id"), rs.getString("name"));
-                person.setBirthdate(convert(rs.getTimestamp("birthdate")));
-                person.setPhoneNumber(rs.getString("phonenumber"));
-                person.setEmail(rs.getString("email"));
-                person.setFamilyId(rs.getInt("family_id"));
-                person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
-                person.setMemberSince(convert(rs.getTimestamp("member_since")));
+                Person person = extractPerson(rs);
 
                 String surname = rs.getString("surname");
                 if(!isEmpty(surname)) {
@@ -231,6 +234,18 @@ public class PersonDB extends DBAccess {
             }
             return people;
         }
+    }
+
+    private Person extractPerson(ResultSet rs) throws SQLException {
+        Person person = new Person(rs.getInt("id"), rs.getString("name"));
+        person.setBirthdate(convert(rs.getTimestamp("birthdate")));
+        person.setPhoneNumber(rs.getString("phonenumber"));
+        person.setEmail(rs.getString("email"));
+        person.setFamilyId(rs.getInt("family_id"));
+        person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
+        person.setMemberSince(convert(rs.getTimestamp("member_since")));
+        person.setPhotoGuid(rs.getString("photo_guid"));
+        return person;
     }
 
     private String optionalWhereClause(String search) {

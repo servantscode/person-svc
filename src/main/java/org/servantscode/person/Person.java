@@ -14,6 +14,7 @@ public class Person {
     private boolean headOfHousehold;
     private ZonedDateTime birthdate;
     private ZonedDateTime memberSince;
+    private String photoGuid;
 
     @JsonIgnore
     private int familyId;
@@ -54,4 +55,7 @@ public class Person {
 
     public boolean isHeadOfHousehold() { return headOfHousehold; }
     public void setHeadOfHousehold(boolean headOfHousehold) { this.headOfHousehold = headOfHousehold; }
+
+    public String getPhotoGuid() { return photoGuid; }
+    public void setPhotoGuid(String photoGuid) { this.photoGuid = photoGuid; }
 }

@@ -152,6 +152,7 @@ public class FamilyDB extends DBAccess {
                                            rs.getString("addr_state"),
                                            rs.getInt("addr_zip"));
                 family.setAddress(addr);
+                family.setPhotoGuid(rs.getString("photo_guid"));
                 families.add(family);
             }
             return families;

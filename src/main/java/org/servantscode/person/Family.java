@@ -9,6 +9,7 @@ public class Family {
     private int envelopeNumber;
     private List<Person> members;
     private Address address;
+    private String photoGuid;
 
     public Family() {}
 
@@ -35,4 +36,7 @@ public class Family {
 
     public Address getAddress() { return address; }
     public void setAddress(Address address) { this.address = address; }
+
+    public String getPhotoGuid() { return photoGuid; }
+    public void setPhotoGuid(String photoGuid) { this.photoGuid = photoGuid; }
 }

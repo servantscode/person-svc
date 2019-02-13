@@ -18,6 +18,12 @@ import java.util.List;
 public class PersonSvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(PersonSvc.class);
 
+    private PersonDB db;
+
+    public PersonSvc() {
+        this.db = new PersonDB();
+    }
+
     @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
     public List<String> getPeopleNames(@QueryParam("start") @DefaultValue("0") int start,
                                        @QueryParam("count") @DefaultValue("100") int count,
@@ -28,7 +34,6 @@ public class PersonSvc extends SCServiceBase {
 
         try {
             LOG.trace(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            PersonDB db = new PersonDB();
             return db.getPeopleNames(nameSearch, count);
         } catch (Throwable t) {
             LOG.error("Retrieving people failed:", t);
@@ -47,7 +52,6 @@ public class PersonSvc extends SCServiceBase {
 
         try {
             LOG.trace(String.format("Retrieving people (%s, %s, page: %d; %d, families: %b)", nameSearch, sortField, start, count, includeFamilies));
-            PersonDB db = new PersonDB();
             int totalPeople = db.getCount(nameSearch);
 
             List<Person> results ;
@@ -76,6 +80,19 @@ public class PersonSvc extends SCServiceBase {
         }
     }
 
+    @PUT @Path("/{id}/photo") @Consumes(MediaType.TEXT_PLAIN)
+    public void attachPhoto(@PathParam("id") int id,
+                            String guid) {
+        verifyUserAccess("person.update");
+
+        LOG.debug("Attaching photo: " + guid);
+        try {
+            db.attchPhoto(id, guid);
+        } catch (Throwable t) {
+            LOG.error("Attaching photo to person failed.", t);
+            throw t;
+        }
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
@@ -126,6 +143,6 @@ public class PersonSvc extends SCServiceBase {
 
     // ----- Private -----
     private FamilyReconciler getReconciler() {
-        return new FamilyReconciler(new PersonDB(), new FamilyDB());
+        return new FamilyReconciler(db, new FamilyDB());
     }
 }
