@@ -74,16 +74,18 @@ public class FamilyDB extends DBAccess {
 
     public void create(Family family) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO families(surname, addr_street1, addr_street2, addr_city, addr_state, addr_zip) values (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO families(surname, home_phone, envelope_number, addr_street1, addr_street2, addr_city, addr_state, addr_zip) values (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             Address addr = family.getAddress();
 
             stmt.setString(1, family.getSurname());
-            stmt.setString(2, addr.getStreet1());
-            stmt.setString(3, addr.getStreet2());
-            stmt.setString(4, addr.getCity());
-            stmt.setString(5, addr.getState());
-            stmt.setInt(6, addr.getZip());
+            stmt.setString(2, family.getHomePhone());
+            stmt.setInt(3, family.getEnvelopeNumber());
+            stmt.setString(4, addr.getStreet1());
+            stmt.setString(5, addr.getStreet2());
+            stmt.setString(6, addr.getCity());
+            stmt.setString(7, addr.getState());
+            stmt.setInt(8, addr.getZip());
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create family: " + family.getSurname());
@@ -100,18 +102,20 @@ public class FamilyDB extends DBAccess {
 
     public void update(Family family) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE families SET surname=?, addr_street1=?, addr_street2=?, addr_city=?, addr_state=?, addr_zip=? WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE families SET surname=?, home_phone=?, envelope_number=?, addr_street1=?, addr_street2=?, addr_city=?, addr_state=?, addr_zip=? WHERE id=?")
             ){
 
             Address addr = family.getAddress();
 
             stmt.setString(1, family.getSurname());
-            stmt.setString(2, addr.getStreet1());
-            stmt.setString(3, addr.getStreet2());
-            stmt.setString(4, addr.getCity());
-            stmt.setString(5, addr.getState());
-            stmt.setInt(6, addr.getZip());
-            stmt.setInt(7, family.getId());
+            stmt.setString(2, family.getHomePhone());
+            stmt.setInt(3, family.getEnvelopeNumber());
+            stmt.setString(4, addr.getStreet1());
+            stmt.setString(5, addr.getStreet2());
+            stmt.setString(6, addr.getCity());
+            stmt.setString(7, addr.getState());
+            stmt.setInt(8, addr.getZip());
+            stmt.setInt(9, family.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update family: " + family.getSurname());
@@ -140,6 +144,8 @@ public class FamilyDB extends DBAccess {
             List<Family> families = new ArrayList<>();
             while(rs.next()) {
                 Family family = new Family(rs.getInt("id"), rs.getString("surname"));
+                family.setHomePhone(rs.getString("home_phone"));
+                family.setEnvelopeNumber(rs.getInt("envelope_number"));
                 Address addr = new Address(rs.getString("addr_street1"),
                                            rs.getString("addr_street2"),
                                            rs.getString("addr_city"),
