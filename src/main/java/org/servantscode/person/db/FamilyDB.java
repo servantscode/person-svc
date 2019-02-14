@@ -5,6 +5,7 @@ import org.servantscode.commons.db.DBAccess;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 
+import javax.ws.rs.NotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,21 @@ public class FamilyDB extends DBAccess {
             return stmt.executeUpdate() != 0;
         } catch (SQLException e) {
             throw new RuntimeException("Could not delete family: " + family.getSurname(), e);
+        }
+    }
+
+    public void attchPhoto(int id, String guid) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("UPDATE families SET photo_guid=? WHERE id=?");
+        ){
+            stmt.setString(1, guid);
+            stmt.setInt(2, id);
+
+            if(stmt.executeUpdate() == 0)
+                throw new NotFoundException("Could not attach photo to family: " + id);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not attach photo to family: " + id, e);
         }
     }
 

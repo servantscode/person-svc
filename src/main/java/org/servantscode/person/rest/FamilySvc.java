@@ -15,7 +15,13 @@ import java.util.List;
 
 @Path("/family")
 public class FamilySvc extends SCServiceBase {
-    private static final Logger logger = LogManager.getLogger(FamilySvc.class);
+    private static final Logger LOG = LogManager.getLogger(FamilySvc.class);
+
+    private FamilyDB db;
+
+    public FamilySvc() {
+        db = new FamilyDB();
+    }
 
     @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
     public List<String> getFamilyNames(@QueryParam("start") @DefaultValue("0") int start,
@@ -25,11 +31,10 @@ public class FamilySvc extends SCServiceBase {
 
         verifyUserAccess("family.list");
         try {
-            logger.trace(String.format("Retrieving family names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            FamilyDB db = new FamilyDB();
+            LOG.trace(String.format("Retrieving family names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             return db.getFamilySurnames(nameSearch, count);
         } catch (Throwable t) {
-            logger.error("Retrieving families failed:");
+            LOG.error("Retrieving families failed:");
             t.printStackTrace();
         }
         return null;
@@ -43,13 +48,12 @@ public class FamilySvc extends SCServiceBase {
 
         verifyUserAccess("family.list");
         try {
-            logger.trace(String.format("Retrieving families (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            FamilyDB db = new FamilyDB();
+            LOG.trace(String.format("Retrieving families (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             int totalFamilies = db.getCount(nameSearch);
             List<Family> results = db.getFamilies(nameSearch, sortField, start, count);
             return new PaginatedResponse<>(start, results.size(), totalFamilies, results);
         } catch (Throwable t) {
-            logger.error("Retrieving families failed:");
+            LOG.error("Retrieving families failed:");
             t.printStackTrace();
         }
         return null;
@@ -61,12 +65,25 @@ public class FamilySvc extends SCServiceBase {
         try {
             return getReconciler().getFamily(id);
         } catch (Throwable t) {
-            logger.error("Retrieving family failed:");
+            LOG.error("Retrieving family failed:");
             t.printStackTrace();
         }
         return null;
     }
 
+    @PUT @Path("/{id}/photo") @Consumes(MediaType.TEXT_PLAIN)
+    public void attachPhoto(@PathParam("id") int id,
+                            String guid) {
+        verifyUserAccess("family.update");
+
+        LOG.debug("Attaching photo: " + guid);
+        try {
+            db.attchPhoto(id, guid);
+        } catch (Throwable t) {
+            LOG.error("Attaching photo to person failed.", t);
+            throw t;
+        }
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
@@ -74,10 +91,10 @@ public class FamilySvc extends SCServiceBase {
         verifyUserAccess("family.create");
         try {
             getReconciler().createFamily(family);
-            logger.info("Created family: " + family.getSurname());
+            LOG.info("Created family: " + family.getSurname());
             return family;
         } catch (Throwable t) {
-            logger.error("Creating family failed:");
+            LOG.error("Creating family failed:");
             t.printStackTrace();
         }
         return null;
@@ -89,10 +106,10 @@ public class FamilySvc extends SCServiceBase {
         verifyUserAccess("family.update");
         try {
             getReconciler().updateFamily(family);
-            logger.info("Edited family: " + family.getSurname());
+            LOG.info("Edited family: " + family.getSurname());
             return family;
         } catch (Throwable t) {
-            logger.error("Updating family failed:");
+            LOG.error("Updating family failed:");
             t.printStackTrace();
         }
         return null;
@@ -107,15 +124,15 @@ public class FamilySvc extends SCServiceBase {
             Family family = getReconciler().getFamily(id);
             if(family == null || getReconciler().deleteFamily(family))
                 throw new NotFoundException();
-            logger.info("Deleted family: " + family.getSurname());
+            LOG.info("Deleted family: " + family.getSurname());
         } catch (Throwable t) {
-            logger.error("Deleting family failed:");
+            LOG.error("Deleting family failed:");
             t.printStackTrace();
         }
     }
 
     // ----- Private -----
     private FamilyReconciler getReconciler() {
-        return new FamilyReconciler(new PersonDB(), new FamilyDB());
+        return new FamilyReconciler(new PersonDB(), db);
     }
 }
