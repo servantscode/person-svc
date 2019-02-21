@@ -15,3 +15,4 @@ CREATE TABLE roles (id SERIAL PRIMARY KEY, name TEXT);
 CREATE TABLE permissions (role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE, permission TEXT);
 CREATE TABLE logins (person_id INTEGER PRIMARY KEY REFERENCES people(id) ON DELETE CASCADE, hashed_password TEXT, role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE);
 CREATE TABLE photos (guid TEXT PRIMARY KEY, filetype TEXT, bytes BYTEA);
+CREATE TABLE notes (id SERIAL PRIMARY KEY, creator_id INTEGER REFERENCES people(id), created_time TIMESTAMP WITH TIME ZONE, private BOOLEAN, resource_type TEXT, resource_id INTEGER, note TEXT);
