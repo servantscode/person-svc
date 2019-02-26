@@ -116,9 +116,9 @@ public class PersonSvc extends SCServiceBase {
     public Person updatePerson(Person person) {
         verifyUserAccess("person.update");
         try {
-            getReconciler().updatePerson(person);
+            Person updatedPerson = getReconciler().updatePerson(person);
             LOG.info("Edited parishoner: " + person.getName());
-            return person;
+            return updatedPerson;
         } catch (Throwable t) {
             LOG.error("Updating person failed:", t);
             throw t;

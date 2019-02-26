@@ -105,9 +105,9 @@ public class FamilySvc extends SCServiceBase {
     public Family updateFamily(Family family) {
         verifyUserAccess("family.update");
         try {
-            getReconciler().updateFamily(family);
+            Family updatedFamily = getReconciler().updateFamily(family);
             LOG.info("Edited family: " + family.getSurname());
-            return family;
+            return updatedFamily;
         } catch (Throwable t) {
             LOG.error("Updating family failed:");
             t.printStackTrace();

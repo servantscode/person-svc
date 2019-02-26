@@ -30,7 +30,7 @@ public class FamilyReconciler {
         }
 
         personDb.update(person);
-        return person;
+        return getPerson(person.getId());
     }
 
     public Person getPerson(int id) {
@@ -71,7 +71,7 @@ public class FamilyReconciler {
                 personDb.update(person);
             }
         }
-        return family;
+        return getFamily(family.getId());
     }
 
     public Family getFamily(int id) {
