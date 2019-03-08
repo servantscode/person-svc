@@ -1,5 +1,3 @@
--- TODO: Make all this readable by the average dev
-
 CREATE TABLE families (id SERIAL PRIMARY KEY, surname TEXT, home_phone TEXT, envelope_number INTEGER, addr_street1 TEXT, addr_street2 TEXT, addr_city TEXT, addr_state TEXT, addr_zip INTEGER, photo_guid TEXT);
 CREATE TABLE people (id SERIAL PRIMARY KEY, name TEXT, birthdate TIMESTAMP WITH TIME ZONE, email TEXT, phonenumber TEXT, head_of_house boolean, family_id INTEGER, member_since TIMESTAMP WITH TIME ZONE, photo_guid TEXT);
 CREATE TABLE ministries (id SERIAL PRIMARY KEY, name TEXT, description TEXT);
