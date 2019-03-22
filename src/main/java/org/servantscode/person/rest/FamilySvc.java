@@ -122,7 +122,7 @@ public class FamilySvc extends SCServiceBase {
             throw new NotFoundException();
         try {
             Family family = getReconciler().getFamily(id);
-            if(family == null || getReconciler().deleteFamily(family))
+            if(family == null || !getReconciler().deleteFamily(family))
                 throw new NotFoundException();
             LOG.info("Deleted family: " + family.getSurname());
         } catch (Throwable t) {

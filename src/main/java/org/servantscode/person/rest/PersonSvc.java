@@ -132,7 +132,7 @@ public class PersonSvc extends SCServiceBase {
             throw new NotFoundException();
         try {
             Person person = getReconciler().getPerson(id);
-            if(person == null || getReconciler().deletePerson(person))
+            if(person == null || !getReconciler().deletePerson(person))
                 throw new NotFoundException();
             LOG.info("Deleted parishoner: " + person.getName());
         } catch (Throwable t) {
