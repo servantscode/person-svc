@@ -28,13 +28,14 @@ public class PersonSvc extends SCServiceBase {
     public List<String> getPeopleNames(@QueryParam("start") @DefaultValue("0") int start,
                                        @QueryParam("count") @DefaultValue("100") int count,
                                        @QueryParam("sort_field") @DefaultValue("id") String sortField,
-                                       @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
+                                       @QueryParam("partial_name") @DefaultValue("") String nameSearch,
+                                       @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
 
         verifyUserAccess("person.list");
 
         try {
             LOG.trace(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            return db.getPeopleNames(nameSearch, count);
+            return db.getPeopleNames(nameSearch, count, includeInactive);
         } catch (Throwable t) {
             LOG.error("Retrieving people failed:", t);
             throw t;
@@ -46,19 +47,20 @@ public class PersonSvc extends SCServiceBase {
                                        @QueryParam("count") @DefaultValue("10") int count,
                                        @QueryParam("sort_field") @DefaultValue("id") String sortField,
                                        @QueryParam("partial_name") @DefaultValue("") String nameSearch,
-                                       @QueryParam("families") @DefaultValue("false") boolean includeFamilies) {
+                                       @QueryParam("families") @DefaultValue("false") boolean includeFamilies,
+                                       @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
 
         verifyUserAccess("person.list");
 
         try {
             LOG.trace(String.format("Retrieving people (%s, %s, page: %d; %d, families: %b)", nameSearch, sortField, start, count, includeFamilies));
-            int totalPeople = db.getCount(nameSearch);
+            int totalPeople = db.getCount(nameSearch, includeInactive);
 
             List<Person> results ;
             if(!includeFamilies) {
-                results = db.getPeople(nameSearch, sortField, start, count);
+                results = db.getPeople(nameSearch, sortField, start, count, includeInactive);
             } else {
-                results = db.getPeopleWithFamilies(nameSearch, sortField, start, count);
+                results = db.getPeopleWithFamilies(nameSearch, sortField, start, count, includeInactive);
             }
 
             return new PaginatedResponse<>(start, results.size(), totalPeople, results);
@@ -69,11 +71,12 @@ public class PersonSvc extends SCServiceBase {
     }
 
     @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
-    public Person getPerson(@PathParam("id") int id) {
+    public Person getPerson(@PathParam("id") int id,
+                            @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
         verifyUserAccess("person.read");
 
         try {
-            return getReconciler().getPerson(id);
+            return getReconciler().getPerson(id, includeInactive);
         } catch (Throwable t) {
             LOG.error("Retrieving person failed:", t);
             throw t;
@@ -126,15 +129,30 @@ public class PersonSvc extends SCServiceBase {
     }
 
     @DELETE @Path("/{id}")
-    public void deletePerson(@PathParam("id") int id) {
-        verifyUserAccess("person.delete");
+    public void deletePerson(@PathParam("id") int id,
+                             @QueryParam("delete_permenantly") @DefaultValue("false") boolean permenantDelete) {
+
+        if(!permenantDelete)
+            verifyUserAccess("admin.person.delete");
+        else
+            verifyUserAccess("person.delete");
+
         if(id <= 0)
             throw new NotFoundException();
         try {
-            Person person = getReconciler().getPerson(id);
-            if(person == null || !getReconciler().deletePerson(person))
+            Person person = getReconciler().getPerson(id, false);
+            if(person == null)
                 throw new NotFoundException();
-            LOG.info("Deleted parishoner: " + person.getName());
+
+            if(permenantDelete) {
+                if(!getReconciler().deletePerson(person))
+                    throw new NotFoundException();
+                LOG.info("Deleted parishoner: " + person.getName());
+            } else {
+                if(!getReconciler().deactivatePerson(person))
+                    throw new NotFoundException();
+                LOG.info("Deactivated parishoner: " + person.getName());
+            }
         } catch (Throwable t) {
             LOG.error("Deleting person failed:", t);
             throw t;

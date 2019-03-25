@@ -12,11 +12,12 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.servantscode.commons.StringUtils.isEmpty;
+import static org.servantscode.commons.StringUtils.isSet;
 
 public class FamilyDB extends DBAccess {
 
-    public int getCount(String search) {
-        String sql = format("Select count(1) from families%s", optionalWhereClause(search));
+    public int getCount(String search, boolean includeInactive) {
+        String sql = format("Select count(1) from families%s", optionalWhereClause(search, includeInactive));
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery() ){
@@ -27,8 +28,8 @@ public class FamilyDB extends DBAccess {
         }
     }
 
-    public List<Family> getFamilies(String search, String sortField, int start, int count) {
-        String sql = format("SELECT * FROM families%s ORDER BY %s LIMIT ? OFFSET ?", optionalWhereClause(search), sortField);
+    public List<Family> getFamilies(String search, String sortField, int start, int count, boolean includeInactive) {
+        String sql = format("SELECT * FROM families%s ORDER BY %s LIMIT ? OFFSET ?", optionalWhereClause(search, includeInactive), sortField);
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
@@ -41,8 +42,8 @@ public class FamilyDB extends DBAccess {
         }
     }
 
-    public List<String> getFamilySurnames(String search, int count) {
-        String sql = format("SELECT surname FROM families%s", optionalWhereClause(search));
+    public List<String> getFamilySurnames(String search, int count, boolean includeInactive) {
+        String sql = format("SELECT surname FROM families%s", optionalWhereClause(search, includeInactive));
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
@@ -103,7 +104,7 @@ public class FamilyDB extends DBAccess {
 
     public void update(Family family) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE families SET surname=?, home_phone=?, envelope_number=?, addr_street1=?, addr_street2=?, addr_city=?, addr_state=?, addr_zip=? WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE families SET surname=?, home_phone=?, envelope_number=?, addr_street1=?, addr_street2=?, addr_city=?, addr_state=?, addr_zip=?, inactive=? WHERE id=?")
             ){
 
             Address addr = family.getAddress();
@@ -116,7 +117,8 @@ public class FamilyDB extends DBAccess {
             stmt.setString(6, addr.getCity());
             stmt.setString(7, addr.getState());
             stmt.setInt(8, addr.getZip());
-            stmt.setInt(9, family.getId());
+            stmt.setBoolean(9, family.isInactive());
+            stmt.setInt(10, family.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update family: " + family.getSurname());
@@ -136,6 +138,20 @@ public class FamilyDB extends DBAccess {
             return stmt.executeUpdate() != 0;
         } catch (SQLException e) {
             throw new RuntimeException("Could not delete family: " + family.getSurname(), e);
+        }
+    }
+
+    public boolean deactivate(Family family) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("UPDATE families SET inactive=? WHERE id=?")
+        ){
+
+            stmt.setBoolean(1, true);
+            stmt.setInt(2, family.getId());
+
+            return stmt.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not deactivate family: " + family.getSurname(), e);
         }
     }
 
@@ -169,13 +185,19 @@ public class FamilyDB extends DBAccess {
                                            rs.getInt("addr_zip"));
                 family.setAddress(addr);
                 family.setPhotoGuid(rs.getString("photo_guid"));
+                family.setInactive(rs.getBoolean("inactive"));
                 families.add(family);
             }
             return families;
         }
     }
 
-    private String optionalWhereClause(String search) {
-    return !isEmpty(search)? format(" WHERE surname ILIKE '%%%s%%'", search.replace("'", "''")) : "";
+    private String optionalWhereClause(String search, boolean includeInactive) {
+        String sqlClause = !includeInactive? " inactive=false": "";
+        if(isSet(search)) {
+            if(isSet(sqlClause)) sqlClause += " AND";
+            sqlClause += format(" surname ILIKE '%%%s%%'", search.replace("'", "''"));
+        }
+        return isEmpty(sqlClause)? "": " WHERE" + sqlClause;
     }
 }

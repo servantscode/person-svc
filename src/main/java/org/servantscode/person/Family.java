@@ -10,6 +10,7 @@ public class Family {
     private List<Person> members;
     private Address address;
     private String photoGuid;
+    private boolean inactive;
 
     public Family() {}
 
@@ -39,4 +40,7 @@ public class Family {
 
     public String getPhotoGuid() { return photoGuid; }
     public void setPhotoGuid(String photoGuid) { this.photoGuid = photoGuid; }
+
+    public boolean isInactive() { return inactive; }
+    public void setInactive(boolean inactive) { this.inactive = inactive; }
 }

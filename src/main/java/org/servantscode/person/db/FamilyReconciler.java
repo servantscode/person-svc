@@ -25,17 +25,17 @@ public class FamilyReconciler {
         if(family != null) {
             resolveFamily(family);
 
-            family.setMembers(personDb.getFamilyMembers(family.getId()));
+            family.setMembers(personDb.getFamilyMembers(family.getId(), false));
             family.getMembers().removeIf((p) -> p.getId() == person.getId()); //Remove the returned person
         }
 
         personDb.update(person);
-        return getPerson(person.getId());
+        return getPerson(person.getId(), false);
     }
 
-    public Person getPerson(int id) {
+    public Person getPerson(int id, boolean includeInactive) {
         Person person = personDb.getPerson(id);
-        Family family = retrieveFamilyWithMembers(person.getFamilyId());
+        Family family = retrieveFamilyWithMembers(person.getFamilyId(), includeInactive);
         if(family != null) {
             family.getMembers().removeIf((p) -> p.getId() == person.getId()); //Remove the returned person
         }
@@ -45,11 +45,21 @@ public class FamilyReconciler {
     }
 
     public boolean deletePerson(Person person) {
-        List<Person> familyMembers = personDb.getFamilyMembers(person.getFamily().getId());
+        List<Person> familyMembers = personDb.getFamilyMembers(person.getFamily().getId(), true);
 
         boolean success = personDb.delete(person);
         if(success && familyMembers.size() == 1 && familyMembers.get(0).getId() == person.getId())
             success = familyDb.delete(person.getFamily());
+
+        return success;
+    }
+
+    public boolean deactivatePerson(Person person) {
+        List<Person> activeFamilyMembers = personDb.getFamilyMembers(person.getFamily().getId(), false);
+
+        boolean success = personDb.deactivate(person);
+        if(success && activeFamilyMembers.size() == 1 && activeFamilyMembers.get(0).getId() == person.getId())
+            success = familyDb.deactivate(person.getFamily());
 
         return success;
     }
@@ -71,11 +81,11 @@ public class FamilyReconciler {
                 personDb.update(person);
             }
         }
-        return getFamily(family.getId());
+        return getFamily(family.getId(), false);
     }
 
-    public Family getFamily(int id) {
-        return retrieveFamilyWithMembers(id);
+    public Family getFamily(int id, boolean includeInactive) {
+        return retrieveFamilyWithMembers(id, includeInactive);
     }
 
     public boolean deleteFamily(Family family) {
@@ -83,6 +93,10 @@ public class FamilyReconciler {
         return familyDb.delete(family);
     }
 
+    public boolean deactivateFamily(Family family) {
+        personDb.deactivateByFamilyId(family.getId());
+        return familyDb.deactivate(family);
+    }
     // ----- Private -----
     private void resolveFamily(Family family) {
         if(family.getId() > 0) {
@@ -92,10 +106,10 @@ public class FamilyReconciler {
         }
     }
 
-    private Family retrieveFamilyWithMembers(int familyId) {
+    private Family retrieveFamilyWithMembers(int familyId, boolean includeInactive) {
         Family family = familyDb.getFamily(familyId);
         if(family != null) {
-            family.setMembers(personDb.getFamilyMembers(family.getId()));
+            family.setMembers(personDb.getFamilyMembers(family.getId(), includeInactive | family.isInactive()));
         }
         return family;
     }

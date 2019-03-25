@@ -19,8 +19,8 @@ import static org.servantscode.commons.StringUtils.isEmpty;
 public class PersonDB extends DBAccess {
     private static final Logger LOG = LogManager.getLogger(PersonDB.class);
 
-    public int getCount(String search) {
-        String sql = format("Select count(1) from people%s", optionalWhereClause(search));
+    public int getCount(String search, boolean includeInactive) {
+        String sql = format("Select count(1) from people p%s", optionalWhereClause(search, includeInactive));
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -33,8 +33,8 @@ public class PersonDB extends DBAccess {
         return 0;
     }
 
-    public List<Person> getPeople(String search, String sortField, int start, int count) {
-        String sql = format("SELECT * FROM people%s ORDER BY %s LIMIT ? OFFSET ?", optionalWhereClause(search), sortField);
+    public List<Person> getPeople(String search, String sortField, int start, int count, boolean includeInactive) {
+        String sql = format("SELECT * FROM people p%s ORDER BY %s LIMIT ? OFFSET ?", optionalWhereClause(search, includeInactive), sortField);
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
@@ -47,11 +47,11 @@ public class PersonDB extends DBAccess {
         }
     }
 
-    public List<Person> getPeopleWithFamilies(String search, String sortField, int start, int count) {
+    public List<Person> getPeopleWithFamilies(String search, String sortField, int start, int count, boolean includeInactive) {
         String sql = format("SELECT p.*, f.surname, f.addr_street1, f.addr_street2, f.addr_city, f.addr_state, f.addr_zip FROM people p " +
                             "LEFT JOIN families f ON p.family_id=f.id" +
                             "%s ORDER BY %s LIMIT ? OFFSET ?",
-                optionalWhereClause(search), sortField);
+                optionalWhereClause(search, includeInactive), sortField);
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
@@ -64,8 +64,8 @@ public class PersonDB extends DBAccess {
         }
     }
 
-    public List<String> getPeopleNames(String search, int count) {
-        String sql = format("SELECT name FROM people%s", optionalWhereClause(search));
+    public List<String> getPeopleNames(String search, int count, boolean includeInactive) {
+        String sql = format("SELECT name FROM people p%s", optionalWhereClause(search, includeInactive));
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -98,9 +98,11 @@ public class PersonDB extends DBAccess {
         }
     }
 
-    public List<Person> getFamilyMembers(int familyId) {
+    public List<Person> getFamilyMembers(int familyId, boolean includeInactive) {
+        String sql = "SELECT * FROM people p WHERE family_id=?";
+        if(!includeInactive) sql += " AND inactive=false";
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM people WHERE family_id=?")
+              PreparedStatement stmt = conn.prepareStatement(sql)
             ) {
 
             stmt.setInt(1, familyId);
@@ -137,7 +139,7 @@ public class PersonDB extends DBAccess {
 
     public void update(Person person) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=? WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, inactive=? WHERE id=?")
             ){
 
             stmt.setString(1, person.getName());
@@ -147,13 +149,28 @@ public class PersonDB extends DBAccess {
             stmt.setInt(5, person.getFamily().getId());
             stmt.setBoolean(6, person.isHeadOfHousehold());
             stmt.setTimestamp(7, convert(person.getMemberSince()));
-            stmt.setInt(8, person.getId());
+            stmt.setBoolean(8, person.isInactive());
+            stmt.setInt(9, person.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update person: " + person.getName());
 
         } catch (SQLException e) {
             throw new RuntimeException("Could not update person: " + person.getName(), e);
+        }
+    }
+
+    public boolean deactivate(Person person) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE id=?")
+        ){
+
+            stmt.setBoolean(1, true);
+            stmt.setInt(2, person.getId());
+
+            return stmt.executeUpdate() != 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not deactivate person: " + person.getName(), e);
         }
     }
 
@@ -176,9 +193,35 @@ public class PersonDB extends DBAccess {
             ){
 
             stmt.setInt(1, familyId);
-
+            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Could not delete people by family id: " + familyId, e);
+        }
+    }
+
+    public void activateByFamilyId(int familyId) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE family_id=?")
+        ){
+
+            stmt.setBoolean(1, false);
+            stmt.setInt(2, familyId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not activate people by family id: " + familyId, e);
+        }
+    }
+
+    public void deactivateByFamilyId(int familyId) {
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE family_id=?")
+        ){
+
+            stmt.setBoolean(1, true);
+            stmt.setInt(2, familyId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not deactivate people by family id: " + familyId, e);
         }
     }
 
@@ -245,10 +288,16 @@ public class PersonDB extends DBAccess {
         person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
         person.setMemberSince(convert(rs.getTimestamp("member_since")));
         person.setPhotoGuid(rs.getString("photo_guid"));
+        person.setInactive(rs.getBoolean("inactive"));
         return person;
     }
 
-    private String optionalWhereClause(String search) {
-        return !isEmpty(search)? format(" WHERE name ILIKE '%%%s%%'", search.replace("'", "''")) : "";
+    private String optionalWhereClause(String search, boolean includeInactive) {
+        String sqlClause = !includeInactive? " p.inactive=false": "";
+        if(!isEmpty(search)) {
+            if(!isEmpty(sqlClause)) sqlClause += " AND";
+            sqlClause += format(" name ILIKE '%%%s%%'", search.replace("'", "''"));
+        }
+        return isEmpty(sqlClause)? "": " WHERE" + sqlClause;
     }
 }

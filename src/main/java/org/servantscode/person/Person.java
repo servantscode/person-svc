@@ -16,6 +16,8 @@ public class Person {
     private ZonedDateTime memberSince;
     private String photoGuid;
 
+    private boolean inactive;
+
     @JsonIgnore
     private int familyId;
 
@@ -58,4 +60,7 @@ public class Person {
 
     public String getPhotoGuid() { return photoGuid; }
     public void setPhotoGuid(String photoGuid) { this.photoGuid = photoGuid; }
+
+    public boolean isInactive() { return inactive; }
+    public void setInactive(boolean inactive) { this.inactive = inactive; }
 }

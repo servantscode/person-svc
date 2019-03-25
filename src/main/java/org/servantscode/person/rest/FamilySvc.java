@@ -27,12 +27,13 @@ public class FamilySvc extends SCServiceBase {
     public List<String> getFamilyNames(@QueryParam("start") @DefaultValue("0") int start,
                                        @QueryParam("count") @DefaultValue("100") int count,
                                        @QueryParam("sort_field") @DefaultValue("id") String sortField,
-                                       @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
+                                       @QueryParam("partial_name") @DefaultValue("") String nameSearch,
+                                       @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
 
         verifyUserAccess("family.list");
         try {
             LOG.trace(String.format("Retrieving family names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            return db.getFamilySurnames(nameSearch, count);
+            return db.getFamilySurnames(nameSearch, count, includeInactive);
         } catch (Throwable t) {
             LOG.error("Retrieving families failed:");
             t.printStackTrace();
@@ -44,13 +45,14 @@ public class FamilySvc extends SCServiceBase {
     public PaginatedResponse<Family> getFamilies(@QueryParam("start") @DefaultValue("0") int start,
                                          @QueryParam("count") @DefaultValue("100") int count,
                                          @QueryParam("sort_field") @DefaultValue("id") String sortField,
-                                         @QueryParam("partial_name") @DefaultValue("") String nameSearch) {
+                                         @QueryParam("partial_name") @DefaultValue("") String nameSearch,
+                                         @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
 
         verifyUserAccess("family.list");
         try {
             LOG.trace(String.format("Retrieving families (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            int totalFamilies = db.getCount(nameSearch);
-            List<Family> results = db.getFamilies(nameSearch, sortField, start, count);
+            int totalFamilies = db.getCount(nameSearch, includeInactive);
+            List<Family> results = db.getFamilies(nameSearch, sortField, start, count, includeInactive);
             return new PaginatedResponse<>(start, results.size(), totalFamilies, results);
         } catch (Throwable t) {
             LOG.error("Retrieving families failed:");
@@ -60,10 +62,11 @@ public class FamilySvc extends SCServiceBase {
     }
 
     @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
-    public Family getFamily(@PathParam("id") int id) {
+    public Family getFamily(@PathParam("id") int id,
+                            @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
         verifyUserAccess("family.read");
         try {
-            return getReconciler().getFamily(id);
+            return getReconciler().getFamily(id, includeInactive);
         } catch (Throwable t) {
             LOG.error("Retrieving family failed:");
             t.printStackTrace();
@@ -116,15 +119,28 @@ public class FamilySvc extends SCServiceBase {
     }
 
     @DELETE @Path("/{id}")
-    public void deleteFamily(@PathParam("id") int id) {
-        verifyUserAccess("family.delete");
+    public void deleteFamily(@PathParam("id") int id,
+                             @QueryParam("delete_permenantly") @DefaultValue("false") boolean permenantDelete) {
+        if(permenantDelete)
+            verifyUserAccess("admin.family.delete");
+        else
+            verifyUserAccess("family.delete");
+
         if(id <= 0)
             throw new NotFoundException();
         try {
-            Family family = getReconciler().getFamily(id);
-            if(family == null || !getReconciler().deleteFamily(family))
+            Family family = getReconciler().getFamily(id, false);
+            if(family == null)
                 throw new NotFoundException();
-            LOG.info("Deleted family: " + family.getSurname());
+            if(permenantDelete) {
+                if (!getReconciler().deleteFamily(family))
+                    throw new NotFoundException();
+                LOG.info("Deleted family: " + family.getSurname());
+            } else {
+                if (!getReconciler().deactivateFamily(family))
+                    throw new NotFoundException();
+                LOG.info("Deactivated family: " + family.getSurname());
+            }
         } catch (Throwable t) {
             LOG.error("Deleting family failed:");
             t.printStackTrace();

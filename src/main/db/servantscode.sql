@@ -1,5 +1,5 @@
-CREATE TABLE families (id SERIAL PRIMARY KEY, surname TEXT, home_phone TEXT, envelope_number INTEGER, addr_street1 TEXT, addr_street2 TEXT, addr_city TEXT, addr_state TEXT, addr_zip INTEGER, photo_guid TEXT);
-CREATE TABLE people (id SERIAL PRIMARY KEY, name TEXT, birthdate TIMESTAMP WITH TIME ZONE, email TEXT, phonenumber TEXT, head_of_house boolean, family_id INTEGER, member_since TIMESTAMP WITH TIME ZONE, photo_guid TEXT);
+CREATE TABLE families (id SERIAL PRIMARY KEY, surname TEXT, home_phone TEXT, envelope_number INTEGER, addr_street1 TEXT, addr_street2 TEXT, addr_city TEXT, addr_state TEXT, addr_zip INTEGER, photo_guid TEXT, inactive boolean DEFAULT false);
+CREATE TABLE people (id SERIAL PRIMARY KEY, name TEXT, birthdate TIMESTAMP WITH TIME ZONE, email TEXT, phonenumber TEXT, head_of_house boolean, family_id INTEGER, member_since TIMESTAMP WITH TIME ZONE, photo_guid TEXT, inactive boolean DEFAULT false);
 CREATE TABLE ministries (id SERIAL PRIMARY KEY, name TEXT, description TEXT);
 CREATE TABLE ministry_enrollments (person_id INTEGER REFERENCES people(id) ON DELETE CASCADE, ministry_id INTEGER REFERENCES ministries(id) ON DELETE CASCADE, role TEXT);
 CREATE TABLE pledges (id SERIAL PRIMARY KEY, family_id INTEGER REFERENCES families(id), pledge_type TEXT, pledge_date TIMESTAMP WITH TIME ZONE, pledge_start TIMESTAMP WITH TIME ZONE, pledge_end TIMESTAMP WITH TIME ZONE, frequency TEXT, pledge_increment FLOAT, total_pledge FLOAT);
