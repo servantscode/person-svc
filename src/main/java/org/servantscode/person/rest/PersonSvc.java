@@ -132,7 +132,7 @@ public class PersonSvc extends SCServiceBase {
     public void deletePerson(@PathParam("id") int id,
                              @QueryParam("delete_permenantly") @DefaultValue("false") boolean permenantDelete) {
 
-        if(!permenantDelete)
+        if(permenantDelete)
             verifyUserAccess("admin.person.delete");
         else
             verifyUserAccess("person.delete");

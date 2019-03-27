@@ -35,6 +35,8 @@ public class FamilyReconciler {
 
     public Person getPerson(int id, boolean includeInactive) {
         Person person = personDb.getPerson(id);
+        if(person == null)
+            return null;
         Family family = retrieveFamilyWithMembers(person.getFamilyId(), includeInactive);
         if(family != null) {
             family.getMembers().removeIf((p) -> p.getId() == person.getId()); //Remove the returned person
