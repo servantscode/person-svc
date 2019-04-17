@@ -14,4 +14,5 @@ CREATE TABLE permissions (role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE
 CREATE TABLE logins (person_id INTEGER PRIMARY KEY REFERENCES people(id) ON DELETE CASCADE, hashed_password TEXT, role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE, reset_password BOOLEAN DEFAULT false, reset_token TEXT);
 CREATE TABLE photos (guid TEXT PRIMARY KEY, filetype TEXT, bytes BYTEA);
 CREATE TABLE notes (id SERIAL PRIMARY KEY, creator_id INTEGER REFERENCES people(id), created_time TIMESTAMP WITH TIME ZONE, edited BOOLEAN, private BOOLEAN, resource_type TEXT, resource_id INTEGER, note TEXT);
-CREATE TABLE configuration (config TEXT NOT NULL, value TEXT);
+CREATE TABLE configuration (config TEXT PRIMARY KEY, value TEXT);
+CREATE TABLE baptisms (id SERIAL PRIMARY KEY, name TEXT NOT NULL, person_id INTEGER, father_name TEXT, father_id INTEGER, mother_name TEXT, mother_id INTEGER, baptism_date DATE NOT NULL, baptism_location TEXT, birth_date DATE, birth_location TEXT, minister_name TEXT NOT NULL, minister_id INTEGER, godfather_name TEXT, godfather_id INTEGER, godmother_name TEXT, godmother_id INTEGER, withness_name TEXT, witness_id INTEGER, conditional BOOLEAN DEFAULT FALSE, reception BOOLEAN DEFAULT FALSE, notations TEXT);
