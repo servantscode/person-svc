@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 public class Person {
     private int id;
     private String name;
+    private boolean male;
 
     private String phoneNumber;
     private String email;
@@ -36,6 +37,9 @@ public class Person {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public boolean isMale() { return male; }
+    public void setMale(boolean male) { this.male = male; }
 
     public ZonedDateTime getBirthdate() { return birthdate; }
     public void setBirthdate(ZonedDateTime birthdate) { this.birthdate = birthdate; }

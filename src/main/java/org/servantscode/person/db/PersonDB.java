@@ -114,15 +114,16 @@ public class PersonDB extends DBAccess {
 
     public void create(Person person) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, phonenumber, email, family_id, head_of_house, member_since) values (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since) values (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
             stmt.setTimestamp(2, convert(person.getBirthdate()));
-            stmt.setString(3, person.getPhoneNumber());
-            stmt.setString(4, person.getEmail());
-            stmt.setInt(5, person.getFamily().getId());
-            stmt.setBoolean(6, person.isHeadOfHousehold());
-            stmt.setTimestamp(7, convert(person.getMemberSince()));
+            stmt.setBoolean(3, person.isMale());
+            stmt.setString(4, person.getPhoneNumber());
+            stmt.setString(5, person.getEmail());
+            stmt.setInt(6, person.getFamily().getId());
+            stmt.setBoolean(7, person.isHeadOfHousehold());
+            stmt.setTimestamp(8, convert(person.getMemberSince()));
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -139,18 +140,19 @@ public class PersonDB extends DBAccess {
 
     public void update(Person person) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, inactive=? WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, male=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, inactive=? WHERE id=?")
             ){
 
             stmt.setString(1, person.getName());
             stmt.setTimestamp(2, convert(person.getBirthdate()));
-            stmt.setString(3, person.getPhoneNumber());
-            stmt.setString(4, person.getEmail());
-            stmt.setInt(5, person.getFamily().getId());
-            stmt.setBoolean(6, person.isHeadOfHousehold());
-            stmt.setTimestamp(7, convert(person.getMemberSince()));
-            stmt.setBoolean(8, person.isInactive());
-            stmt.setInt(9, person.getId());
+            stmt.setBoolean(3, person.isMale());
+            stmt.setString(4, person.getPhoneNumber());
+            stmt.setString(5, person.getEmail());
+            stmt.setInt(6, person.getFamily().getId());
+            stmt.setBoolean(7, person.isHeadOfHousehold());
+            stmt.setTimestamp(8, convert(person.getMemberSince()));
+            stmt.setBoolean(9, person.isInactive());
+            stmt.setInt(10, person.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update person: " + person.getName());
@@ -282,6 +284,7 @@ public class PersonDB extends DBAccess {
     private Person extractPerson(ResultSet rs) throws SQLException {
         Person person = new Person(rs.getInt("id"), rs.getString("name"));
         person.setBirthdate(convert(rs.getTimestamp("birthdate")));
+        person.setMale(rs.getBoolean("male"));
         person.setPhoneNumber(rs.getString("phonenumber"));
         person.setEmail(rs.getString("email"));
         person.setFamilyId(rs.getInt("family_id"));
