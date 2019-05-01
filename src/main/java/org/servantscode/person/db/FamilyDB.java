@@ -2,10 +2,15 @@ package org.servantscode.person.db;
 
 import org.servantscode.commons.AutoCompleteComparator;
 import org.servantscode.commons.db.DBAccess;
+import org.servantscode.commons.db.ReportStreamingOutput;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,24 @@ public class FamilyDB extends DBAccess {
         }
     }
 
+    public StreamingOutput getReportReader(String search, boolean includeInactive, final List<String> fields) {
+        final String sql = format("SELECT * FROM families p%s", optionalWhereClause(search, includeInactive));
+
+        return new ReportStreamingOutput(fields) {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try ( Connection conn = getConnection();
+                      PreparedStatement stmt = conn.prepareStatement(sql);
+                      ResultSet rs = stmt.executeQuery()) {
+
+                    writeCsv(output, rs);
+                } catch (SQLException | IOException e) {
+                    throw new RuntimeException("Could not retrieve families containing '" + search + "'", e);
+                }
+            }
+        };
+    }
+
     public List<Family> getFamilies(String search, String sortField, int start, int count, boolean includeInactive) {
         String sql = format("SELECT * FROM families%s ORDER BY %s LIMIT ? OFFSET ?", optionalWhereClause(search, includeInactive), sortField);
         try ( Connection conn = getConnection();
@@ -39,25 +62,6 @@ public class FamilyDB extends DBAccess {
             return processFamilyResults(stmt);
         } catch (SQLException e) {
             throw new RuntimeException("Could not get families with surnames containing " + search, e);
-        }
-    }
-
-    public List<String> getFamilySurnames(String search, int count, boolean includeInactive) {
-        String sql = format("SELECT surname FROM families%s", optionalWhereClause(search, includeInactive));
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-            try ( ResultSet rs = stmt.executeQuery()){
-                List<String> names = new ArrayList<>();
-
-                while(rs.next())
-                    names.add(rs.getString(1));
-
-                names.sort(new AutoCompleteComparator(search));
-                return (count < names.size())? names.subList(0, count): names;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not get family surnames containing " + search, e);
         }
     }
 

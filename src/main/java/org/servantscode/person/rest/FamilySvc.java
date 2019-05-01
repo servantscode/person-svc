@@ -11,34 +11,20 @@ import org.servantscode.person.db.PersonDB;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.List;
 
 @Path("/family")
 public class FamilySvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(FamilySvc.class);
 
+    private static List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "surname", "home_phone", "envelope_number", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip", "inactive");
+
     private FamilyDB db;
 
     public FamilySvc() {
         db = new FamilyDB();
-    }
-
-    @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getFamilyNames(@QueryParam("start") @DefaultValue("0") int start,
-                                       @QueryParam("count") @DefaultValue("100") int count,
-                                       @QueryParam("sort_field") @DefaultValue("id") String sortField,
-                                       @QueryParam("partial_name") @DefaultValue("") String nameSearch,
-                                       @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
-
-        verifyUserAccess("family.list");
-        try {
-            LOG.trace(String.format("Retrieving family names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            return db.getFamilySurnames(nameSearch, count, includeInactive);
-        } catch (Throwable t) {
-            LOG.error("Retrieving families failed:");
-            t.printStackTrace();
-        }
-        return null;
     }
 
     @GET @Produces(MediaType.APPLICATION_JSON)
@@ -60,6 +46,21 @@ public class FamilySvc extends SCServiceBase {
         }
         return null;
     }
+
+    @GET @Path("/report") @Produces(MediaType.TEXT_PLAIN)
+    public Response getFamilyReport(@QueryParam("search") @DefaultValue("") String nameSearch,
+                                    @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
+        verifyUserAccess("family.export");
+
+        try {
+            LOG.trace(String.format("Retrieving family report(%s)", nameSearch));
+            return Response.ok(db.getReportReader(nameSearch, includeInactive, EXPORTABLE_FIELDS)).build();
+        } catch (Throwable t) {
+            LOG.error("Retrieving family report failed:", t);
+            throw t;
+        }
+    }
+
 
     @GET @Path("/{id}") @Produces(MediaType.APPLICATION_JSON)
     public Family getFamily(@PathParam("id") int id,

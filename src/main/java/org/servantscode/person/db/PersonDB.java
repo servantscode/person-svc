@@ -2,13 +2,17 @@ package org.servantscode.person.db;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.servantscode.commons.AutoCompleteComparator;
 import org.servantscode.commons.db.DBAccess;
+import org.servantscode.commons.db.ReportStreamingOutput;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
 
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,27 +68,6 @@ public class PersonDB extends DBAccess {
         }
     }
 
-    public List<String> getPeopleNames(String search, int count, boolean includeInactive) {
-        String sql = format("SELECT name FROM people p%s", optionalWhereClause(search, includeInactive));
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            List<String> names = new ArrayList<>();
-
-            while (rs.next())
-                names.add(rs.getString(1));
-
-            long start = System.currentTimeMillis();
-            names.sort(new AutoCompleteComparator(search));
-            LOG.debug(String.format("Sorted %d names in %d ms.", names.size(), System.currentTimeMillis()-start));
-
-            return (count < names.size())? names.subList(0, count): names;
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not retrieve names containing '" + search + "'", e);
-        }
-    }
-
     public Person getPerson(int id) {
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement("SELECT * from people where id=?")
@@ -96,6 +79,24 @@ public class PersonDB extends DBAccess {
         } catch (SQLException e) {
             throw new RuntimeException("Could not find person by id " + id, e);
         }
+    }
+
+    public StreamingOutput getReportReader(String search, boolean includeInactive, final List<String> fields) {
+        final String sql = format("SELECT * FROM people p%s", optionalWhereClause(search, includeInactive));
+
+        return new ReportStreamingOutput(fields) {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try ( Connection conn = getConnection();
+                      PreparedStatement stmt = conn.prepareStatement(sql);
+                      ResultSet rs = stmt.executeQuery()) {
+
+                    writeCsv(output, rs);
+               } catch (SQLException | IOException e) {
+                    throw new RuntimeException("Could not retrieve people containing '" + search + "'", e);
+                }
+            }
+        };
     }
 
     public List<Person> getFamilyMembers(int familyId, boolean includeInactive) {

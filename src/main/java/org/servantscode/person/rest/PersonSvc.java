@@ -11,35 +11,21 @@ import org.servantscode.person.db.PersonDB;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Path("/person")
 public class PersonSvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(PersonSvc.class);
 
+    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "phonenumber", "email", "family_id", "head_of_house", "member_since", "inactive");
+
     private PersonDB db;
 
     public PersonSvc() {
         this.db = new PersonDB();
-    }
-
-    @GET @Path("/autocomplete") @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getPeopleNames(@QueryParam("start") @DefaultValue("0") int start,
-                                       @QueryParam("count") @DefaultValue("100") int count,
-                                       @QueryParam("sort_field") @DefaultValue("id") String sortField,
-                                       @QueryParam("partial_name") @DefaultValue("") String nameSearch,
-                                       @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
-
-        verifyUserAccess("person.list");
-
-        try {
-            LOG.trace(String.format("Retrieving people names (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            return db.getPeopleNames(nameSearch, count, includeInactive);
-        } catch (Throwable t) {
-            LOG.error("Retrieving people failed:", t);
-            throw t;
-        }
     }
 
     @GET @Produces(MediaType.APPLICATION_JSON)
@@ -66,6 +52,22 @@ public class PersonSvc extends SCServiceBase {
             return new PaginatedResponse<>(start, results.size(), totalPeople, results);
         } catch (Throwable t) {
             LOG.error("Retrieving people failed:", t);
+            throw t;
+        }
+    }
+
+    @GET @Path("/report") @Produces(MediaType.TEXT_PLAIN)
+    public Response getPeopleReport(@QueryParam("search") @DefaultValue("") String nameSearch,
+                                    @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
+
+        verifyUserAccess("person.export");
+
+        try {
+            LOG.trace(String.format("Retrieving people report(%s)", nameSearch));
+
+            return Response.ok(db.getReportReader(nameSearch, includeInactive, EXPORTABLE_FIELDS)).build();
+        } catch (Throwable t) {
+            LOG.error("Retrieving people report failed:", t);
             throw t;
         }
     }
