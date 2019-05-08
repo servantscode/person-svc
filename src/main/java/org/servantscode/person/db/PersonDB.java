@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.db.DBAccess;
 import org.servantscode.commons.db.ReportStreamingOutput;
+import org.servantscode.commons.search.SearchParser;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.servantscode.commons.StringUtils.isEmpty;
+import static org.servantscode.commons.StringUtils.isSet;
 
 public class PersonDB extends DBAccess {
     private static final Logger LOG = LogManager.getLogger(PersonDB.class);
@@ -297,11 +299,13 @@ public class PersonDB extends DBAccess {
     }
 
     private String optionalWhereClause(String search, boolean includeInactive) {
-        String sqlClause = !includeInactive? " p.inactive=false": "";
-        if(!isEmpty(search)) {
-            if(!isEmpty(sqlClause)) sqlClause += " AND";
-            sqlClause += format(" name ILIKE '%%%s%%'", search.replace("'", "''"));
+        String sqlClause = !includeInactive? "p.inactive=false": "";
+        if(isSet(search)) {
+            if(isSet(sqlClause)) sqlClause += " AND ";
+            sqlClause += new SearchParser(Person.class).parse(search).getDBQueryString();
         }
-        return isEmpty(sqlClause)? "": " WHERE" + sqlClause;
+        String where = isEmpty(sqlClause) ? "" : " WHERE " + sqlClause;
+        LOG.debug("Generated where query: " + where);
+        return where;
     }
 }

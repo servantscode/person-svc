@@ -1,8 +1,8 @@
 package org.servantscode.person.db;
 
-import org.servantscode.commons.AutoCompleteComparator;
 import org.servantscode.commons.db.DBAccess;
 import org.servantscode.commons.db.ReportStreamingOutput;
+import org.servantscode.commons.search.SearchParser;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 
@@ -197,11 +197,11 @@ public class FamilyDB extends DBAccess {
     }
 
     private String optionalWhereClause(String search, boolean includeInactive) {
-        String sqlClause = !includeInactive? " inactive=false": "";
+        String sqlClause = !includeInactive? "inactive=false": "";
         if(isSet(search)) {
-            if(isSet(sqlClause)) sqlClause += " AND";
-            sqlClause += format(" surname ILIKE '%%%s%%'", search.replace("'", "''"));
+            if(isSet(sqlClause)) sqlClause += " AND ";
+            sqlClause += new SearchParser(Family.class, "surname").parse(search).getDBQueryString();
         }
-        return isEmpty(sqlClause)? "": " WHERE" + sqlClause;
+        return isEmpty(sqlClause)? "": " WHERE " + sqlClause;
     }
 }
