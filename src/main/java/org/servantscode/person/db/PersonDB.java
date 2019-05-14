@@ -31,8 +31,7 @@ public class PersonDB extends DBAccess {
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
-            if (rs.next())
-                return rs.getInt(1);
+            if (rs.next()) return rs.getInt(1);
         } catch (SQLException e) {
             throw new RuntimeException("Could not retrieve people count '" + search + "'", e);
         }
@@ -305,7 +304,6 @@ public class PersonDB extends DBAccess {
             sqlClause += new SearchParser(Person.class).parse(search).getDBQueryString();
         }
         String where = isEmpty(sqlClause) ? "" : " WHERE " + sqlClause;
-        LOG.debug("Generated where query: " + where);
         return where;
     }
 }
