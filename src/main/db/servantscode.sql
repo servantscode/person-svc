@@ -7,7 +7,7 @@ CREATE TABLE funds (id SERIAL PRIMARY KEY, name TEXT NOT NULL);
 INSERT INTO funds (name) values ('general');
 CREATE TABLE pledges (id SERIAL PRIMARY KEY, family_id INTEGER REFERENCES families(id), fund_id INTEGER REFERENCES funds(id) DEFAULT 1 NOT NULL, pledge_type TEXT, pledge_date TIMESTAMP WITH TIME ZONE, pledge_start TIMESTAMP WITH TIME ZONE, pledge_end TIMESTAMP WITH TIME ZONE, frequency TEXT, pledge_increment FLOAT, total_pledge FLOAT);
 CREATE TABLE donations (id BIGSERIAL PRIMARY KEY, family_id INTEGER REFERENCES families(id), fund_id INTEGER REFERENCES funds(id) DEFAULT 1 NOT NULL, amount FLOAT, date TIMESTAMP WITH TIME ZONE, type TEXT, check_number INTEGER, transaction_id bigint);
-CREATE TABLE events (id SERIAL PRIMARY KEY, start_time TIMESTAMP WITH TIME ZONE, recurring_meeting_id INTEGER, end_time TIMESTAMP WITH TIME ZONE, description TEXT, scheduler_id INTEGER REFERENCES people(id) ON DELETE SET NULL, ministry_id INTEGER REFERENCES ministries(id) ON DELETE CASCADE);
+CREATE TABLE events (id SERIAL PRIMARY KEY, start_time TIMESTAMP WITH TIME ZONE, recurring_meeting_id INTEGER, end_time TIMESTAMP WITH TIME ZONE, title TEXT, description TEXT, scheduler_id INTEGER REFERENCES people(id) ON DELETE SET NULL, ministry_id INTEGER REFERENCES ministries(id) ON DELETE CASCADE);
 CREATE TABLE rooms (id SERIAL PRIMARY KEY, name TEXT, type TEXT, capacity INTEGER);
 CREATE TABLE equipment (id SERIAL PRIMARY KEY, name TEXT, manufacturer TEXT, description TEXT);
 CREATE TABLE reservations (id BIGSERIAL PRIMARY KEY, resource_type TEXT, resource_id INTEGER, reserving_person_id INTEGER REFERENCES people(id) ON DELETE SET NULL, event_id INTEGER, start_time TIMESTAMP WITH TIME ZONE, end_time TIMESTAMP WITH TIME ZONE);
