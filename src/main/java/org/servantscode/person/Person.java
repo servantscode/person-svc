@@ -2,7 +2,7 @@ package org.servantscode.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 public class Person {
     private int id;
@@ -13,8 +13,8 @@ public class Person {
     private String email;
     private Family family;
     private boolean headOfHousehold;
-    private ZonedDateTime birthdate;
-    private ZonedDateTime memberSince;
+    private LocalDate birthdate;
+    private LocalDate memberSince;
     private String photoGuid;
 
     private boolean inactive;
@@ -41,11 +41,11 @@ public class Person {
     public boolean isMale() { return male; }
     public void setMale(boolean male) { this.male = male; }
 
-    public ZonedDateTime getBirthdate() { return birthdate; }
-    public void setBirthdate(ZonedDateTime birthdate) { this.birthdate = birthdate; }
+    public LocalDate getBirthdate() { return birthdate; }
+    public void setBirthdate(LocalDate birthdate) { this.birthdate = birthdate; }
 
-    public ZonedDateTime getMemberSince() { return memberSince; }
-    public void setMemberSince(ZonedDateTime memberSince) { this.memberSince = memberSince; }
+    public LocalDate getMemberSince() { return memberSince; }
+    public void setMemberSince(LocalDate memberSince) { this.memberSince = memberSince; }
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }

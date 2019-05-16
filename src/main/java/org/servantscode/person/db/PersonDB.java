@@ -119,13 +119,13 @@ public class PersonDB extends DBAccess {
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since) values (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
-            stmt.setTimestamp(2, convert(person.getBirthdate()));
+            stmt.setDate(2, convert(person.getBirthdate()));
             stmt.setBoolean(3, person.isMale());
             stmt.setString(4, person.getPhoneNumber());
             stmt.setString(5, person.getEmail());
             stmt.setInt(6, person.getFamily().getId());
             stmt.setBoolean(7, person.isHeadOfHousehold());
-            stmt.setTimestamp(8, convert(person.getMemberSince()));
+            stmt.setDate(8, convert(person.getMemberSince()));
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -146,13 +146,13 @@ public class PersonDB extends DBAccess {
             ){
 
             stmt.setString(1, person.getName());
-            stmt.setTimestamp(2, convert(person.getBirthdate()));
+            stmt.setDate(2, convert(person.getBirthdate()));
             stmt.setBoolean(3, person.isMale());
             stmt.setString(4, person.getPhoneNumber());
             stmt.setString(5, person.getEmail());
             stmt.setInt(6, person.getFamily().getId());
             stmt.setBoolean(7, person.isHeadOfHousehold());
-            stmt.setTimestamp(8, convert(person.getMemberSince()));
+            stmt.setDate(8, convert(person.getMemberSince()));
             stmt.setBoolean(9, person.isInactive());
             stmt.setInt(10, person.getId());
 
@@ -285,13 +285,13 @@ public class PersonDB extends DBAccess {
 
     private Person extractPerson(ResultSet rs) throws SQLException {
         Person person = new Person(rs.getInt("id"), rs.getString("name"));
-        person.setBirthdate(convert(rs.getTimestamp("birthdate")));
+        person.setBirthdate(convert(rs.getDate("birthdate")));
         person.setMale(rs.getBoolean("male"));
         person.setPhoneNumber(rs.getString("phonenumber"));
         person.setEmail(rs.getString("email"));
         person.setFamilyId(rs.getInt("family_id"));
         person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
-        person.setMemberSince(convert(rs.getTimestamp("member_since")));
+        person.setMemberSince(convert(rs.getDate("member_since")));
         person.setPhotoGuid(rs.getString("photo_guid"));
         person.setInactive(rs.getBoolean("inactive"));
         return person;
