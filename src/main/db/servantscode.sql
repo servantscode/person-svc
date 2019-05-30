@@ -1,5 +1,5 @@
 CREATE TABLE families (id SERIAL PRIMARY KEY, surname TEXT, home_phone TEXT, envelope_number INTEGER, addr_street1 TEXT, addr_street2 TEXT, addr_city TEXT, addr_state TEXT, addr_zip INTEGER, photo_guid TEXT, inactive boolean DEFAULT false);
-CREATE TABLE people (id SERIAL PRIMARY KEY, name TEXT, birthdate DATE, email TEXT, male BOOLEAN, phonenumber TEXT, head_of_house boolean, family_id INTEGER, member_since DATE, photo_guid TEXT, inactive boolean DEFAULT false);
+CREATE TABLE people (id SERIAL PRIMARY KEY, name TEXT, birthdate DATE, email TEXT, male BOOLEAN, phonenumber TEXT, head_of_house boolean, family_id INTEGER, member_since DATE, photo_guid TEXT, inactive boolean DEFAULT false, parishioner BOOLEAN, baptized BOOLEAN, confession BOOLEAN, communion BOOLEAN, confirmed BOOLEAN, marital_status TEXT, ethnicity TEXT, primary_language TEXT);
 CREATE TABLE ministries (id SERIAL PRIMARY KEY, name TEXT, description TEXT);
 CREATE TABLE ministry_roles (id SERIAL PRIMARY KEY, ministry_id INTEGER REFERENCES ministries(id) ON DELETE CASCADE NOT NULL, name TEXT NOT NULL, contact BOOLEAN, leader BOOLEAN);
 CREATE TABLE ministry_enrollments (person_id INTEGER REFERENCES people(id) ON DELETE CASCADE, ministry_id INTEGER REFERENCES ministries(id) ON DELETE CASCADE, role_id INTEGER REFERENCES ministry_roles(id) ON DELETE SET NULL);
@@ -25,30 +25,3 @@ CREATE TABLE baptisms (id SERIAL PRIMARY KEY, name TEXT NOT NULL, person_id INTE
 CREATE TABLE confirmations (id SERIAL PRIMARY KEY, name TEXT NOT NULL, person_id INTEGER, father_name TEXT, father_id INTEGER, mother_name TEXT, mother_id INTEGER, baptism_id INTEGER REFERENCES baptisms(id), baptism_date DATE NOT NULL, baptism_location TEXT, sponsor_name TEXT NOT NULL, sponsor_id INTEGER, confirmation_date DATE NOT NULL, confirmation_location TEXT NOT NULL, minister_name TEXT NOT NULL, minister_id INTEGER, notations TEXT);
 CREATE TABLE marriages (id SERIAL PRIMARY KEY, groom_name TEXT NOT NULL, groom_id INTEGER, groom_father_name TEXT, groom_father_id INTEGER, groom_mother_name TEXT, groom_mother_id INTEGER, groom_baptism_id INTEGER REFERENCES baptisms(id), groom_baptism_date DATE, groom_baptism_location TEXT, bride_name TEXT NOT NULL, bride_id INTEGER, bride_father_name TEXT, bride_father_id INTEGER, bride_mother_name TEXT, bride_mother_id INTEGER, bride_baptism_id INTEGER REFERENCES baptisms(id), bride_baptism_date DATE, bride_baptism_location TEXT, wedding_date DATE NOT NULL, wedding_location TEXT, minister_name TEXT NOT NULL, minister_id INTEGER, witness_1_name TEXT NOT NULL, witness_1_id INTEGER, witness_2_name TEXT NOT NULL, witness_2_id INTEGER, notations TEXT);
 CREATE TABLE mass_intentions (id SERIAL PRIMARY KEY, eventId INTEGER REFERENCES events(id) NOT NULL, personName TEXT, personId INTEGER REFERENCES people(id), intentionType TEXT, requesterName TEXT, requesterId INTEGER REFERENCES people(id), requesterPhone TEXT);
-
-
------ Drop tables -----
-DROP TABLE mass_intentions;
-DROP TABLE marriages;
-DROP TABLE confirmations;
-DROP TABLE baptisms;
-DROP TABLE configuration;
-DROP TABLE notes;
-DROP TABLE photos;
-DROP TABLE sessions;
-DROP TABLE logins;
-DROP TABLE permissions;
-DROP TABLE roles;
-DROP TABLE recurrences;
-DROP TABLE reservations;
-DROP TABLE equipment;
-DROP TABLE rooms;
-DROP TABLE events;
-DROP TABLE donations;
-DROP TABLE pledges;
-DROP TABLE funds;
-DROP TABLE ministry_enrollments;
-DROP TABLE ministry_roles;
-DROP TABLE ministries;
-DROP TABLE people;
-DROP TABLE families;

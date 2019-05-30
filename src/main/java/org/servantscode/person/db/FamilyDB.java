@@ -2,6 +2,7 @@ package org.servantscode.person.db;
 
 import org.servantscode.commons.db.DBAccess;
 import org.servantscode.commons.db.ReportStreamingOutput;
+import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.commons.search.SearchParser;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
@@ -15,16 +16,21 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.String.format;
-import static org.servantscode.commons.StringUtils.isEmpty;
-import static org.servantscode.commons.StringUtils.isSet;
-
 public class FamilyDB extends DBAccess {
 
+    private SearchParser<Family> searchParser;
+
+    public FamilyDB() {
+        this.searchParser = new SearchParser<>(Family.class, "surname");
+    }
+
     public int getCount(String search, boolean includeInactive) {
-        String sql = format("Select count(1) from families%s", optionalWhereClause(search, includeInactive));
+        QueryBuilder query = count().from("families").search(searchParser.parse(search));
+        if(!includeInactive)
+            query.where("inactive=false");
+
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+             PreparedStatement stmt = query.prepareStatement(conn);
              ResultSet rs = stmt.executeQuery() ){
 
             return rs.next()? rs.getInt(1): 0;
@@ -34,13 +40,15 @@ public class FamilyDB extends DBAccess {
     }
 
     public StreamingOutput getReportReader(String search, boolean includeInactive, final List<String> fields) {
-        final String sql = format("SELECT * FROM families p%s", optionalWhereClause(search, includeInactive));
+        final QueryBuilder query = selectAll().from("families").search(searchParser.parse(search));
+        if(!includeInactive)
+            query.where("inactive=false");
 
         return new ReportStreamingOutput(fields) {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try ( Connection conn = getConnection();
-                      PreparedStatement stmt = conn.prepareStatement(sql);
+                      PreparedStatement stmt = query.prepareStatement(conn);
                       ResultSet rs = stmt.executeQuery()) {
 
                     writeCsv(output, rs);
@@ -52,12 +60,14 @@ public class FamilyDB extends DBAccess {
     }
 
     public List<Family> getFamilies(String search, String sortField, int start, int count, boolean includeInactive) {
-        String sql = format("SELECT * FROM families%s ORDER BY %s LIMIT ? OFFSET ?", optionalWhereClause(search, includeInactive), sortField);
+        QueryBuilder query = selectAll().from("families").search(searchParser.parse(search));
+        if(!includeInactive)
+            query.where("inactive=false");
+        query.sort(sortField).limit(count).offset(start);
+
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement(sql)
+              PreparedStatement stmt = query.prepareStatement(conn)
         ) {
-            stmt.setInt(1, count);
-            stmt.setInt(2, start);
 
             return processFamilyResults(stmt);
         } catch (SQLException e) {
@@ -66,11 +76,12 @@ public class FamilyDB extends DBAccess {
     }
 
     public Family getFamily(int id) {
+        QueryBuilder query = selectAll().from("families").where("id=?", id);
+
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM families WHERE id=?")
+              PreparedStatement stmt = query.prepareStatement(conn)
             ) {
 
-            stmt.setInt(1, id);
             List<Family> results = processFamilyResults(stmt);
             return results.isEmpty()? null: results.get(0);
         } catch (SQLException e) {
@@ -194,14 +205,5 @@ public class FamilyDB extends DBAccess {
             }
             return families;
         }
-    }
-
-    private String optionalWhereClause(String search, boolean includeInactive) {
-        String sqlClause = !includeInactive? "inactive=false": "";
-        if(isSet(search)) {
-            if(isSet(sqlClause)) sqlClause += " AND ";
-            sqlClause += new SearchParser(Family.class, "surname").parse(search).getDBQueryString();
-        }
-        return isEmpty(sqlClause)? "": " WHERE " + sqlClause;
     }
 }

@@ -4,10 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.db.DBAccess;
 import org.servantscode.commons.db.ReportStreamingOutput;
+import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.commons.search.SearchParser;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
+import org.servantscode.person.Person.Ethnicity;
+import org.servantscode.person.Person.Language;
+import org.servantscode.person.Person.MaritalStatus;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
@@ -18,17 +22,26 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.String.format;
 import static org.servantscode.commons.StringUtils.isEmpty;
 import static org.servantscode.commons.StringUtils.isSet;
 
+@SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve"})
 public class PersonDB extends DBAccess {
     private static final Logger LOG = LogManager.getLogger(PersonDB.class);
 
+    private SearchParser<Person> searchParser;
+
+    public PersonDB() {
+        this.searchParser = new SearchParser<>(Person.class);
+    }
+
     public int getCount(String search, boolean includeInactive) {
-        String sql = format("Select count(1) from people p%s", optionalWhereClause(search, includeInactive));
+        QueryBuilder query = count().from("people").search(searchParser.parse(search));
+        if(!includeInactive)
+            query.where("inactive=false");
+
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+             PreparedStatement stmt = query.prepareStatement(conn);
              ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) return rs.getInt(1);
@@ -39,12 +52,14 @@ public class PersonDB extends DBAccess {
     }
 
     public List<Person> getPeople(String search, String sortField, int start, int count, boolean includeInactive) {
-        String sql = format("SELECT * FROM people p%s ORDER BY %s LIMIT ? OFFSET ?", optionalWhereClause(search, includeInactive), sortField);
+        QueryBuilder query = selectAll().from("people p").search(searchParser.parse(search));
+        if(!includeInactive)
+            query.where("p.inactive=false");
+        query.sort(sortField).limit(count).offset(start);
+
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement(sql)
+              PreparedStatement stmt = query.prepareStatement(conn)
         ) {
-            stmt.setInt(1, count);
-            stmt.setInt(2, start);
 
             return processPeopleResults(stmt);
         } catch (SQLException e) {
@@ -53,15 +68,17 @@ public class PersonDB extends DBAccess {
     }
 
     public List<Person> getPeopleWithFamilies(String search, String sortField, int start, int count, boolean includeInactive) {
-        String sql = format("SELECT p.*, f.surname, f.addr_street1, f.addr_street2, f.addr_city, f.addr_state, f.addr_zip FROM people p " +
-                            "LEFT JOIN families f ON p.family_id=f.id" +
-                            "%s ORDER BY %s LIMIT ? OFFSET ?",
-                optionalWhereClause(search, includeInactive), sortField);
+        QueryBuilder query = select("p.*", "f.surname", "f.addr_street1", "f.addr_street2", "f.addr_city", "f.addr_state", "f.addr_zip")
+                .from("people p")
+                .join("LEFT JOIN families f ON p.family_id=f.id")
+                .search(searchParser.parse(search));
+        if(!includeInactive)
+            query.where("p.inactive=false");
+        query.sort(sortField).limit(count).offset(start);
+
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-            stmt.setInt(1, count);
-            stmt.setInt(2, start);
+              PreparedStatement stmt = query.prepareStatement(conn)
+            ) {
 
             return processPeopleResultsWithFamilies(stmt);
         } catch (SQLException e) {
@@ -70,26 +87,27 @@ public class PersonDB extends DBAccess {
     }
 
     public Person getPerson(int id) {
+        QueryBuilder query = selectAll().from("people").where("id=?", id);
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("SELECT * from people where id=?")
-        ) {
-            stmt.setInt(1, id);
-            List<Person> results = processPeopleResults(stmt);
+              PreparedStatement stmt = query.prepareStatement(conn);
+            ) {
 
-            return results.isEmpty()? null: results.get(0);
+            return firstOrNull(processPeopleResults(stmt));
         } catch (SQLException e) {
             throw new RuntimeException("Could not find person by id " + id, e);
         }
     }
 
     public StreamingOutput getReportReader(String search, boolean includeInactive, final List<String> fields) {
-        final String sql = format("SELECT * FROM people p%s", optionalWhereClause(search, includeInactive));
+        final QueryBuilder query = selectAll().from("people p").search(searchParser.parse(search));
+        if(!includeInactive)
+            query.where("p.inactive=false");
 
         return new ReportStreamingOutput(fields) {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try ( Connection conn = getConnection();
-                      PreparedStatement stmt = conn.prepareStatement(sql);
+                      PreparedStatement stmt = query.prepareStatement(conn);
                       ResultSet rs = stmt.executeQuery()) {
 
                     writeCsv(output, rs);
@@ -101,13 +119,15 @@ public class PersonDB extends DBAccess {
     }
 
     public List<Person> getFamilyMembers(int familyId, boolean includeInactive) {
-        String sql = "SELECT * FROM people p WHERE family_id=?";
-        if(!includeInactive) sql += " AND inactive=false";
+
+        QueryBuilder query = selectAll().from("people p").where("family_id=?", familyId);
+        if(!includeInactive)
+            query.where("p.inactive=false");
+
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement(sql)
+              PreparedStatement stmt = query.prepareStatement(conn)
             ) {
 
-            stmt.setInt(1, familyId);
             return processPeopleResults(stmt);
         } catch (SQLException e) {
             throw new RuntimeException("Could not find family memebers for family id " + familyId, e);
@@ -116,7 +136,9 @@ public class PersonDB extends DBAccess {
 
     public void create(Person person) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since) values (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people" +
+                     "(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since, parishioner, baptized, confession, communion, confirmed, marital_status, ethnicity, primary_language) " +
+                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
             stmt.setDate(2, convert(person.getBirthdate()));
@@ -126,6 +148,14 @@ public class PersonDB extends DBAccess {
             stmt.setInt(6, person.getFamily().getId());
             stmt.setBoolean(7, person.isHeadOfHousehold());
             stmt.setDate(8, convert(person.getMemberSince()));
+            stmt.setBoolean(9, person.isParishioner());
+            stmt.setBoolean(10, person.isBaptized());
+            stmt.setBoolean(11, person.isConfession());
+            stmt.setBoolean(12, person.isCommunion());
+            stmt.setBoolean(13, person.isConfirmed());
+            stmt.setString(14, stringify(person.getMaritalStatus()));
+            stmt.setString(15, stringify(person.getEthnicity()));
+            stmt.setString(16, stringify(person.getPrimaryLanguage()));
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -142,7 +172,10 @@ public class PersonDB extends DBAccess {
 
     public void update(Person person) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET name=?, birthdate=?, male=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, inactive=? WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people " +
+                      "SET name=?, birthdate=?, male=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, " +
+                      "inactive=?, parishioner=?, baptized=?, confession=?, communion=?, confirmed=?, marital_status=?, ethnicity=?, primary_language=? " +
+                      "WHERE id=?")
             ){
 
             stmt.setString(1, person.getName());
@@ -154,7 +187,15 @@ public class PersonDB extends DBAccess {
             stmt.setBoolean(7, person.isHeadOfHousehold());
             stmt.setDate(8, convert(person.getMemberSince()));
             stmt.setBoolean(9, person.isInactive());
-            stmt.setInt(10, person.getId());
+            stmt.setBoolean(10, person.isParishioner());
+            stmt.setBoolean(11, person.isBaptized());
+            stmt.setBoolean(12, person.isConfession());
+            stmt.setBoolean(13, person.isCommunion());
+            stmt.setBoolean(14, person.isConfirmed());
+            stmt.setString(15, stringify(person.getMaritalStatus()));
+            stmt.setString(16, stringify(person.getEthnicity()));
+            stmt.setString(17, stringify(person.getPrimaryLanguage()));
+            stmt.setInt(18, person.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update person: " + person.getName());
@@ -294,16 +335,25 @@ public class PersonDB extends DBAccess {
         person.setMemberSince(convert(rs.getDate("member_since")));
         person.setPhotoGuid(rs.getString("photo_guid"));
         person.setInactive(rs.getBoolean("inactive"));
+        person.setParishioner(rs.getBoolean("parishioner"));
+        person.setBaptized(rs.getBoolean("baptized"));
+        person.setConfession(rs.getBoolean("confession"));
+        person.setCommunion(rs.getBoolean("communion"));
+        person.setConfirmed(rs.getBoolean("confirmed"));
+
+        String maritalStatus = rs.getString("marital_status");
+        person.setMaritalStatus(isSet(maritalStatus)? MaritalStatus.valueOf(maritalStatus): null);
+
+        String ethnicity = rs.getString("ethnicity");
+        person.setEthnicity(isSet(ethnicity)? Ethnicity.valueOf(ethnicity): null);
+
+        String primaryLanguage = rs.getString("primary_language");
+        person.setPrimaryLanguage(isSet(primaryLanguage)? Language.valueOf(primaryLanguage): null);
+
         return person;
     }
 
-    private String optionalWhereClause(String search, boolean includeInactive) {
-        String sqlClause = !includeInactive? "p.inactive=false": "";
-        if(isSet(search)) {
-            if(isSet(sqlClause)) sqlClause += " AND ";
-            sqlClause += new SearchParser(Person.class).parse(search).getDBQueryString();
-        }
-        String where = isEmpty(sqlClause) ? "" : " WHERE " + sqlClause;
-        return where;
+    private String stringify(Enum<?> value) {
+        return value == null? null: value.toString();
     }
 }

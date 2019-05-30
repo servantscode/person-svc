@@ -47,7 +47,6 @@ run: ## Run container on port configured in `config.env`
 up: build run ## Run container on port configured in `config.env` (Alias to run)
 
 update:
-	kubectl.exe set image deployment/postgres postgres=postgres$(TAG)
 	kubectl.exe set image deployment/$(APP_NAME) $(APP_NAME)=servantcode/$(APP_NAME)$(TAG)
 
 stop: ## Stop and remove a running container

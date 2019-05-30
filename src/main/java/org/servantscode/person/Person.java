@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 
 public class Person {
+    public enum MaritalStatus { SINGLE, MARRIED_IN_CHURCH, MARRIED_OUTSIDE_CHURCH, SEPARATED, DIVORCED, ANNULLED, WIDOWED };
+    public enum Ethnicity { AFRICAN_AMERICAN, ASIAN, EUROPEAN_AMERICAN, HINDU, LATINO, VIETNAMESE};
+    public enum Language { ENGLISH, SPANISH, VIETNAMESE };
+
     private int id;
     private String name;
     private boolean male;
@@ -18,6 +22,14 @@ public class Person {
     private String photoGuid;
 
     private boolean inactive;
+    private boolean parishioner;
+    private boolean baptized;
+    private boolean confession;
+    private boolean communion;
+    private boolean confirmed;
+    private MaritalStatus maritalStatus;
+    private Ethnicity ethnicity;
+    private Language primaryLanguage;
 
     @JsonIgnore
     private int familyId;
@@ -67,4 +79,28 @@ public class Person {
 
     public boolean isInactive() { return inactive; }
     public void setInactive(boolean inactive) { this.inactive = inactive; }
+
+    public boolean isParishioner() { return parishioner; }
+    public void setParishioner(boolean parishioner) { this.parishioner = parishioner; }
+
+    public boolean isBaptized() { return baptized; }
+    public void setBaptized(boolean baptized) { this.baptized = baptized; }
+
+    public boolean isConfession() { return confession; }
+    public void setConfession(boolean confession) { this.confession = confession; }
+
+    public boolean isCommunion() { return communion; }
+    public void setCommunion(boolean communion) { this.communion = communion; }
+
+    public boolean isConfirmed() { return confirmed; }
+    public void setConfirmed(boolean confirmed) { this.confirmed = confirmed; }
+
+    public MaritalStatus getMaritalStatus() { return maritalStatus; }
+    public void setMaritalStatus(MaritalStatus maritalStatus) { this.maritalStatus = maritalStatus; }
+
+    public Ethnicity getEthnicity() { return ethnicity; }
+    public void setEthnicity(Ethnicity ethnicity) { this.ethnicity = ethnicity; }
+
+    public Language getPrimaryLanguage() { return primaryLanguage; }
+    public void setPrimaryLanguage(Language primaryLanguage) { this.primaryLanguage = primaryLanguage; }
 }

@@ -2,6 +2,7 @@ package org.servantscode.person.rest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.servantscode.commons.EnumUtils;
 import org.servantscode.commons.rest.PaginatedResponse;
 import org.servantscode.commons.rest.SCServiceBase;
 import org.servantscode.person.Person;
@@ -16,6 +17,8 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/person")
 public class PersonSvc extends SCServiceBase {
@@ -161,6 +164,15 @@ public class PersonSvc extends SCServiceBase {
             throw t;
         }
     }
+
+    @GET @Path("/maritalStatuses") @Produces(APPLICATION_JSON)
+    public List<String> getMaritalStatuses() { return EnumUtils.listValues(Person.MaritalStatus.class); }
+
+    @GET @Path("/ethnicities") @Produces(APPLICATION_JSON)
+    public List<String> getEthnicities() { return EnumUtils.listValues(Person.Ethnicity.class); }
+
+    @GET @Path("/languages") @Produces(APPLICATION_JSON)
+    public List<String> getLanguages() { return EnumUtils.listValues(Person.Language.class); }
 
     // ----- Private -----
     private FamilyReconciler getReconciler() {
