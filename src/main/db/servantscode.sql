@@ -11,7 +11,7 @@ CREATE TABLE events (id SERIAL PRIMARY KEY, start_time TIMESTAMP WITH TIME ZONE,
 CREATE TABLE rooms (id SERIAL PRIMARY KEY, name TEXT, type TEXT, capacity INTEGER);
 CREATE TABLE equipment (id SERIAL PRIMARY KEY, name TEXT, manufacturer TEXT, description TEXT);
 CREATE TABLE reservations (id BIGSERIAL PRIMARY KEY, resource_type TEXT, resource_id INTEGER, reserving_person_id INTEGER REFERENCES people(id) ON DELETE SET NULL, event_id INTEGER, start_time TIMESTAMP WITH TIME ZONE, end_time TIMESTAMP WITH TIME ZONE);
-CREATE TABLE recurrences(id SERIAL PRIMARY KEY, cycle TEXT, frequency INTEGER, end_date DATE, weekly_days INTEGER);
+CREATE TABLE recurrences(id SERIAL PRIMARY KEY, cycle TEXT, frequency INTEGER, end_date DATE, weekly_days INTEGER, excluded_days TEXT);
 CREATE TABLE roles (id SERIAL PRIMARY KEY, name TEXT);
 INSERT INTO roles(name) values ('system');
 CREATE TABLE permissions (role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE, permission TEXT);
