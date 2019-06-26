@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class Person {
     public enum MaritalStatus { SINGLE, MARRIED_IN_CHURCH, MARRIED_OUTSIDE_CHURCH, SEPARATED, DIVORCED, ANNULLED, WIDOWED };
-    public enum Ethnicity { AFRICAN_AMERICAN, ASIAN, EUROPEAN_AMERICAN, HINDU, LATINO, VIETNAMESE};
+    public enum Ethnicity { AFRICAN_AMERICAN, ASIAN, CAUCASIAN, HINDU, LATINO, VIETNAMESE};
     public enum Language { ENGLISH, SPANISH, VIETNAMESE };
 
     private int id;
