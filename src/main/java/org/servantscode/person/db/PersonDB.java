@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.servantscode.commons.StringUtils.isEmpty;
@@ -30,9 +31,14 @@ public class PersonDB extends DBAccess {
     private static final Logger LOG = LogManager.getLogger(PersonDB.class);
 
     private SearchParser<Person> searchParser;
+    static HashMap<String, String> FIELD_MAP = new HashMap<>(8);
+
+    static {
+        FIELD_MAP.put("lastName","f.surname");
+    }
 
     public PersonDB() {
-        this.searchParser = new SearchParser<>(Person.class);
+        this.searchParser = new SearchParser<>(Person.class, "name", FIELD_MAP);
     }
 
     public int getCount(String search, boolean includeInactive) {
@@ -55,7 +61,7 @@ public class PersonDB extends DBAccess {
         QueryBuilder query = selectAll().from("people p").search(searchParser.parse(search));
         if(!includeInactive)
             query.where("p.inactive=false");
-        query.sort(sortField).limit(count).offset(start);
+        query.sort(FIELD_MAP.getOrDefault(sortField, sortField)).limit(count).offset(start);
 
         try ( Connection conn = getConnection();
               PreparedStatement stmt = query.prepareStatement(conn)
@@ -74,7 +80,7 @@ public class PersonDB extends DBAccess {
                 .search(searchParser.parse(search));
         if(!includeInactive)
             query.where("p.inactive=false");
-        query.sort(sortField).limit(count).offset(start);
+        query.sort(FIELD_MAP.getOrDefault(sortField, sortField)).limit(count).offset(start);
 
         try ( Connection conn = getConnection();
               PreparedStatement stmt = query.prepareStatement(conn)

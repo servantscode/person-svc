@@ -35,7 +35,7 @@ public class PersonSvc extends SCServiceBase {
     @GET @Produces(MediaType.APPLICATION_JSON)
     public PaginatedResponse<Person> getPeople(@QueryParam("start") @DefaultValue("0") int start,
                                        @QueryParam("count") @DefaultValue("10") int count,
-                                       @QueryParam("sort_field") @DefaultValue("id") String sortField,
+                                       @QueryParam("sort_field") @DefaultValue("name") String sortField,
                                        @QueryParam("partial_name") @DefaultValue("") String nameSearch,
                                        @QueryParam("families") @DefaultValue("false") boolean includeFamilies,
                                        @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
@@ -50,7 +50,7 @@ public class PersonSvc extends SCServiceBase {
             if(!includeFamilies) {
                 results = db.getPeople(nameSearch, sortField, start, count, includeInactive);
             } else {
-                results = db.getPeopleWithFamilies(nameSearch, sortField, start, count, includeInactive);
+                results = db.getPeopleWithFamilies(nameSearch, sortField.equals("name")? "lastName": sortField, start, count, includeInactive);
             }
 
             return new PaginatedResponse<>(start, results.size(), totalPeople, results);
