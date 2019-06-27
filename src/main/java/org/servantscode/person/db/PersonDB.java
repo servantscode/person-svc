@@ -359,7 +359,4 @@ public class PersonDB extends DBAccess {
         return person;
     }
 
-    private String stringify(Enum<?> value) {
-        return value == null? null: value.toString();
-    }
 }

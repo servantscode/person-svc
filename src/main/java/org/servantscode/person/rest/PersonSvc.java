@@ -9,6 +9,7 @@ import org.servantscode.person.Person;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
 import org.servantscode.person.db.PersonDB;
+import org.servantscode.person.db.PreferenceDB;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -27,9 +29,11 @@ public class PersonSvc extends SCServiceBase {
     private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "phonenumber", "email", "family_id", "head_of_house", "member_since", "inactive");
 
     private PersonDB db;
+    private PreferenceDB prefDb;
 
     public PersonSvc() {
         this.db = new PersonDB();
+        this.prefDb = new PreferenceDB();
     }
 
     @GET @Produces(MediaType.APPLICATION_JSON)
@@ -99,6 +103,46 @@ public class PersonSvc extends SCServiceBase {
             db.attchPhoto(id, guid);
         } catch (Throwable t) {
             LOG.error("Attaching photo to person failed.", t);
+            throw t;
+        }
+    }
+
+    @GET @Path("/{id}/preferences") @Produces(APPLICATION_JSON)
+    public Map<String, String> getPreferences(@PathParam("id") int id) {
+        verifyUserAccess("preferences.read");
+
+        if(id <= 0)
+            throw new BadRequestException();
+
+        Person person = db.getPerson(id);
+        if(person == null)
+            throw new NotFoundException();
+
+        try {
+            return prefDb.getPersonalPreferences(id);
+        } catch (Throwable t) {
+            LOG.error("Retrieving personal preferences failed for: " + person.getName(), t);
+            throw t;
+        }
+    }
+
+    @PUT @Path("/{id}/preferences") @Consumes(APPLICATION_JSON)
+    public void updatePreferences(@PathParam("id") int id,
+                                  Map<String, String> prefs) {
+        verifyUserAccess("preferences.update");
+
+        if(id <= 0 || prefs == null)
+            throw new BadRequestException();
+
+        Person person = db.getPerson(id);
+        if(person == null)
+            throw new NotFoundException();
+
+        try {
+            prefDb.updatePersonalPreferences(id, prefs);
+            LOG.info("Updated personal preferences for: "  + person.getName());
+        } catch (Throwable t) {
+            LOG.error("Updating personal preferences failed for: " + person.getName(), t);
             throw t;
         }
     }

@@ -5,15 +5,20 @@ import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.rest.PaginatedResponse;
 import org.servantscode.commons.rest.SCServiceBase;
 import org.servantscode.person.Family;
+import org.servantscode.person.Person;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
 import org.servantscode.person.db.PersonDB;
+import org.servantscode.person.db.PreferenceDB;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/family")
 public class FamilySvc extends SCServiceBase {
@@ -22,9 +27,11 @@ public class FamilySvc extends SCServiceBase {
     private static List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "surname", "home_phone", "envelope_number", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip", "inactive");
 
     private FamilyDB db;
+    private PreferenceDB prefDb;
 
     public FamilySvc() {
         db = new FamilyDB();
+        prefDb = new PreferenceDB();
     }
 
     @GET @Produces(MediaType.APPLICATION_JSON)
@@ -88,9 +95,47 @@ public class FamilySvc extends SCServiceBase {
             throw t;
         }
     }
+    @GET @Path("/{id}/preferences") @Produces(APPLICATION_JSON)
+    public Map<String, String> getPreferences(@PathParam("id") int id) {
+        verifyUserAccess("preferences.read");
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
+        if(id <= 0)
+            throw new BadRequestException();
+
+        Family family = db.getFamily(id);
+        if(family == null)
+            throw new NotFoundException();
+
+        try {
+            return prefDb.getFamilialPreferences(id);
+        } catch (Throwable t) {
+            LOG.error("Retrieving familial preferences failed for: " + family.getSurname(), t);
+            throw t;
+        }
+    }
+
+    @PUT @Path("/{id}/preferences") @Consumes(APPLICATION_JSON)
+    public void updatePreferences(@PathParam("id") int id,
+                                  Map<String, String> prefs) {
+        verifyUserAccess("preferences.update");
+
+        if(id <= 0 || prefs == null)
+            throw new BadRequestException();
+
+        Family family = db.getFamily(id);
+        if(family == null)
+            throw new NotFoundException();
+
+        try {
+            prefDb.updateFamilialPreferences(id, prefs);
+            LOG.info("Updated familial preferences for: "  + family.getSurname());
+        } catch (Throwable t) {
+            LOG.error("Updating familial preferences failed for: " + family.getSurname(), t);
+            throw t;
+        }
+    }
+
+    @POST @Consumes(MediaType.APPLICATION_JSON) @Produces(MediaType.APPLICATION_JSON)
     public Family createFamily(Family family) {
         verifyUserAccess("family.create");
         try {
