@@ -102,6 +102,9 @@ public class PreferenceSvc extends SCServiceBase {
         }
     }
 
-    @GET @Path("/type") @Produces(APPLICATION_JSON)
+    @GET @Path("/objectTypes") @Produces(APPLICATION_JSON)
+    public List<String> getObjectTypes() { return EnumUtils.listValues(Preference.ObjectType.class); }
+
+    @GET @Path("/preferenceTypes") @Produces(APPLICATION_JSON)
     public List<String> getPreferenceTypes() { return EnumUtils.listValues(Preference.PreferenceType.class); }
 }

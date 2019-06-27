@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.db.DBAccess;
 import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.commons.search.SearchParser;
-import org.servantscode.person.Person;
 import org.servantscode.person.Preference;
 import org.servantscode.person.Preference.ObjectType;
 import org.servantscode.person.Preference.PreferenceType;
@@ -16,8 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.servantscode.person.Preference.PreferenceType.valueOf;
-
 public class PreferenceDB extends DBAccess {
     private static final Logger LOG = LogManager.getLogger(PreferenceDB.class);
 
@@ -25,6 +22,7 @@ public class PreferenceDB extends DBAccess {
     static HashMap<String, String> FIELD_MAP = new HashMap<>(8);
 
     static {
+        FIELD_MAP.put("objectType", "object_type");
     }
 
     public PreferenceDB() {
