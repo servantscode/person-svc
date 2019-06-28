@@ -218,6 +218,12 @@ public class PersonSvc extends SCServiceBase {
     @GET @Path("/languages") @Produces(APPLICATION_JSON)
     public List<String> getLanguages() { return EnumUtils.listValues(Person.Language.class); }
 
+    @GET @Path("/religions") @Produces(APPLICATION_JSON)
+    public List<String> getReligions() { return EnumUtils.listValues(Person.Religion.class); }
+
+    @GET @Path("/specialNeeds") @Produces(APPLICATION_JSON)
+    public List<String> getSpecialNeeds() { return EnumUtils.listValues(Person.SpecialNeeds.class); }
+
     // ----- Private -----
     private FamilyReconciler getReconciler() {
         return new FamilyReconciler(db, new FamilyDB());

@@ -9,9 +9,6 @@ import org.servantscode.commons.search.SearchParser;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
-import org.servantscode.person.Person.Ethnicity;
-import org.servantscode.person.Person.Language;
-import org.servantscode.person.Person.MaritalStatus;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
@@ -22,9 +19,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.servantscode.commons.StringUtils.isEmpty;
-import static org.servantscode.commons.StringUtils.isSet;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve"})
 public class PersonDB extends DBAccess {
@@ -143,8 +140,8 @@ public class PersonDB extends DBAccess {
     public void create(Person person) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO people" +
-                     "(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since, parishioner, baptized, confession, communion, confirmed, marital_status, ethnicity, primary_language) " +
-                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+                     "(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since, parishioner, baptized, confession, communion, confirmed, marital_status, ethnicity, primary_language, religion, special_needs) " +
+                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
             stmt.setDate(2, convert(person.getBirthdate()));
@@ -162,6 +159,8 @@ public class PersonDB extends DBAccess {
             stmt.setString(14, stringify(person.getMaritalStatus()));
             stmt.setString(15, stringify(person.getEthnicity()));
             stmt.setString(16, stringify(person.getPrimaryLanguage()));
+            stmt.setString(17, stringify(person.getReligion()));
+            stmt.setString(18, storeEnumList(person.getSpecialNeeds()));
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -180,7 +179,7 @@ public class PersonDB extends DBAccess {
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement("UPDATE people " +
                       "SET name=?, birthdate=?, male=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, " +
-                      "inactive=?, parishioner=?, baptized=?, confession=?, communion=?, confirmed=?, marital_status=?, ethnicity=?, primary_language=? " +
+                      "inactive=?, parishioner=?, baptized=?, confession=?, communion=?, confirmed=?, marital_status=?, ethnicity=?, primary_language=?, religion=?, special_needs=? " +
                       "WHERE id=?")
             ){
 
@@ -201,7 +200,9 @@ public class PersonDB extends DBAccess {
             stmt.setString(15, stringify(person.getMaritalStatus()));
             stmt.setString(16, stringify(person.getEthnicity()));
             stmt.setString(17, stringify(person.getPrimaryLanguage()));
-            stmt.setInt(18, person.getId());
+            stmt.setString(18, stringify(person.getReligion()));
+            stmt.setString(19, storeEnumList(person.getSpecialNeeds()));
+            stmt.setInt(20, person.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update person: " + person.getName());
@@ -346,16 +347,11 @@ public class PersonDB extends DBAccess {
         person.setConfession(rs.getBoolean("confession"));
         person.setCommunion(rs.getBoolean("communion"));
         person.setConfirmed(rs.getBoolean("confirmed"));
-
-        String maritalStatus = rs.getString("marital_status");
-        person.setMaritalStatus(isSet(maritalStatus)? MaritalStatus.valueOf(maritalStatus): null);
-
-        String ethnicity = rs.getString("ethnicity");
-        person.setEthnicity(isSet(ethnicity)? Ethnicity.valueOf(ethnicity): null);
-
-        String primaryLanguage = rs.getString("primary_language");
-        person.setPrimaryLanguage(isSet(primaryLanguage)? Language.valueOf(primaryLanguage): null);
-
+        person.setMaritalStatus(parse(Person.MaritalStatus.class, rs.getString("marital_status")));
+        person.setEthnicity(parse(Person.Ethnicity.class, rs.getString("ethnicity")));
+        person.setPrimaryLanguage(parse(Person.Language.class, rs.getString("primary_language")));
+        person.setReligion(parse(Person.Religion.class, rs.getString("religion")));
+        person.setSpecialNeeds(parseEnumList(Person.SpecialNeeds.class, rs.getString("special_needs")));
         return person;
     }
 

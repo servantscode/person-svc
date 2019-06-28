@@ -3,11 +3,52 @@ package org.servantscode.person;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Person {
     public enum MaritalStatus { SINGLE, MARRIED_IN_CHURCH, MARRIED_OUTSIDE_CHURCH, SEPARATED, DIVORCED, ANNULLED, WIDOWED };
     public enum Ethnicity { AFRICAN_AMERICAN, ASIAN, CAUCASIAN, HINDU, LATINO, VIETNAMESE, OTHER};
     public enum Language { ENGLISH, SPANISH, VIETNAMESE, OTHER };
+    public enum SpecialNeeds { ARTHRITIS,
+                               ASTHMA,
+                               BLIND,
+                               CANCER,
+                               DEAF,
+                               EMPHYSEMA,
+                               HEARING_IMPAIRED,
+                               HEART_DISEASE,
+                               IMPAIRED_MOBILITY,
+                               MANIC_DEPRESSION,
+                               MULTIPLE_SCLEROSIS,
+                               VISUALLY_IMPAIRED,
+                               WHEEL_CHAIR };
+    public enum Religion { ASSEMBLY_OF_GOD,
+                           BAPTIST,
+                           BUDDHIST,
+                           CATHOLIC,
+                           CHRISTIAN,
+                           CHURCH_OF_GOD,
+                           CONGREGATIONAL,
+                           EASTERN_RITE_ORTHODOX,
+                           EPISCOPALIAN,
+                           EVANGELICAL,
+                           GREEK_ORTHODOX,
+                           HINDU,
+                           JEWISH,
+                           LDS,
+                           LUTHERAN,
+                           METHODIST,
+                           MORMAN,
+                           MUSLIM,
+                           NAZARENE,
+                           NONDENOMINATIONAL,
+                           NONE,
+                           OTHER,
+                           PENTECOSTAL,
+                           PRESBYTERIAN,
+                           PROTESTANT,
+                           RUSSIAN_ORTHODOX,
+                           UNDECIDED };
 
     private int id;
     private String name;
@@ -30,6 +71,8 @@ public class Person {
     private MaritalStatus maritalStatus;
     private Ethnicity ethnicity;
     private Language primaryLanguage;
+    private Religion religion;
+    private List<SpecialNeeds> specialNeeds;
 
     @JsonIgnore
     private int familyId;
@@ -103,4 +146,10 @@ public class Person {
 
     public Language getPrimaryLanguage() { return primaryLanguage; }
     public void setPrimaryLanguage(Language primaryLanguage) { this.primaryLanguage = primaryLanguage; }
+
+    public Religion getReligion() { return religion; }
+    public void setReligion(Religion religion) { this.religion = religion; }
+
+    public List<SpecialNeeds> getSpecialNeeds() { return specialNeeds; }
+    public void setSpecialNeeds(List<SpecialNeeds> specialNeeds) { this.specialNeeds = specialNeeds; }
 }
