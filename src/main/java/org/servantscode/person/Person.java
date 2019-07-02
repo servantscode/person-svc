@@ -73,6 +73,7 @@ public class Person {
     private Language primaryLanguage;
     private Religion religion;
     private List<SpecialNeeds> specialNeeds;
+    private String occupation;
 
     @JsonIgnore
     private int familyId;
@@ -152,4 +153,7 @@ public class Person {
 
     public List<SpecialNeeds> getSpecialNeeds() { return specialNeeds; }
     public void setSpecialNeeds(List<SpecialNeeds> specialNeeds) { this.specialNeeds = specialNeeds; }
+
+    public String getOccupation() { return occupation; }
+    public void setOccupation(String occupation) { this.occupation = occupation; }
 }

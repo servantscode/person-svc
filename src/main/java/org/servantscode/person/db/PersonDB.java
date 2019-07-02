@@ -140,8 +140,10 @@ public class PersonDB extends DBAccess {
     public void create(Person person) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO people" +
-                     "(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since, parishioner, baptized, confession, communion, confirmed, marital_status, ethnicity, primary_language, religion, special_needs) " +
-                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+                     "(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since, parishioner, " +
+                     "baptized, confession, communion, confirmed, marital_status, " +
+                     "ethnicity, primary_language, religion, special_needs, occupation) " +
+                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
             stmt.setDate(2, convert(person.getBirthdate()));
@@ -161,6 +163,7 @@ public class PersonDB extends DBAccess {
             stmt.setString(16, stringify(person.getPrimaryLanguage()));
             stmt.setString(17, stringify(person.getReligion()));
             stmt.setString(18, storeEnumList(person.getSpecialNeeds()));
+            stmt.setString(19, person.getOccupation());
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -179,7 +182,8 @@ public class PersonDB extends DBAccess {
         try ( Connection conn = getConnection();
               PreparedStatement stmt = conn.prepareStatement("UPDATE people " +
                       "SET name=?, birthdate=?, male=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, " +
-                      "inactive=?, parishioner=?, baptized=?, confession=?, communion=?, confirmed=?, marital_status=?, ethnicity=?, primary_language=?, religion=?, special_needs=? " +
+                      "inactive=?, parishioner=?, baptized=?, confession=?, communion=?, confirmed=?, marital_status=?, " +
+                      "ethnicity=?, primary_language=?, religion=?, special_needs=?, occupation=? " +
                       "WHERE id=?")
             ){
 
@@ -202,7 +206,8 @@ public class PersonDB extends DBAccess {
             stmt.setString(17, stringify(person.getPrimaryLanguage()));
             stmt.setString(18, stringify(person.getReligion()));
             stmt.setString(19, storeEnumList(person.getSpecialNeeds()));
-            stmt.setInt(20, person.getId());
+            stmt.setString(20, person.getOccupation());
+            stmt.setInt(21, person.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update person: " + person.getName());
@@ -352,6 +357,7 @@ public class PersonDB extends DBAccess {
         person.setPrimaryLanguage(parse(Person.Language.class, rs.getString("primary_language")));
         person.setReligion(parse(Person.Religion.class, rs.getString("religion")));
         person.setSpecialNeeds(parseEnumList(Person.SpecialNeeds.class, rs.getString("special_needs")));
+        person.setOccupation(rs.getString("occupation"));
         return person;
     }
 
