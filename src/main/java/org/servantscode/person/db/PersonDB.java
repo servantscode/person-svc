@@ -137,6 +137,21 @@ public class PersonDB extends DBAccess {
         }
     }
 
+    public boolean isMale(int id) {
+        QueryBuilder query = select("male").from("people").withId(id);
+        try ( Connection conn = getConnection();
+              PreparedStatement stmt = query.prepareStatement(conn);
+              ResultSet rs = stmt.executeQuery()
+        ) {
+            if(!rs.next())
+                throw new RuntimeException("Could not find person with id: " + id);
+
+            return rs.getBoolean(1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not find gender of person id: " + id, e);
+        }
+    }
+
     public void create(Person person) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO people" +

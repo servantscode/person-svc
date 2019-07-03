@@ -6,6 +6,28 @@ public class Relationship {
                                    GRANDFATHER, GRANDMOTHER, GRANDCHILD,
                                    OTHER };
 
+    public static RelationshipType invert(RelationshipType relationship, boolean isMale) {
+        switch (relationship) {
+            case FATHER:
+            case MOTHER:
+                return RelationshipType.CHILD;
+            case CHILD:
+                return isMale? RelationshipType.FATHER: RelationshipType.MOTHER;
+            case STEP_FATHER:
+            case STEP_MOTHER:
+                return RelationshipType.STEP_CHILD;
+            case STEP_CHILD:
+                return isMale? RelationshipType.STEP_FATHER: RelationshipType.STEP_MOTHER;
+            case GRANDFATHER:
+            case GRANDMOTHER:
+                return RelationshipType.GRANDCHILD;
+            case GRANDCHILD:
+                return isMale? RelationshipType.GRANDFATHER: RelationshipType.GRANDMOTHER;
+            default:
+                return relationship;
+        }
+    }
+
     private int personId;
     private String personName;
     private int otherId;
