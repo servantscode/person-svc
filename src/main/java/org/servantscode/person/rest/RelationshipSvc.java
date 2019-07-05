@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.EnumUtils;
 import org.servantscode.commons.rest.SCServiceBase;
-import org.servantscode.person.Person;
 import org.servantscode.person.Relationship;
 import org.servantscode.person.Relationship.RelationshipType;
 import org.servantscode.person.db.PersonDB;
@@ -13,7 +12,6 @@ import org.servantscode.person.db.RelationshipDB;
 import javax.ws.rs.*;
 import java.util.List;
 
-import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/relationship")
@@ -47,6 +45,8 @@ public class RelationshipSvc extends SCServiceBase {
     @PUT @Produces(APPLICATION_JSON) @Consumes(APPLICATION_JSON)
     public void storeRelationships(@QueryParam("addReciprocals") @DefaultValue("false") boolean addReciprocals,
                                    List<Relationship> relationships) {
+        userHasAccess("relationship.update");
+
         if (relationships == null || relationships.isEmpty())
             throw new BadRequestException();
 
