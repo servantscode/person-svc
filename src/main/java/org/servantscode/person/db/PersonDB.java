@@ -19,7 +19,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.servantscode.commons.StringUtils.isEmpty;
 
@@ -32,6 +31,7 @@ public class PersonDB extends DBAccess {
 
     static {
         FIELD_MAP.put("lastName","f.surname");
+        FIELD_MAP.put("memberSince","member_since");
     }
 
     public PersonDB() {
