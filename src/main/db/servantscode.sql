@@ -17,7 +17,6 @@ INSERT INTO roles(name) values ('system');
 CREATE TABLE permissions (role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE, permission TEXT);
 INSERT INTO permissions(role_id, permission) values (1, '*');
 CREATE TABLE logins (person_id INTEGER PRIMARY KEY REFERENCES people(id) ON DELETE CASCADE, hashed_password TEXT, role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE, reset_password BOOLEAN DEFAULT false, reset_token TEXT);
-CREATE TABLE sessions (pseron_id INTEGER REFERENCES people(id), token TEXT NOT NULL, expiration TIMESTAMP WITH TIME ZONE);
 CREATE TABLE photos (guid TEXT PRIMARY KEY, filetype TEXT, bytes BYTEA);
 CREATE TABLE notes (id SERIAL PRIMARY KEY, creator_id INTEGER REFERENCES people(id), created_time TIMESTAMP WITH TIME ZONE, edited BOOLEAN, private BOOLEAN, resource_type TEXT, resource_id INTEGER, note TEXT);
 CREATE TABLE configuration (config TEXT PRIMARY KEY, value TEXT);
