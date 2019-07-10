@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.db.DBAccess;
 import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.commons.search.SearchParser;
+import org.servantscode.commons.security.OrganizationContext;
 import org.servantscode.person.Preference;
 import org.servantscode.person.Preference.ObjectType;
 import org.servantscode.person.Preference.PreferenceType;
@@ -30,7 +31,7 @@ public class PreferenceDB extends DBAccess {
     }
 
     public int getCount(String search) {
-        QueryBuilder query = count().from("preferences").search(searchParser.parse(search));
+        QueryBuilder query = count().from("preferences").search(searchParser.parse(search)).inOrg();
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = query.prepareStatement(conn);
@@ -44,7 +45,7 @@ public class PreferenceDB extends DBAccess {
     }
 
     public List<Preference> getPreferences(String search, String sortField, int start, int count) {
-        QueryBuilder query = selectAll().from("preferences").search(searchParser.parse(search));
+        QueryBuilder query = selectAll().from("preferences").search(searchParser.parse(search)).inOrg();
         query.sort(FIELD_MAP.getOrDefault(sortField, sortField)).limit(count).offset(start);
 
         try ( Connection conn = getConnection();
@@ -58,7 +59,7 @@ public class PreferenceDB extends DBAccess {
     }
 
     public Preference getPreference(int id) {
-        QueryBuilder query = selectAll().from("preferences").withId(id);
+        QueryBuilder query = selectAll().from("preferences").withId(id).inOrg();
 
         try(Connection conn = getConnection();
             PreparedStatement stmt = query.prepareStatement(conn)) {
@@ -68,16 +69,18 @@ public class PreferenceDB extends DBAccess {
             throw new RuntimeException("Could not retrieve preference with id: " + id , e);
         }
     }
+
     public void create(Preference preference) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO preferences" +
-                     "(name, object_type, type, default_value) " +
-                     "values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+                     "(name, object_type, type, default_value, org_id) " +
+                     "values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, preference.getName());
             stmt.setString(2, stringify(preference.getObjectType()));
             stmt.setString(3, stringify(preference.getType()));
             stmt.setString(4, preference.getDefaultValue());
+            stmt.setInt(5, OrganizationContext.orgId());
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create preference: " + preference.getName());
@@ -95,7 +98,7 @@ public class PreferenceDB extends DBAccess {
     public void update(Preference preference) {
         try ( Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement("UPDATE preferences " +
-                    "SET name=?, object_type=?, type=?, default_value=? " +
+                    "SET name=?, object_type=?, type=?, default_value=?, org_id=? " +
                     "WHERE id=?")
             ){
 
@@ -103,7 +106,8 @@ public class PreferenceDB extends DBAccess {
         stmt.setString(2, stringify(preference.getObjectType()));
         stmt.setString(3, stringify(preference.getType()));
         stmt.setString(4, preference.getDefaultValue());
-        stmt.setInt(5, preference.getId());
+        stmt.setInt(5, OrganizationContext.orgId());
+        stmt.setInt(6, preference.getId());
 
         if(stmt.executeUpdate() == 0)
             throw new RuntimeException("Could not update preference: " + preference.getName());
@@ -116,10 +120,11 @@ public class PreferenceDB extends DBAccess {
 
     public boolean delete(Preference preference) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("DELETE FROM preferences WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("DELETE FROM preferences WHERE id=? AND org_id=?")
             ){
 
             stmt.setInt(1, preference.getId());
+            stmt.setInt(2, OrganizationContext.orgId());
 
             return stmt.executeUpdate() != 0;
         } catch (SQLException e) {
@@ -130,7 +135,8 @@ public class PreferenceDB extends DBAccess {
     public Map<String, String> getPersonalPreferences(int personId) {
         QueryBuilder query = select("p.name", "pp.value").from("preferences p")
                 .join("LEFT JOIN person_preferences pp ON p.id=pp.preference_id")
-                .where("p.object_type='PERSON'").where("pp.person_id=?", personId);
+                .where("p.object_type='PERSON'").where("pp.person_id=?", personId)
+                .inOrg("p.org_id");
         return getPreferencesFromQuery(query);
     }
 
@@ -154,7 +160,8 @@ public class PreferenceDB extends DBAccess {
     public Map<String, String> getFamilialPreferences(int familyId) {
         QueryBuilder query = select("p.name", "fp.value").from("preferences p")
                 .join("LEFT JOIN family_preferences fp ON p.id=fp.preference_id")
-                .where("p.object_type='FAMILY'").where("fp.family_id=?", familyId);
+                .where("p.object_type='FAMILY'").where("fp.family_id=?", familyId)
+                .inOrg("p.org_id");
         return getPreferencesFromQuery(query);
     }
 

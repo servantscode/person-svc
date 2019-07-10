@@ -6,6 +6,7 @@ import org.servantscode.commons.db.DBAccess;
 import org.servantscode.commons.db.ReportStreamingOutput;
 import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.commons.search.SearchParser;
+import org.servantscode.commons.security.OrganizationContext;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
@@ -39,7 +40,7 @@ public class PersonDB extends DBAccess {
     }
 
     public int getCount(String search, boolean includeInactive) {
-        QueryBuilder query = count().from("people").search(searchParser.parse(search));
+        QueryBuilder query = count().from("people").search(searchParser.parse(search)).inOrg();
         if(!includeInactive)
             query.where("inactive=false");
 
@@ -55,7 +56,7 @@ public class PersonDB extends DBAccess {
     }
 
     public List<Person> getPeople(String search, String sortField, int start, int count, boolean includeInactive) {
-        QueryBuilder query = selectAll().from("people p").search(searchParser.parse(search));
+        QueryBuilder query = selectAll().from("people p").search(searchParser.parse(search)).inOrg();
         if(!includeInactive)
             query.where("p.inactive=false");
         query.sort(FIELD_MAP.getOrDefault(sortField, sortField)).limit(count).offset(start);
@@ -74,7 +75,7 @@ public class PersonDB extends DBAccess {
         QueryBuilder query = select("p.*", "f.surname", "f.addr_street1", "f.addr_street2", "f.addr_city", "f.addr_state", "f.addr_zip")
                 .from("people p")
                 .join("LEFT JOIN families f ON p.family_id=f.id")
-                .search(searchParser.parse(search));
+                .search(searchParser.parse(search)).inOrg("p.org_id");
         if(!includeInactive)
             query.where("p.inactive=false");
         query.sort(FIELD_MAP.getOrDefault(sortField, sortField)).limit(count).offset(start);
@@ -90,7 +91,7 @@ public class PersonDB extends DBAccess {
     }
 
     public Person getPerson(int id) {
-        QueryBuilder query = selectAll().from("people").where("id=?", id);
+        QueryBuilder query = selectAll().from("people").where("id=?", id).inOrg();
         try ( Connection conn = getConnection();
               PreparedStatement stmt = query.prepareStatement(conn);
             ) {
@@ -102,7 +103,7 @@ public class PersonDB extends DBAccess {
     }
 
     public StreamingOutput getReportReader(String search, boolean includeInactive, final List<String> fields) {
-        final QueryBuilder query = selectAll().from("people p").search(searchParser.parse(search));
+        final QueryBuilder query = selectAll().from("people p").search(searchParser.parse(search)).inOrg();
         if(!includeInactive)
             query.where("p.inactive=false");
 
@@ -123,7 +124,7 @@ public class PersonDB extends DBAccess {
 
     public List<Person> getFamilyMembers(int familyId, boolean includeInactive) {
 
-        QueryBuilder query = selectAll().from("people p").where("family_id=?", familyId);
+        QueryBuilder query = selectAll().from("people p").where("family_id=?", familyId).inOrg();
         if(!includeInactive)
             query.where("p.inactive=false");
 
@@ -138,7 +139,7 @@ public class PersonDB extends DBAccess {
     }
 
     public boolean isMale(int id) {
-        QueryBuilder query = select("male").from("people").withId(id);
+        QueryBuilder query = select("male").from("people").withId(id).inOrg();
         try ( Connection conn = getConnection();
               PreparedStatement stmt = query.prepareStatement(conn);
               ResultSet rs = stmt.executeQuery()
@@ -157,8 +158,8 @@ public class PersonDB extends DBAccess {
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO people" +
                      "(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since, parishioner, " +
                      "baptized, confession, communion, confirmed, marital_status, " +
-                     "ethnicity, primary_language, religion, special_needs, occupation) " +
-                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
+                     "ethnicity, primary_language, religion, special_needs, occupation, org_id) " +
+                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)", Statement.RETURN_GENERATED_KEYS)
         ){
             stmt.setString(1, person.getName());
             stmt.setDate(2, convert(person.getBirthdate()));
@@ -179,6 +180,7 @@ public class PersonDB extends DBAccess {
             stmt.setString(17, stringify(person.getReligion()));
             stmt.setString(18, storeEnumList(person.getSpecialNeeds()));
             stmt.setString(19, person.getOccupation());
+            stmt.setInt(20, OrganizationContext.orgId());
 
             if(stmt.executeUpdate() == 0) {
                 throw new RuntimeException("Could not create person: " + person.getName());
@@ -198,7 +200,7 @@ public class PersonDB extends DBAccess {
               PreparedStatement stmt = conn.prepareStatement("UPDATE people " +
                       "SET name=?, birthdate=?, male=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, " +
                       "inactive=?, parishioner=?, baptized=?, confession=?, communion=?, confirmed=?, marital_status=?, " +
-                      "ethnicity=?, primary_language=?, religion=?, special_needs=?, occupation=? " +
+                      "ethnicity=?, primary_language=?, religion=?, special_needs=?, occupation=?, org_id=? " +
                       "WHERE id=?")
             ){
 
@@ -222,7 +224,8 @@ public class PersonDB extends DBAccess {
             stmt.setString(18, stringify(person.getReligion()));
             stmt.setString(19, storeEnumList(person.getSpecialNeeds()));
             stmt.setString(20, person.getOccupation());
-            stmt.setInt(21, person.getId());
+            stmt.setInt(21, OrganizationContext.orgId());
+            stmt.setInt(22, person.getId());
 
             if(stmt.executeUpdate() == 0)
                 throw new RuntimeException("Could not update person: " + person.getName());
@@ -234,11 +237,12 @@ public class PersonDB extends DBAccess {
 
     public boolean deactivate(Person person) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE id=? AND org_id=?")
         ){
 
             stmt.setBoolean(1, true);
             stmt.setInt(2, person.getId());
+            stmt.setInt(3, OrganizationContext.orgId());
 
             return stmt.executeUpdate() != 0;
         } catch (SQLException e) {
@@ -248,10 +252,11 @@ public class PersonDB extends DBAccess {
 
     public boolean delete(Person person) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE id=?")
+              PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE id=? AND org_id=?")
         ){
 
             stmt.setInt(1, person.getId());
+            stmt.setInt(2, OrganizationContext.orgId());
 
             return stmt.executeUpdate() != 0;
         } catch (SQLException e) {
@@ -261,10 +266,11 @@ public class PersonDB extends DBAccess {
 
     public void deleteByFamilyId(int familyId) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE family_id=?")
+              PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE family_id=? AND org_id=?")
             ){
 
             stmt.setInt(1, familyId);
+            stmt.setInt(2, OrganizationContext.orgId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Could not delete people by family id: " + familyId, e);
@@ -273,11 +279,12 @@ public class PersonDB extends DBAccess {
 
     public void activateByFamilyId(int familyId) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE family_id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE family_id=? AND org_id=?")
         ){
 
             stmt.setBoolean(1, false);
             stmt.setInt(2, familyId);
+            stmt.setInt(3, OrganizationContext.orgId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Could not activate people by family id: " + familyId, e);
@@ -286,11 +293,12 @@ public class PersonDB extends DBAccess {
 
     public void deactivateByFamilyId(int familyId) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE family_id=?")
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE family_id=? AND org_id=?")
         ){
 
             stmt.setBoolean(1, true);
             stmt.setInt(2, familyId);
+            stmt.setInt(3, OrganizationContext.orgId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Could not deactivate people by family id: " + familyId, e);
@@ -299,10 +307,11 @@ public class PersonDB extends DBAccess {
 
     public void attchPhoto(int id, String guid) {
         try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET photo_guid=? WHERE id=?");
+              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET photo_guid=? WHERE id=? AND org_id=?");
         ){
             stmt.setString(1, guid);
             stmt.setInt(2, id);
+            stmt.setInt(3, OrganizationContext.orgId());
 
             if(stmt.executeUpdate() == 0)
                 throw new NotFoundException("Could not attach photo to person: " + id);
