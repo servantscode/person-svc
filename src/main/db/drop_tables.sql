@@ -22,3 +22,5 @@ DROP TABLE ministry_roles;
 DROP TABLE ministries;
 DROP TABLE people;
 DROP TABLE families;
+DROP TABLE sessions;
+DROP TABLE organizations;
