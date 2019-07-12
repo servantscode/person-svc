@@ -98,16 +98,16 @@ public class PreferenceDB extends DBAccess {
     public void update(Preference preference) {
         try ( Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement("UPDATE preferences " +
-                    "SET name=?, object_type=?, type=?, default_value=?, org_id=? " +
-                    "WHERE id=?")
+                    "SET name=?, object_type=?, type=?, default_value=? " +
+                    "WHERE id=? AND org_id=?")
             ){
 
         stmt.setString(1, preference.getName());
         stmt.setString(2, stringify(preference.getObjectType()));
         stmt.setString(3, stringify(preference.getType()));
         stmt.setString(4, preference.getDefaultValue());
-        stmt.setInt(5, OrganizationContext.orgId());
-        stmt.setInt(6, preference.getId());
+        stmt.setInt(5, preference.getId());
+        stmt.setInt(6, OrganizationContext.orgId());
 
         if(stmt.executeUpdate() == 0)
             throw new RuntimeException("Could not update preference: " + preference.getName());
