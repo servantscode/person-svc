@@ -15,14 +15,24 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class FamilyDB extends DBAccess {
 
     private SearchParser<Family> searchParser;
+    static HashMap<String, String> FIELD_MAP = new HashMap<>(8);
+
+    static {
+        FIELD_MAP.put("envelopeNumber","envelope_number");
+        FIELD_MAP.put("address.street1","addr_street1");
+        FIELD_MAP.put("address.city","addr_city");
+        FIELD_MAP.put("address.state","addr_state");
+        FIELD_MAP.put("address.zip","addr_zip");
+    }
 
     public FamilyDB() {
-        this.searchParser = new SearchParser<>(Family.class, "surname");
+        this.searchParser = new SearchParser<>(Family.class, "surname", FIELD_MAP);
     }
 
     public int getCount(String search, boolean includeInactive) {
