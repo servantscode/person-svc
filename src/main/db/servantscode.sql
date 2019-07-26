@@ -32,3 +32,5 @@ CREATE TABLE preferences (id SERIAL PRIMARY KEY, name TEXT NOT NULL,  object_typ
 CREATE TABLE person_preferences (preference_id INTEGER REFERENCES preferences(id) ON DELETE CASCADE, person_id INTEGER REFERENCES people(id) ON DELETE CASCADE, value TEXT, PRIMARY KEY (preference_id, person_id));
 CREATE TABLE family_preferences (preference_id INTEGER REFERENCES preferences(id) ON DELETE CASCADE, family_id INTEGER REFERENCES families(id) ON DELETE CASCADE, value TEXT, PRIMARY KEY (preference_id, family_id));
 CREATE TABLE relationships (subject_id INTEGER REFERENCES people(id) ON DELETE CASCADE, other_id INTEGER REFERENCES people(id) ON DELETE CASCADE, relationship TEXT, guardian BOOLEAN, contact_preference INTEGER, PRIMARY KEY (subject_id, other_id));
+CREATE TABLE departments(id SERIAL PRIMARY KEY, name TEXT, department_head_id INTEGER REFERENCES people(id) ON DELETE SET NULL, org_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE);
+CREATE TABLE categories(id SERIAL PRIMARY KEY, name TEXT, org_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE)
