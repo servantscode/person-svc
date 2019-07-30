@@ -30,8 +30,8 @@ spec:
         - name: PGDATA
           value: /var/lib/postgresql/pgdata
         volumeMounts:
-        - mountPath: /var/lib/postgresql
-          name: pgdata
+        - name: pgdata
+          mountPath: /var/lib/postgresql
       volumes:
       - name: pgdata
         persistentVolumeClaim:
