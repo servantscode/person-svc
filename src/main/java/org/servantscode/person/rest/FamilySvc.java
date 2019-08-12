@@ -48,10 +48,9 @@ public class FamilySvc extends SCServiceBase {
             List<Family> results = db.getFamilies(nameSearch, sortField, start, count, includeInactive);
             return new PaginatedResponse<>(start, results.size(), totalFamilies, results);
         } catch (Throwable t) {
-            LOG.error("Retrieving families failed:");
-            t.printStackTrace();
+            LOG.error("Retrieving families failed:", t);
+            throw t;
         }
-        return null;
     }
 
     @GET @Path("/report") @Produces(MediaType.TEXT_PLAIN)
@@ -76,10 +75,20 @@ public class FamilySvc extends SCServiceBase {
         try {
             return getReconciler().getFamily(id, includeInactive);
         } catch (Throwable t) {
-            LOG.error("Retrieving family failed:");
-            t.printStackTrace();
+            LOG.error("Retrieving family failed:", t);
+            throw t;
         }
-        return null;
+    }
+
+    @GET @Path("/nextEnvelope") @Produces(MediaType.APPLICATION_JSON)
+    public int getNextEnvelopeNumber() {
+        verifyUserAccess("family.list");
+        try {
+            return db.getNextUnusedEnvelopeNumber();
+        } catch (Throwable t) {
+            LOG.error("Determining next envelope number failed.", t);
+            throw t;
+        }
     }
 
     @PUT @Path("/{id}/photo") @Consumes(MediaType.TEXT_PLAIN)
@@ -143,10 +152,9 @@ public class FamilySvc extends SCServiceBase {
             LOG.info("Created family: " + family.getSurname());
             return family;
         } catch (Throwable t) {
-            LOG.error("Creating family failed:");
-            t.printStackTrace();
+            LOG.error("Creating family failed:", t);
+            throw t;
         }
-        return null;
     }
 
     @PUT
@@ -158,10 +166,9 @@ public class FamilySvc extends SCServiceBase {
             LOG.info("Edited family: " + family.getSurname());
             return updatedFamily;
         } catch (Throwable t) {
-            LOG.error("Updating family failed:");
-            t.printStackTrace();
+            LOG.error("Updating family failed:", t);
+            throw t;
         }
-        return null;
     }
 
     @DELETE @Path("/{id}")
@@ -188,8 +195,8 @@ public class FamilySvc extends SCServiceBase {
                 LOG.info("Deactivated family: " + family.getSurname());
             }
         } catch (Throwable t) {
-            LOG.error("Deleting family failed:");
-            t.printStackTrace();
+            LOG.error("Deleting family failed:", t);
+            throw t;
         }
     }
 

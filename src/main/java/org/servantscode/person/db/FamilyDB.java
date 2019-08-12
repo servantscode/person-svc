@@ -100,6 +100,18 @@ public class FamilyDB extends DBAccess {
         }
     }
 
+    public int getNextUnusedEnvelopeNumber() {
+        QueryBuilder query = select("MAX(envelope_number)+1 AS next_envelope").from("families").inOrg();
+
+        try(Connection conn = getConnection();
+            PreparedStatement stmt = query.prepareStatement(conn);
+            ResultSet rs = stmt.executeQuery()) {
+            return rs.next()? rs.getInt("next_envelope"): 1;
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not get next unused envelope number.", e);
+        }
+    }
+
     public void create(Family family) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO families(surname, home_phone, envelope_number, addr_street1, addr_street2, addr_city, addr_state, addr_zip, org_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)
