@@ -38,7 +38,7 @@ public class FamilySvc extends SCServiceBase {
     public PaginatedResponse<Family> getFamilies(@QueryParam("start") @DefaultValue("0") int start,
                                          @QueryParam("count") @DefaultValue("100") int count,
                                          @QueryParam("sort_field") @DefaultValue("surname") String sortField,
-                                         @QueryParam("partial_name") @DefaultValue("") String nameSearch,
+                                         @QueryParam("search") @DefaultValue("") String nameSearch,
                                          @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
 
         verifyUserAccess("family.list");
