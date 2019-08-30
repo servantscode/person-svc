@@ -2,16 +2,18 @@ package org.servantscode.person.db;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.servantscode.commons.db.DBAccess;
+import org.servantscode.commons.db.EasyDB;
 import org.servantscode.commons.db.ReportStreamingOutput;
+import org.servantscode.commons.search.DeleteBuilder;
+import org.servantscode.commons.search.InsertBuilder;
 import org.servantscode.commons.search.QueryBuilder;
-import org.servantscode.commons.search.SearchParser;
+import org.servantscode.commons.search.UpdateBuilder;
 import org.servantscode.commons.security.OrganizationContext;
 import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
+import org.servantscode.person.PhoneNumber;
 
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
@@ -19,15 +21,15 @@ import java.io.OutputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.servantscode.commons.StringUtils.isEmpty;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SqlResolve"})
-public class PersonDB extends DBAccess {
+public class PersonDB extends EasyDB<Person> {
     private static final Logger LOG = LogManager.getLogger(PersonDB.class);
 
-    private SearchParser<Person> searchParser;
     static HashMap<String, String> FIELD_MAP = new HashMap<>(8);
 
     static {
@@ -36,23 +38,14 @@ public class PersonDB extends DBAccess {
     }
 
     public PersonDB() {
-        this.searchParser = new SearchParser<>(Person.class, "name", FIELD_MAP);
+        super(Person.class, "name", FIELD_MAP);
     }
 
     public int getCount(String search, boolean includeInactive) {
         QueryBuilder query = count().from("people").search(searchParser.parse(search)).inOrg();
         if(!includeInactive)
             query.where("inactive=false");
-
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = query.prepareStatement(conn);
-             ResultSet rs = stmt.executeQuery()) {
-
-            if (rs.next()) return rs.getInt(1);
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not retrieve people count '" + search + "'", e);
-        }
-        return 0;
+        return getCount(query);
     }
 
     public List<Person> getPeople(String search, String sortField, int start, int count, boolean includeInactive) {
@@ -60,15 +53,7 @@ public class PersonDB extends DBAccess {
         if(!includeInactive)
             query.where("p.inactive=false");
         query.sort(FIELD_MAP.getOrDefault(sortField, sortField)).limit(count).offset(start);
-
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = query.prepareStatement(conn)
-        ) {
-
-            return processPeopleResults(stmt);
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not retrieve people containing '" + search + "'", e);
-        }
+        return get(query);
     }
 
     public List<Person> getPeopleWithFamilies(String search, String sortField, int start, int count, boolean includeInactive) {
@@ -91,15 +76,7 @@ public class PersonDB extends DBAccess {
     }
 
     public Person getPerson(int id) {
-        QueryBuilder query = selectAll().from("people").where("id=?", id).inOrg();
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = query.prepareStatement(conn);
-            ) {
-
-            return firstOrNull(processPeopleResults(stmt));
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not find person by id " + id, e);
-        }
+        return getOne(selectAll().from("people").with("id", id).inOrg());
     }
 
     public StreamingOutput getReportReader(String search, boolean includeInactive, final List<String> fields) {
@@ -123,27 +100,18 @@ public class PersonDB extends DBAccess {
     }
 
     public List<Person> getFamilyMembers(int familyId, boolean includeInactive) {
-
-        QueryBuilder query = selectAll().from("people p").where("family_id=?", familyId).inOrg();
+        QueryBuilder query = selectAll().from("people p").with("family_id", familyId).inOrg();
         if(!includeInactive)
             query.where("p.inactive=false");
-
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = query.prepareStatement(conn)
-            ) {
-
-            return processPeopleResults(stmt);
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not find family memebers for family id " + familyId, e);
-        }
+        return get(query);
     }
 
     public boolean isMale(int id) {
         QueryBuilder query = select("male").from("people").withId(id).inOrg();
         try ( Connection conn = getConnection();
               PreparedStatement stmt = query.prepareStatement(conn);
-              ResultSet rs = stmt.executeQuery()
-        ) {
+              ResultSet rs = stmt.executeQuery()) {
+
             if(!rs.next())
                 throw new RuntimeException("Could not find person with id: " + id);
 
@@ -153,191 +121,101 @@ public class PersonDB extends DBAccess {
         }
     }
 
-    public void create(Person person) {
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO people" +
-                     "(name, birthdate, male, phonenumber, email, family_id, head_of_house, member_since, parishioner, " +
-                     "baptized, confession, communion, confirmed, marital_status, " +
-                     "ethnicity, primary_language, religion, special_needs, occupation, org_id) " +
-                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)", Statement.RETURN_GENERATED_KEYS)
-        ){
-            stmt.setString(1, person.getName());
-            stmt.setDate(2, convert(person.getBirthdate()));
-            stmt.setBoolean(3, person.isMale());
-            stmt.setString(4, person.getPhoneNumber());
-            stmt.setString(5, person.getEmail());
-            stmt.setInt(6, person.getFamily().getId());
-            stmt.setBoolean(7, person.isHeadOfHousehold());
-            stmt.setDate(8, convert(person.getMemberSince()));
-            stmt.setBoolean(9, person.isParishioner());
-            stmt.setBoolean(10, person.isBaptized());
-            stmt.setBoolean(11, person.isConfession());
-            stmt.setBoolean(12, person.isCommunion());
-            stmt.setBoolean(13, person.isConfirmed());
-            stmt.setString(14, stringify(person.getMaritalStatus()));
-            stmt.setString(15, stringify(person.getEthnicity()));
-            stmt.setString(16, stringify(person.getPrimaryLanguage()));
-            stmt.setString(17, stringify(person.getReligion()));
-            stmt.setString(18, storeEnumList(person.getSpecialNeeds()));
-            stmt.setString(19, person.getOccupation());
-            stmt.setInt(20, OrganizationContext.orgId());
+    public Person create(Person person) {
+        InsertBuilder cmd = insertInto("people")
+                .value("name", person.getName())
+                .value("birthdate", convert(person.getBirthdate()))
+                .value("male", person.isMale())
+                .value("salutation", person.getSaluation())
+                .value("suffix", person.getSuffix())
+                .value("maiden_name", person.getMaidenName())
+                .value("nickname", person.getNickname())
+                .value("email", person.getEmail())
+                .value("family_id", person.getFamilyId())
+                .value("head_of_house", person.isHeadOfHousehold())
+                .value("member_since", person.getMemberSince())
+                .value("parishioner", person.isParishioner())
+                .value("baptized", person.isBaptized())
+                .value("confession", person.isConfession())
+                .value("communion", person.isCommunion())
+                .value("confirmed", person.isConfirmed())
+                .value("marital_status", stringify(person.getMaritalStatus()))
+                .value("ethnicity", stringify(person.getEthnicity()))
+                .value("primary_language", stringify(person.getPrimaryLanguage()))
+                .value("religion", stringify(person.getReligion()))
+                .value("special_needs", storeEnumList(person.getSpecialNeeds()))
+                .value("occupation", person.getOccupation())
+                .value("org_id", OrganizationContext.orgId());
+        person.setId(createAndReturnKey(cmd));
 
-            if(stmt.executeUpdate() == 0) {
-                throw new RuntimeException("Could not create person: " + person.getName());
-            }
-
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next())
-                    person.setId(rs.getInt(1));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not add person: " + person.getName(), e);
-        }
+        storePhoneNumbers(person);
+        return person;
     }
 
     public void update(Person person) {
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people " +
-                      "SET name=?, birthdate=?, male=?, phonenumber=?, email=?, family_id=?, head_of_house=?, member_since=?, " +
-                      "inactive=?, parishioner=?, baptized=?, confession=?, communion=?, confirmed=?, marital_status=?, " +
-                      "ethnicity=?, primary_language=?, religion=?, special_needs=?, occupation=?, org_id=? " +
-                      "WHERE id=?")
-            ){
+        UpdateBuilder cmd = update("people")
+                .value("name", person.getName())
+                .value("birthdate", convert(person.getBirthdate()))
+                .value("male", person.isMale())
+                .value("salutation", person.getSaluation())
+                .value("suffix", person.getSuffix())
+                .value("maiden_name", person.getMaidenName())
+                .value("nickname", person.getNickname())
+                .value("email", person.getEmail())
+                .value("family_id", person.getFamilyId())
+                .value("head_of_house", person.isHeadOfHousehold())
+                .value("member_since", person.getMemberSince())
+                .value("inactive", person.isInactive())
+                .value("parishioner", person.isParishioner())
+                .value("baptized", person.isBaptized())
+                .value("confession", person.isConfession())
+                .value("communion", person.isCommunion())
+                .value("confirmed", person.isConfirmed())
+                .value("marital_status", stringify(person.getMaritalStatus()))
+                .value("ethnicity", stringify(person.getEthnicity()))
+                .value("primary_language", stringify(person.getPrimaryLanguage()))
+                .value("religion", stringify(person.getReligion()))
+                .value("special_needs", storeEnumList(person.getSpecialNeeds()))
+                .value("occupation", person.getOccupation())
+                .withId(person.getId()).inOrg();
+        if(!update(cmd))
+            throw new RuntimeException("Could not update person: " + person.getName());
 
-            stmt.setString(1, person.getName());
-            stmt.setDate(2, convert(person.getBirthdate()));
-            stmt.setBoolean(3, person.isMale());
-            stmt.setString(4, person.getPhoneNumber());
-            stmt.setString(5, person.getEmail());
-            stmt.setInt(6, person.getFamily().getId());
-            stmt.setBoolean(7, person.isHeadOfHousehold());
-            stmt.setDate(8, convert(person.getMemberSince()));
-            stmt.setBoolean(9, person.isInactive());
-            stmt.setBoolean(10, person.isParishioner());
-            stmt.setBoolean(11, person.isBaptized());
-            stmt.setBoolean(12, person.isConfession());
-            stmt.setBoolean(13, person.isCommunion());
-            stmt.setBoolean(14, person.isConfirmed());
-            stmt.setString(15, stringify(person.getMaritalStatus()));
-            stmt.setString(16, stringify(person.getEthnicity()));
-            stmt.setString(17, stringify(person.getPrimaryLanguage()));
-            stmt.setString(18, stringify(person.getReligion()));
-            stmt.setString(19, storeEnumList(person.getSpecialNeeds()));
-            stmt.setString(20, person.getOccupation());
-            stmt.setInt(21, OrganizationContext.orgId());
-            stmt.setInt(22, person.getId());
-
-            if(stmt.executeUpdate() == 0)
-                throw new RuntimeException("Could not update person: " + person.getName());
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not update person: " + person.getName(), e);
-        }
+        storePhoneNumbers(person);
     }
 
     public boolean deactivate(Person person) {
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE id=? AND org_id=?")
-        ){
-
-            stmt.setBoolean(1, true);
-            stmt.setInt(2, person.getId());
-            stmt.setInt(3, OrganizationContext.orgId());
-
-            return stmt.executeUpdate() != 0;
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not deactivate person: " + person.getName(), e);
-        }
+        return update(update("people").value("inactive", true).withId(person.getId()).inOrg());
     }
 
     public boolean delete(Person person) {
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE id=? AND org_id=?")
-        ){
-
-            stmt.setInt(1, person.getId());
-            stmt.setInt(2, OrganizationContext.orgId());
-
-            return stmt.executeUpdate() != 0;
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not delete person: " + person.getName(), e);
-        }
+        return delete(deleteFrom("people").withId(person.getId()).inOrg());
     }
 
     public void deleteByFamilyId(int familyId) {
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("DELETE FROM people WHERE family_id=? AND org_id=?")
-            ){
-
-            stmt.setInt(1, familyId);
-            stmt.setInt(2, OrganizationContext.orgId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not delete people by family id: " + familyId, e);
-        }
+        if(!delete(deleteFrom("people").with("family_id", familyId).inOrg()))
+            throw new RuntimeException("Could not delete people by family id: " + familyId);
     }
 
     public void activateByFamilyId(int familyId) {
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE family_id=? AND org_id=?")
-        ){
-
-            stmt.setBoolean(1, false);
-            stmt.setInt(2, familyId);
-            stmt.setInt(3, OrganizationContext.orgId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not activate people by family id: " + familyId, e);
-        }
+        update(update("people").value("inactive", false).with("family_id", familyId).inOrg());
     }
 
     public void deactivateByFamilyId(int familyId) {
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET inactive=? WHERE family_id=? AND org_id=?")
-        ){
-
-            stmt.setBoolean(1, true);
-            stmt.setInt(2, familyId);
-            stmt.setInt(3, OrganizationContext.orgId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not deactivate people by family id: " + familyId, e);
-        }
+        update(update("people").value("inactive", true).with("family_id", familyId).inOrg());
     }
 
     public void attchPhoto(int id, String guid) {
-        try ( Connection conn = getConnection();
-              PreparedStatement stmt = conn.prepareStatement("UPDATE people SET photo_guid=? WHERE id=? AND org_id=?");
-        ){
-            stmt.setString(1, guid);
-            stmt.setInt(2, id);
-            stmt.setInt(3, OrganizationContext.orgId());
-
-            if(stmt.executeUpdate() == 0)
-                throw new NotFoundException("Could not attach photo to person: " + id);
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not attach photo to person: " + id, e);
-        }
+        update(update("people").value("photo_guid", guid).withId(id).inOrg());
     }
 
     // ----- Private ------
-    private List<Person> processPeopleResults(PreparedStatement stmt) throws SQLException {
-        try (ResultSet rs = stmt.executeQuery()){
-            List<Person> people = new ArrayList<>();
-            while(rs.next()) {
-                people.add(extractPerson(rs));
-            }
-            return people;
-        }
-    }
-
     private List<Person> processPeopleResultsWithFamilies(PreparedStatement stmt) throws SQLException {
         LOG.debug("Processing people with family information");
         try (ResultSet rs = stmt.executeQuery()){
             List<Person> people = new ArrayList<>();
             while(rs.next()) {
-                Person person = extractPerson(rs);
+                Person person = processRow(rs);
 
                 String surname = rs.getString("surname");
                 if(!isEmpty(surname)) {
@@ -360,11 +238,10 @@ public class PersonDB extends DBAccess {
         }
     }
 
-    private Person extractPerson(ResultSet rs) throws SQLException {
+    protected Person processRow(ResultSet rs) throws SQLException {
         Person person = new Person(rs.getInt("id"), rs.getString("name"));
         person.setBirthdate(convert(rs.getDate("birthdate")));
         person.setMale(rs.getBoolean("male"));
-        person.setPhoneNumber(rs.getString("phonenumber"));
         person.setEmail(rs.getString("email"));
         person.setFamilyId(rs.getInt("family_id"));
         person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
@@ -382,7 +259,39 @@ public class PersonDB extends DBAccess {
         person.setReligion(parse(Person.Religion.class, rs.getString("religion")));
         person.setSpecialNeeds(parseEnumList(Person.SpecialNeeds.class, rs.getString("special_needs")));
         person.setOccupation(rs.getString("occupation"));
+
+        person.setPhoneNumbers(getPhoneNumbers(person.getId(), rs.getStatement().getConnection()));
         return person;
     }
 
+    private void storePhoneNumbers(Person person) {
+        DeleteBuilder clearCmd = deleteFrom("person_phone_numbers").with("person_id", person.getId());
+        delete(clearCmd);
+
+        for(PhoneNumber phoneNumber: person.getPhoneNumbers()) {
+            InsertBuilder cmd = insertInto("person_phone_numbers")
+                    .value("person_id", person.getId())
+                    .value("number", phoneNumber.getPhoneNumber())
+                    .value("type", stringify(phoneNumber.getType()))
+                    .value("is_primary", phoneNumber.isPrimary());
+            create(cmd);
+        }
+    }
+
+    private List<PhoneNumber> getPhoneNumbers(int personId, Connection conn) throws SQLException {
+        QueryBuilder query = selectAll().from("person_phone_numbers").with("person_id", personId);
+        try (PreparedStatement stmt = query.prepareStatement(conn);
+             ResultSet rs = stmt.executeQuery()) {
+
+            LinkedList<PhoneNumber> results = new LinkedList<>();
+            while(rs.next()) {
+                PhoneNumber number = new PhoneNumber();
+                number.setPhoneNumber(rs.getString("number"));
+                number.setType(parse(PhoneNumber.PhoneNumberType.class, rs.getString("type")));
+                number.setPrimary(rs.getBoolean("is_primary"));
+                results.add(number);
+            }
+            return results;
+        }
+    }
 }

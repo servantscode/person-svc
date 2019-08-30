@@ -99,5 +99,39 @@ public class DBUpgrade extends AbstractDBUpgrade {
                                                "org_id INTEGER references organizations(id) ON DELETE CASCADE, " +
                                                "PRIMARY KEY (config, org_id))");
         }
+
+        if(!columnExists("people", "salutation")) {
+            LOG.info("--- Adding column people(salutation)");
+            runSql("ALTER TABLE people ADD COLUMN salutation TEXT");
+        }
+
+        if(!columnExists("people", "suffix")) {
+            LOG.info("--- Adding column people(suffix)");
+            runSql("ALTER TABLE people ADD COLUMN suffix TEXT");
+        }
+
+        if(!columnExists("people", "maiden_name")) {
+            LOG.info("--- Adding column people(maiden_name)");
+            runSql("ALTER TABLE people ADD COLUMN maiden_name TEXT");
+        }
+
+        if(!columnExists("people", "nickname")) {
+            LOG.info("--- Adding column people(nickname)");
+            runSql("ALTER TABLE people ADD COLUMN nickname TEXT");
+        }
+
+        if(!tableExists("person_phone_numbers")) {
+            LOG.info("-- Creating table person_phone_numbers");
+            runSql("CREATE TABLE person_phone_numbers (person_id INTEGER REFERENCES people(id) ON DELETE CASCADE, " +
+                                                      "number TEXT NOT NULL, " +
+                                                      "type TEXT, " +
+                                                      "is_primary BOOLEAN)");
+
+            LOG.info("--- Transferring data to table person_phone_numbers");
+            runSql("INSERT INTO person_phone_numbers SELECT id, phonenumber, true FROM people WHERE phonenumber IS NOT NULL");
+
+            LOG.info("--- Dropping column phone_number from table people");
+            runSql("ALTER TABLE people DROP COLUMN phonenumber");
+        }
     }
 }

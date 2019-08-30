@@ -53,8 +53,12 @@ public class Person {
     private int id;
     private String name;
     private boolean male;
+    private String saluation;
+    private String suffix;
+    private String maidenName;
+    private String nickname;
 
-    private String phoneNumber;
+    private List<PhoneNumber> phoneNumbers;
     private String email;
     private Family family;
     private boolean headOfHousehold;
@@ -97,14 +101,26 @@ public class Person {
     public boolean isMale() { return male; }
     public void setMale(boolean male) { this.male = male; }
 
+    public String getSaluation() { return saluation; }
+    public void setSaluation(String saluation) { this.saluation = saluation; }
+
+    public String getSuffix() { return suffix; }
+    public void setSuffix(String suffix) { this.suffix = suffix; }
+
+    public String getMaidenName() { return maidenName; }
+    public void setMaidenName(String maidenName) { this.maidenName = maidenName; }
+
+    public String getNickname() { return nickname; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
+
     public LocalDate getBirthdate() { return birthdate; }
     public void setBirthdate(LocalDate birthdate) { this.birthdate = birthdate; }
 
     public LocalDate getMemberSince() { return memberSince; }
     public void setMemberSince(LocalDate memberSince) { this.memberSince = memberSince; }
 
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public List<PhoneNumber> getPhoneNumbers() { return phoneNumbers; }
+    public void setPhoneNumbers(List<PhoneNumber> phoneNumbers) { this.phoneNumbers = phoneNumbers; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email;}
