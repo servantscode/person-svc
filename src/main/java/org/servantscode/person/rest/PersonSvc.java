@@ -26,7 +26,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class PersonSvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(PersonSvc.class);
 
-    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "phonenumber", "email", "family_id", "head_of_house", "member_since", "inactive");
+    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "phonenumber", "email", "family_id", "head_of_house", "member_since", "inactive", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip");
 
     private PersonDB db;
     private PreferenceDB prefDb;
