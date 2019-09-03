@@ -130,7 +130,7 @@ public class PersonDB extends EasyDB<Person> {
                 .value("name", person.getName())
                 .value("birthdate", convert(person.getBirthdate()))
                 .value("male", person.isMale())
-                .value("salutation", person.getSaluation())
+                .value("salutation", person.getSalutation())
                 .value("suffix", person.getSuffix())
                 .value("maiden_name", person.getMaidenName())
                 .value("nickname", person.getNickname())
@@ -161,12 +161,12 @@ public class PersonDB extends EasyDB<Person> {
                 .value("name", person.getName())
                 .value("birthdate", convert(person.getBirthdate()))
                 .value("male", person.isMale())
-                .value("salutation", person.getSaluation())
+                .value("salutation", person.getSalutation())
                 .value("suffix", person.getSuffix())
                 .value("maiden_name", person.getMaidenName())
                 .value("nickname", person.getNickname())
                 .value("email", person.getEmail())
-                .value("family_id", person.getFamilyId())
+                .value("family_id", person.getFamily().getId())
                 .value("head_of_house", person.isHeadOfHousehold())
                 .value("member_since", person.getMemberSince())
                 .value("inactive", person.isInactive())
@@ -263,6 +263,10 @@ public class PersonDB extends EasyDB<Person> {
         person.setReligion(parse(Person.Religion.class, rs.getString("religion")));
         person.setSpecialNeeds(parseEnumList(Person.SpecialNeeds.class, rs.getString("special_needs")));
         person.setOccupation(rs.getString("occupation"));
+        person.setSalutation(rs.getString("salutation"));
+        person.setSuffix(rs.getString("suffix"));
+        person.setMaidenName(rs.getString("maiden_name"));
+        person.setNickname(rs.getString("nickname"));
 
         person.setPhoneNumbers(getPhoneNumbers(person.getId(), rs.getStatement().getConnection()));
         return person;

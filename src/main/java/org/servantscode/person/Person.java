@@ -53,7 +53,7 @@ public class Person {
     private int id;
     private String name;
     private boolean male;
-    private String saluation;
+    private String salutation;
     private String suffix;
     private String maidenName;
     private String nickname;
@@ -101,8 +101,8 @@ public class Person {
     public boolean isMale() { return male; }
     public void setMale(boolean male) { this.male = male; }
 
-    public String getSaluation() { return saluation; }
-    public void setSaluation(String saluation) { this.saluation = saluation; }
+    public String getSalutation() { return salutation; }
+    public void setSalutation(String salutation) { this.salutation = salutation; }
 
     public String getSuffix() { return suffix; }
     public void setSuffix(String suffix) { this.suffix = suffix; }

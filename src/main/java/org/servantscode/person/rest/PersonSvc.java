@@ -6,6 +6,7 @@ import org.servantscode.commons.EnumUtils;
 import org.servantscode.commons.rest.PaginatedResponse;
 import org.servantscode.commons.rest.SCServiceBase;
 import org.servantscode.person.Person;
+import org.servantscode.person.PhoneNumber;
 import org.servantscode.person.db.FamilyDB;
 import org.servantscode.person.db.FamilyReconciler;
 import org.servantscode.person.db.PersonDB;
@@ -224,6 +225,8 @@ public class PersonSvc extends SCServiceBase {
     @GET @Path("/specialNeeds") @Produces(APPLICATION_JSON)
     public List<String> getSpecialNeeds() { return EnumUtils.listValues(Person.SpecialNeeds.class); }
 
+    @GET @Path("/phoneNumberTypes") @Produces(APPLICATION_JSON)
+    public List<String> getPhoneNumberTypes() { return EnumUtils.listValues(PhoneNumber.PhoneNumberType.class); }
     // ----- Private -----
     private FamilyReconciler getReconciler() {
         return new FamilyReconciler(db, new FamilyDB());
