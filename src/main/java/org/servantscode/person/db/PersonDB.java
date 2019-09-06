@@ -135,7 +135,7 @@ public class PersonDB extends EasyDB<Person> {
                 .value("maiden_name", person.getMaidenName())
                 .value("nickname", person.getNickname())
                 .value("email", person.getEmail())
-                .value("family_id", person.getFamilyId())
+                .value("family_id", getFamilyId(person))
                 .value("head_of_house", person.isHeadOfHousehold())
                 .value("member_since", person.getMemberSince())
                 .value("parishioner", person.isParishioner())
@@ -149,11 +149,19 @@ public class PersonDB extends EasyDB<Person> {
                 .value("religion", stringify(person.getReligion()))
                 .value("special_needs", storeEnumList(person.getSpecialNeeds()))
                 .value("occupation", person.getOccupation())
+                .value("inactive", person.isInactive())
                 .value("org_id", OrganizationContext.orgId());
         person.setId(createAndReturnKey(cmd));
 
         storePhoneNumbers(person);
         return person;
+    }
+
+    private int getFamilyId(Person person) {
+        int familyId = person.getFamily() != null? person.getFamily().getId(): person.getFamilyId();
+        if(familyId <= 0)
+            throw new IllegalArgumentException("No family information present on person record.");
+        return familyId;
     }
 
     public void update(Person person) {
@@ -166,7 +174,7 @@ public class PersonDB extends EasyDB<Person> {
                 .value("maiden_name", person.getMaidenName())
                 .value("nickname", person.getNickname())
                 .value("email", person.getEmail())
-                .value("family_id", person.getFamily().getId())
+                .value("family_id", getFamilyId(person))
                 .value("head_of_house", person.isHeadOfHousehold())
                 .value("member_since", person.getMemberSince())
                 .value("inactive", person.isInactive())
@@ -276,6 +284,10 @@ public class PersonDB extends EasyDB<Person> {
         DeleteBuilder clearCmd = deleteFrom("person_phone_numbers").with("person_id", person.getId());
         delete(clearCmd);
 
+        if(person.getPhoneNumbers() == null)
+            return;
+
+        // TODO: Add batching to EasyDB;
         for(PhoneNumber phoneNumber: person.getPhoneNumbers()) {
             InsertBuilder cmd = insertInto("person_phone_numbers")
                     .value("person_id", person.getId())

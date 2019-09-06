@@ -4,6 +4,7 @@ import org.servantscode.person.Family;
 import org.servantscode.person.Person;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FamilyReconciler {
     private PersonDB personDb;
@@ -70,17 +71,23 @@ public class FamilyReconciler {
         familyDb.create(family);
         if(family.getMembers() != null) {
             for (Person person : family.getMembers()) {
+                person.setFamilyId(family.getId());
                 personDb.create(person);
             }
         }
         return family;
     }
 
+    //Does not presume that missing members should be removed.
     public Family updateFamily(Family family) {
         familyDb.update(family);
         if(family.getMembers() != null) {
             for (Person person : family.getMembers()) {
-                personDb.update(person);
+                person.setFamilyId(family.getId());
+                if(person.getId() > 0)
+                    personDb.update(person);
+                else
+                    personDb.create(person);
             }
         }
         return getFamily(family.getId(), false);

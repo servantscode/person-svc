@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class Person {
-    public enum MaritalStatus { SINGLE, MARRIED_IN_CHURCH, MARRIED_OUTSIDE_CHURCH, SEPARATED, DIVORCED, ANNULLED, WIDOWED };
+    public enum MaritalStatus { SINGLE, MARRIED_IN_CHURCH, MARRIED_OUTSIDE_CHURCH, MARRIED, SEPARATED, DIVORCED, ANNULLED, WIDOWED };
     public enum Ethnicity { AFRICAN_AMERICAN, ASIAN, CAUCASIAN, HINDU, LATINO, VIETNAMESE, OTHER};
     public enum Language { ENGLISH, SPANISH, VIETNAMESE, OTHER };
     public enum SpecialNeeds { ARTHRITIS,
@@ -52,11 +52,12 @@ public class Person {
 
     private int id;
     private String name;
-    private boolean male;
     private String salutation;
     private String suffix;
     private String maidenName;
     private String nickname;
+
+    private boolean male;
 
     private List<PhoneNumber> phoneNumbers;
     private String email;
@@ -68,10 +69,12 @@ public class Person {
 
     private boolean inactive;
     private boolean parishioner;
+
     private boolean baptized;
     private boolean confession;
     private boolean communion;
     private boolean confirmed;
+
     private MaritalStatus maritalStatus;
     private Ethnicity ethnicity;
     private Language primaryLanguage;
