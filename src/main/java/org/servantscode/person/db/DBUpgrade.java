@@ -128,7 +128,7 @@ public class DBUpgrade extends AbstractDBUpgrade {
                                                       "is_primary BOOLEAN)");
 
             LOG.info("--- Transferring data to table person_phone_numbers");
-            runSql("INSERT INTO person_phone_numbers SELECT id, phonenumber, true FROM people WHERE phonenumber IS NOT NULL");
+            runSql("INSERT INTO person_phone_numbers (person_id, number, type, is_primary) SELECT id, phonenumber, 'OTHER', true FROM people WHERE phonenumber IS NOT NULL");
 
             LOG.info("--- Dropping column phone_number from table people");
             runSql("ALTER TABLE people DROP COLUMN phonenumber");
