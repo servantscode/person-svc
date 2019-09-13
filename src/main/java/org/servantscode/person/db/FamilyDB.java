@@ -17,6 +17,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +97,7 @@ public class FamilyDB extends EasyDB<Family> {
                 .value("home_phone", family.getHomePhone())
                 .value("envelope_number", family.getEnvelopeNumber())
                 .value("inactive", family.isInactive())
+                .value("inactive_since", convert(family.getInactiveSince()))
                 .value("org_id", OrganizationContext.orgId());
 
         Address addr = family.getAddress();
@@ -121,6 +123,7 @@ public class FamilyDB extends EasyDB<Family> {
                 .value("addr_state", addr != null? addr.getState(): null)
                 .value("addr_zip", addr != null? addr.getZip(): null)
                 .value("inactive", family.isInactive())
+                .value("inactive_since", convert(family.getInactiveSince()))
                 .withId(family.getId()).inOrg();
 
         if (!update(cmd))
@@ -134,6 +137,7 @@ public class FamilyDB extends EasyDB<Family> {
     public boolean deactivate(Family family) {
         UpdateBuilder cmd = update("families")
                 .value("inactive", true)
+                .value("inactive_since", convert(LocalDate.now()))
                 .withId(family.getId()).inOrg();
         return update(cmd);
     }
@@ -160,6 +164,7 @@ public class FamilyDB extends EasyDB<Family> {
         family.setAddress(addr);
         family.setPhotoGuid(rs.getString("photo_guid"));
         family.setInactive(rs.getBoolean("inactive"));
+        family.setInactiveSince(convert(rs.getDate("inactive_since")));
         return family;
     }
 }

@@ -1,5 +1,6 @@
 package org.servantscode.person;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class Family {
@@ -11,6 +12,7 @@ public class Family {
     private Address address;
     private String photoGuid;
     private boolean inactive;
+    private LocalDate inactiveSince;
 
     public Family() {}
 
@@ -43,4 +45,7 @@ public class Family {
 
     public boolean isInactive() { return inactive; }
     public void setInactive(boolean inactive) { this.inactive = inactive; }
+
+    public LocalDate getInactiveSince() { return inactiveSince; }
+    public void setInactiveSince(LocalDate inactiveSince) { this.inactiveSince = inactiveSince; }
 }

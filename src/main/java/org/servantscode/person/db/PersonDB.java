@@ -19,6 +19,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -143,6 +144,7 @@ public class PersonDB extends EasyDB<Person> {
                 .value("confession", person.isConfession())
                 .value("communion", person.isCommunion())
                 .value("confirmed", person.isConfirmed())
+                .value("holy_orders", person.isHolyOrders())
                 .value("marital_status", stringify(person.getMaritalStatus()))
                 .value("ethnicity", stringify(person.getEthnicity()))
                 .value("primary_language", stringify(person.getPrimaryLanguage()))
@@ -150,6 +152,9 @@ public class PersonDB extends EasyDB<Person> {
                 .value("special_needs", storeEnumList(person.getSpecialNeeds()))
                 .value("occupation", person.getOccupation())
                 .value("inactive", person.isInactive())
+                .value("inactive_since", convert(person.getInactiveSince()))
+                .value("deceased", person.isDeceased())
+                .value("death_date", convert(person.getDeathDate()))
                 .value("org_id", OrganizationContext.orgId());
         person.setId(createAndReturnKey(cmd));
 
@@ -177,18 +182,22 @@ public class PersonDB extends EasyDB<Person> {
                 .value("family_id", getFamilyId(person))
                 .value("head_of_house", person.isHeadOfHousehold())
                 .value("member_since", person.getMemberSince())
-                .value("inactive", person.isInactive())
                 .value("parishioner", person.isParishioner())
                 .value("baptized", person.isBaptized())
                 .value("confession", person.isConfession())
                 .value("communion", person.isCommunion())
                 .value("confirmed", person.isConfirmed())
+                .value("holy_orders", person.isHolyOrders())
                 .value("marital_status", stringify(person.getMaritalStatus()))
                 .value("ethnicity", stringify(person.getEthnicity()))
                 .value("primary_language", stringify(person.getPrimaryLanguage()))
                 .value("religion", stringify(person.getReligion()))
                 .value("special_needs", storeEnumList(person.getSpecialNeeds()))
                 .value("occupation", person.getOccupation())
+                .value("inactive", person.isInactive())
+                .value("inactive_since", convert(person.getInactiveSince()))
+                .value("deceased", person.isDeceased())
+                .value("death_date", convert(person.getDeathDate()))
                 .withId(person.getId()).inOrg();
         if(!update(cmd))
             throw new RuntimeException("Could not update person: " + person.getName());
@@ -197,7 +206,7 @@ public class PersonDB extends EasyDB<Person> {
     }
 
     public boolean deactivate(Person person) {
-        return update(update("people").value("inactive", true).withId(person.getId()).inOrg());
+        return update(update("people").value("inactive", true).value("inactive_since", convert(LocalDate.now())).withId(person.getId()).inOrg());
     }
 
     public boolean delete(Person person) {
@@ -209,11 +218,11 @@ public class PersonDB extends EasyDB<Person> {
     }
 
     public void activateByFamilyId(int familyId) {
-        update(update("people").value("inactive", false).with("family_id", familyId).inOrg());
+        update(update("people").value("inactive", false).value("inactive_since", null).with("family_id", familyId).inOrg());
     }
 
     public void deactivateByFamilyId(int familyId) {
-        update(update("people").value("inactive", true).with("family_id", familyId).inOrg());
+        update(update("people").value("inactive", true).value("inactive_since", convert(LocalDate.now())).with("family_id", familyId).inOrg());
     }
 
     public void attchPhoto(int id, String guid) {
@@ -256,14 +265,18 @@ public class PersonDB extends EasyDB<Person> {
         person.setEmail(rs.getString("email"));
         person.setFamilyId(rs.getInt("family_id"));
         person.setHeadOfHousehold(rs.getBoolean("head_of_house"));
-        person.setMemberSince(convert(rs.getDate("member_since")));
         person.setPhotoGuid(rs.getString("photo_guid"));
-        person.setInactive(rs.getBoolean("inactive"));
         person.setParishioner(rs.getBoolean("parishioner"));
+        person.setMemberSince(convert(rs.getDate("member_since")));
+        person.setInactive(rs.getBoolean("inactive"));
+        person.setInactiveSince(convert(rs.getDate("inactive_since")));
+        person.setDeceased(rs.getBoolean("deceased"));
+        person.setDeathDate(convert(rs.getDate("death_date")));
         person.setBaptized(rs.getBoolean("baptized"));
         person.setConfession(rs.getBoolean("confession"));
         person.setCommunion(rs.getBoolean("communion"));
         person.setConfirmed(rs.getBoolean("confirmed"));
+        person.setHolyOrders(rs.getBoolean("holy_orders"));
         person.setMaritalStatus(parse(Person.MaritalStatus.class, rs.getString("marital_status")));
         person.setEthnicity(parse(Person.Ethnicity.class, rs.getString("ethnicity")));
         person.setPrimaryLanguage(parse(Person.Language.class, rs.getString("primary_language")));

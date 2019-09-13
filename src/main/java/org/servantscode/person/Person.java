@@ -64,16 +64,21 @@ public class Person {
     private Family family;
     private boolean headOfHousehold;
     private LocalDate birthdate;
-    private LocalDate memberSince;
     private String photoGuid;
 
     private boolean inactive;
+    private LocalDate inactiveSince;
     private boolean parishioner;
+    private LocalDate memberSince;
+
+    private boolean deceased;
+    private LocalDate deathDate;
 
     private boolean baptized;
     private boolean confession;
     private boolean communion;
     private boolean confirmed;
+    private boolean holyOrders;
 
     private MaritalStatus maritalStatus;
     private Ethnicity ethnicity;
@@ -119,9 +124,6 @@ public class Person {
     public LocalDate getBirthdate() { return birthdate; }
     public void setBirthdate(LocalDate birthdate) { this.birthdate = birthdate; }
 
-    public LocalDate getMemberSince() { return memberSince; }
-    public void setMemberSince(LocalDate memberSince) { this.memberSince = memberSince; }
-
     public List<PhoneNumber> getPhoneNumbers() { return phoneNumbers; }
     public void setPhoneNumbers(List<PhoneNumber> phoneNumbers) { this.phoneNumbers = phoneNumbers; }
 
@@ -143,8 +145,20 @@ public class Person {
     public boolean isInactive() { return inactive; }
     public void setInactive(boolean inactive) { this.inactive = inactive; }
 
+    public LocalDate getInactiveSince() { return inactiveSince; }
+    public void setInactiveSince(LocalDate inactiveSince) { this.inactiveSince = inactiveSince; }
+
     public boolean isParishioner() { return parishioner; }
     public void setParishioner(boolean parishioner) { this.parishioner = parishioner; }
+
+    public LocalDate getMemberSince() { return memberSince; }
+    public void setMemberSince(LocalDate memberSince) { this.memberSince = memberSince; }
+
+    public boolean isDeceased() { return deceased; }
+    public void setDeceased(boolean deceased) { this.deceased = deceased; }
+
+    public LocalDate getDeathDate() { return deathDate; }
+    public void setDeathDate(LocalDate deathDate) { this.deathDate = deathDate; }
 
     public boolean isBaptized() { return baptized; }
     public void setBaptized(boolean baptized) { this.baptized = baptized; }
@@ -157,6 +171,9 @@ public class Person {
 
     public boolean isConfirmed() { return confirmed; }
     public void setConfirmed(boolean confirmed) { this.confirmed = confirmed; }
+
+    public boolean isHolyOrders() { return holyOrders; }
+    public void setHolyOrders(boolean holyOrders) { this.holyOrders = holyOrders; }
 
     public MaritalStatus getMaritalStatus() { return maritalStatus; }
     public void setMaritalStatus(MaritalStatus maritalStatus) { this.maritalStatus = maritalStatus; }
