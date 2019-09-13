@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Person {
     public enum MaritalStatus { SINGLE, MARRIED_IN_CHURCH, MARRIED_OUTSIDE_CHURCH, MARRIED, SEPARATED, DIVORCED, ANNULLED, WIDOWED };
-    public enum Ethnicity { AFRICAN_AMERICAN, ASIAN, CAUCASIAN, HINDU, LATINO, VIETNAMESE, OTHER};
+    public enum Ethnicity { AFRICAN_AMERICAN, ASIAN, CAUCASIAN, HINDU, HISPANIC, LATINO, VIETNAMESE, OTHER};
     public enum Language { ENGLISH, SPANISH, VIETNAMESE, OTHER };
     public enum SpecialNeeds { ARTHRITIS,
                                ASTHMA,

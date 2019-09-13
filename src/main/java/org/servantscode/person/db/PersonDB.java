@@ -205,8 +205,7 @@ public class PersonDB extends EasyDB<Person> {
     }
 
     public void deleteByFamilyId(int familyId) {
-        if(!delete(deleteFrom("people").with("family_id", familyId).inOrg()))
-            throw new RuntimeException("Could not delete people by family id: " + familyId);
+        delete(deleteFrom("people").with("family_id", familyId).inOrg());
     }
 
     public void activateByFamilyId(int familyId) {
