@@ -118,5 +118,17 @@ public class DBUpgrade extends AbstractDBUpgrade {
         ensureColumn("people", "death_date", "DATE");
 
         ensureColumn("families", "inactive_since", "DATE");
+
+        if(!tableExists("registration_requests")) {
+            LOG.info("-- Creating table registration_requests");
+            runSql("CREATE TABLE registration_requests (id SERIAL PRIMARY KEY, " +
+                                                       "request_time TIMESTAMP WITH TIME ZONE, " +
+                                                       "family_name TEXT NOT NULL, " +
+                                                       "family_data TEXT NOT NULL, " +
+                                                       "approver_id INTEGER REFERENCES people(id) ON DELETE SET NULL, " +
+                                                       "approval_time TIMESTAMP WITH TIME ZONE, " +
+                                                       "approval_status TEXT NOT NULL," +
+                                                       "org_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE)");
+        }
     }
 }
