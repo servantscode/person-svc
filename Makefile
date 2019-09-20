@@ -34,9 +34,11 @@ build-nc: ## Build the container without caching
 	docker.exe build --no-cache -t servantcode/$(APP_NAME) .
 	docker.exe tag servantcode/$(APP_NAME) servantcode/$(APP_NAME):$(VERSION) 
 
-run: ## Run container on port configured in `config.env`
+run-postgres:
 	kubectl.exe create -f postgres-data-kube.yml
 	kubectl.exe create -f postgres-kube.yml 
+
+run: ## Run container on port configured in `config.env`
 	kubectl.exe create -f kube.yml
 
 update:
@@ -44,6 +46,8 @@ update:
 
 stop: ## Stop and remove a running container
 	kubectl.exe delete -f kube.yml
+
+stop-postgres:
 	kubectl.exe delete -f postgres-kube.yml
 	kubectl.exe delete -f postgres-data-kube.yml
 

@@ -110,7 +110,7 @@ public class PersonSvc extends SCServiceBase {
 
     @GET @Path("/{id}/preferences") @Produces(APPLICATION_JSON)
     public Map<String, String> getPreferences(@PathParam("id") int id) {
-        verifyUserAccess("preferences.read");
+        verifyUserAccess("preference.read");
 
         if(id <= 0)
             throw new BadRequestException();
@@ -130,7 +130,7 @@ public class PersonSvc extends SCServiceBase {
     @PUT @Path("/{id}/preferences") @Consumes(APPLICATION_JSON)
     public void updatePreferences(@PathParam("id") int id,
                                   Map<String, String> prefs) {
-        verifyUserAccess("preferences.update");
+        verifyUserAccess("preference.update");
 
         if(id <= 0 || prefs == null)
             throw new BadRequestException();
