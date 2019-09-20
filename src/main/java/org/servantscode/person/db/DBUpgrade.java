@@ -36,6 +36,10 @@ public class DBUpgrade extends AbstractDBUpgrade {
                                         "birthdate DATE, " +
                                         "email TEXT, " +
                                         "male BOOLEAN, " +
+                                        "salutation TEXT, " +
+                                        "suffix TEXT, " +
+                                        "maiden_name TEXT, " +
+                                        "nickname TEXT, " +
                                         "phonenumber TEXT, " +
                                         "head_of_house BOOLEAN, " +
                                         "family_id INTEGER, " +
