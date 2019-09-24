@@ -81,7 +81,7 @@ public class PersonDB extends EasyDB<Person> {
     }
 
     public StreamingOutput getReportReader(String search, boolean includeInactive, final List<String> fields) {
-        final QueryBuilder query = select("p.*", "pn.number AS phoneNumber", "f.surname", "f.addr_street1", "f.addr_street2", "f.addr_city", "f.addr_state", "f.addr_zip")
+        final QueryBuilder query = select("p.*", "pn.number AS phone_number", "f.surname", "f.addr_street1", "f.addr_street2", "f.addr_city", "f.addr_state", "f.addr_zip")
                 .from("people p")
                 .leftJoin("families f ON p.family_id=f.id")
                 .leftJoin("person_phone_numbers pn ON pn.person_id=p.id AND pn.is_primary=true")

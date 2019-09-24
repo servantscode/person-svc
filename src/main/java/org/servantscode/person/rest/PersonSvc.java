@@ -27,7 +27,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class PersonSvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(PersonSvc.class);
 
-    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "phonenumber", "email", "family_id", "head_of_house", "member_since", "inactive", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip");
+    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "phone_number", "email", "family_id", "head_of_house", "member_since", "inactive", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip");
 
     private PersonDB db;
     private PreferenceDB prefDb;
@@ -156,6 +156,8 @@ public class PersonSvc extends SCServiceBase {
             if(person.getMemberSince() == null)
                 person.setMemberSince(LocalDate.now());
 
+            verifyPrimaryPhone(person);
+
             getReconciler().createPerson(person);
             LOG.info("Created parishoner: " + person.getName());
             return person;
@@ -170,6 +172,7 @@ public class PersonSvc extends SCServiceBase {
     public Person updatePerson(Person person) {
         verifyUserAccess("person.update");
         try {
+            verifyPrimaryPhone(person);
             Person updatedPerson = getReconciler().updatePerson(person);
             LOG.info("Edited parishoner: " + person.getName());
             return updatedPerson;
@@ -227,8 +230,19 @@ public class PersonSvc extends SCServiceBase {
 
     @GET @Path("/phoneNumberTypes") @Produces(APPLICATION_JSON)
     public List<String> getPhoneNumberTypes() { return EnumUtils.listValues(PhoneNumber.PhoneNumberType.class); }
+
     // ----- Private -----
     private FamilyReconciler getReconciler() {
         return new FamilyReconciler(db, new FamilyDB());
+    }
+
+    private void verifyPrimaryPhone(Person person) {
+        List<PhoneNumber> phoneNumbers = person.getPhoneNumbers();
+
+        if(phoneNumbers.size() == 1) {
+            phoneNumbers.get(0).setPrimary(true);
+        } else if (phoneNumbers.stream().filter(PhoneNumber::isPrimary).count() > 1){
+            throw new BadRequestException("Only one primary phone number is allowed");
+        }
     }
 }

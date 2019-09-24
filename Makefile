@@ -23,6 +23,8 @@ help: ## This help.
 
 .DEFAULT_GOAL := help
 
+compile:
+	gradle build
 
 # DOCKER TASKS
 # Build the container
