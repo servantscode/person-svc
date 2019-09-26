@@ -237,6 +237,9 @@ public class PersonSvc extends SCServiceBase {
     }
 
     private void verifyPrimaryPhone(Person person) {
+        if(person.getPhoneNumbers() == null)
+            return;
+
         List<PhoneNumber> phoneNumbers = person.getPhoneNumbers();
 
         if(phoneNumbers.size() == 1) {
