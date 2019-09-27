@@ -2,24 +2,23 @@ package org.servantscode.person.db;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.glassfish.jersey.server.internal.monitoring.core.ReservoirConstants;
+import org.servantscode.commons.ObjectMapperFactory;
 import org.servantscode.commons.db.EasyDB;
 import org.servantscode.commons.search.InsertBuilder;
 import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.commons.search.UpdateBuilder;
 import org.servantscode.commons.security.OrganizationContext;
 import org.servantscode.person.Family;
-import org.servantscode.person.Person;
 import org.servantscode.person.RegistrationRequest;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 public class RegistrationRequestDB extends EasyDB<RegistrationRequest> {
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
+    private static final ObjectMapper JSON_MAPPER = ObjectMapperFactory.getMapper();
 
     public RegistrationRequestDB() {
         super(RegistrationRequest.class, "family_name");
