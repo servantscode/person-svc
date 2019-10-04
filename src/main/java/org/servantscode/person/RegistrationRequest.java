@@ -3,7 +3,7 @@ package org.servantscode.person;
 import java.time.ZonedDateTime;
 
 public class RegistrationRequest {
-    public enum ApprovalStatus {REQUESTED, NEEDS_REVIEW, APPROVED, REJECTED, APPLIED};
+    public enum ApprovalStatus {REQUESTED, NEEDS_REVIEW, APPROVED, REJECTED, MERGED, APPLIED};
 
     private int id;
 

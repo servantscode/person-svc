@@ -26,6 +26,7 @@ public class DBUpgrade extends AbstractDBUpgrade {
                                           "addr_zip INTEGER, " +
                                           "photo_guid TEXT, " +
                                           "inactive boolean DEFAULT false, " +
+                                          "inactive_since DATE, " +
                                           "org_id INTEGER references organizations(id) ON DELETE CASCADE)");
         }
 

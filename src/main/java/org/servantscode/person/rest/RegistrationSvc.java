@@ -22,9 +22,7 @@ import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.servantscode.commons.StringUtils.isEmpty;
-import static org.servantscode.person.RegistrationRequest.ApprovalStatus.APPLIED;
-import static org.servantscode.person.RegistrationRequest.ApprovalStatus.APPROVED;
-import static org.servantscode.person.RegistrationRequest.ApprovalStatus.REQUESTED;
+import static org.servantscode.person.RegistrationRequest.ApprovalStatus.*;
 
 @Path("/registration")
 public class RegistrationSvc extends SCServiceBase {
@@ -68,6 +66,24 @@ public class RegistrationSvc extends SCServiceBase {
         }
     }
 
+    @GET @Path("/{id}/matches") @Produces(MediaType.APPLICATION_JSON)
+    public List<Family> getMatchingFamilies(@PathParam("id") int id) {
+        verifyUserAccess("registration.request.read");
+        verifyUserAccess("family.read");
+
+        if(id <= 0)
+            throw new NotFoundException();
+
+        try {
+            RegistrationRequest request = getRequest(id);
+            List<Family> families = new FamilyDB().getPossibleMatches(request.getFamilyData());
+            new FamilyReconciler(new PersonDB(), new FamilyDB()).populateFamilyMembers(families, true);
+            return families;
+        } catch (Throwable t) {
+            LOG.error("Retrieving matching families failed:", t);
+            throw t;
+        }
+    }
 
     @PUT @Path("/{id}/status/{status}") @Produces(MediaType.APPLICATION_JSON)
     public RegistrationRequest updateApproval(@PathParam("id") int id,
@@ -82,11 +98,12 @@ public class RegistrationSvc extends SCServiceBase {
             if(request == null)
                 throw new NotFoundException();
 
-            if(status == APPLIED)
+            if(request.getApprovalStatus() == APPLIED || request.getApprovalStatus() == MERGED)
                 throw new BadRequestException("Cannot change approval status after data has been accepted.");
 
             request.setApprovalStatus(status);
             request.setApprovalTime(ZonedDateTime.now());
+            request.setApproverId(getUserId());
             db.update(request);
             LOG.info("Updated reservation request status: " + request.getFamilyName() + " Status now: " + status);
 

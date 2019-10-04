@@ -74,6 +74,16 @@ public class FamilyDB extends EasyDB<Family> {
         return get(query);
     }
 
+    public List<Family> getPossibleMatches(Family family) {
+        QueryBuilder query = selectAll().from("families").inOrg()
+                .with("surname", family.getSurname())
+                .or()
+                .with("addr_street1", family.getAddress().getStreet1())
+                .with("addr_street2", family.getAddress().getStreet2())
+                .with("addr_city", family.getAddress().getCity());
+        return get(query);
+    }
+
     public Family getFamily(int id) {
         QueryBuilder query = selectAll().from("families").where("id=?", id).inOrg();
         return getOne(query);

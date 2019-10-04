@@ -27,7 +27,7 @@ public class RegistrationRequestDB extends EasyDB<RegistrationRequest> {
     private QueryBuilder baseQuery(QueryBuilder selectQuery, boolean includeCopmleted) {
         QueryBuilder query = selectQuery.from("registration_requests r").leftJoin("people p ON r.approver_id=p.id").inOrg("r.org_id");
         if(!includeCopmleted)
-            query = query.where("approval_status <> 'APPLIED' AND approval_status <> 'REJECTED'");
+            query = query.where("approval_status <> 'APPLIED' AND approval_status <> 'REJECTED' AND approval_status <> 'MERGED'");
         return query;
     }
 

@@ -97,6 +97,12 @@ public class FamilyReconciler {
         return retrieveFamilyWithMembers(id, includeInactive);
     }
 
+    public void populateFamilyMembers(List<Family> families, boolean includeInactive) {
+        for(Family fam: families) {
+            fam.setMembers(personDb.getFamilyMembers(fam.getId(), includeInactive | fam.isInactive()));
+        }
+    }
+
     public boolean deleteFamily(Family family) {
         personDb.deleteByFamilyId(family.getId());
         return familyDb.delete(family);
