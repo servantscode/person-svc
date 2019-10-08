@@ -108,6 +108,7 @@ public class PersonDB extends EasyDB<Person> {
         QueryBuilder query = selectAll().from("people p").with("family_id", familyId).inOrg();
         if(!includeInactive)
             query.where("p.inactive=false");
+        query.sort("p.birthdate");
         return get(query);
     }
 

@@ -52,6 +52,9 @@ public class RelationshipSvc extends SCServiceBase {
 
         int failures = 0;
         for (Relationship r : relationships) {
+            if(r.getRelationship() == null)
+                continue;
+            
             try {
                 db.upsertRelationship(r);
                 LOG.info("Updated relationship between %d and %d", r.getPersonId(), r.getOtherId());
