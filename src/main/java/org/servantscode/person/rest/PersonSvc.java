@@ -40,7 +40,7 @@ public class PersonSvc extends SCServiceBase {
     @GET @Produces(MediaType.APPLICATION_JSON)
     public PaginatedResponse<Person> getPeople(@QueryParam("start") @DefaultValue("0") int start,
                                        @QueryParam("count") @DefaultValue("10") int count,
-                                       @QueryParam("sort_field") @DefaultValue("name") String sortField,
+                                       @QueryParam("sort_field") @DefaultValue("f.surname, family_id, head_of_house DESC, birthdate") String sortField,
                                        @QueryParam("search") @DefaultValue("") String nameSearch,
                                        @QueryParam("families") @DefaultValue("false") boolean includeFamilies,
                                        @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
