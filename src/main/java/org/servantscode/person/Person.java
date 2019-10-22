@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class Person {
     public enum MaritalStatus { SINGLE, MARRIED_IN_CHURCH, MARRIED_OUTSIDE_CHURCH, MARRIED, SEPARATED, DIVORCED, ANNULLED, WIDOWED };
@@ -89,6 +90,8 @@ public class Person {
 
     @JsonIgnore
     private int familyId;
+
+    private Map<String, String> preferences;
 
     public Person() {}
     public Person(String name) {
@@ -192,4 +195,7 @@ public class Person {
 
     public String getOccupation() { return occupation; }
     public void setOccupation(String occupation) { this.occupation = occupation; }
+
+    public Map<String, String> getPreferences() { return preferences; }
+    public void setPreferences(Map<String, String> preferences) { this.preferences = preferences; }
 }

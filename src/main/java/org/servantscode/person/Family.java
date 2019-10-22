@@ -2,6 +2,7 @@ package org.servantscode.person;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class Family {
     private int id;
@@ -13,6 +14,7 @@ public class Family {
     private String photoGuid;
     private boolean inactive;
     private LocalDate inactiveSince;
+    private Map<String, String> preferences;
 
     public Family() {}
 
@@ -48,4 +50,7 @@ public class Family {
 
     public LocalDate getInactiveSince() { return inactiveSince; }
     public void setInactiveSince(LocalDate inactiveSince) { this.inactiveSince = inactiveSince; }
+
+    public Map<String, String> getPreferences() { return preferences; }
+    public void setPreferences(Map<String, String> preferences) { this.preferences = preferences; }
 }

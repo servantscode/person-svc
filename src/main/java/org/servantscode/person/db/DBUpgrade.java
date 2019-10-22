@@ -117,13 +117,6 @@ public class DBUpgrade extends AbstractDBUpgrade {
                                                       "is_primary BOOLEAN)");
         }
 
-        ensureColumn("people", "holy_orders", "BOOLEAN");
-        ensureColumn("people", "inactive_since", "DATE");
-        ensureColumn("people", "deceased", "BOOLEAN");
-        ensureColumn("people", "death_date", "DATE");
-
-        ensureColumn("families", "inactive_since", "DATE");
-
         if(!tableExists("registration_requests")) {
             LOG.info("-- Creating table registration_requests");
             runSql("CREATE TABLE registration_requests (id SERIAL PRIMARY KEY, " +

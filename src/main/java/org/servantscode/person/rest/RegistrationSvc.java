@@ -8,10 +8,7 @@ import org.servantscode.person.Family;
 import org.servantscode.person.Person;
 import org.servantscode.person.RegistrationRequest;
 import org.servantscode.person.RegistrationRequest.ApprovalStatus;
-import org.servantscode.person.db.FamilyDB;
-import org.servantscode.person.db.FamilyReconciler;
-import org.servantscode.person.db.PersonDB;
-import org.servantscode.person.db.RegistrationRequestDB;
+import org.servantscode.person.db.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -77,7 +74,7 @@ public class RegistrationSvc extends SCServiceBase {
         try {
             RegistrationRequest request = getRequest(id);
             List<Family> families = new FamilyDB().getPossibleMatches(request.getFamilyData());
-            new FamilyReconciler(new PersonDB(), new FamilyDB()).populateFamilyMembers(families, true);
+            new FamilyReconciler(new PersonDB(), new FamilyDB(), new PreferenceDB()).populateFamilyMembers(families, true);
             return families;
         } catch (Throwable t) {
             LOG.error("Retrieving matching families failed:", t);
@@ -108,7 +105,7 @@ public class RegistrationSvc extends SCServiceBase {
             LOG.info("Updated reservation request status: " + request.getFamilyName() + " Status now: " + status);
 
             if(status == APPROVED) {
-                FamilyReconciler familyRec = new FamilyReconciler(new PersonDB(), new FamilyDB());
+                FamilyReconciler familyRec = new FamilyReconciler(new PersonDB(), new FamilyDB(), new PreferenceDB());
                 familyRec.createFamily(request.getFamilyData());
                 request.setApprovalStatus(APPLIED);
                 db.update(request);

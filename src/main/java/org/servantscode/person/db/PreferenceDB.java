@@ -132,9 +132,13 @@ public class PreferenceDB extends DBAccess {
         }
     }
 
+    public Map<String, String> getPersonalPreferencesTemplate() {
+        return getPreferencesTemplate("PERSON");
+    }
+
     public Map<String, String> getPersonalPreferences(int personId) {
         QueryBuilder query = select("p.name", "pp.value").from("preferences p")
-                .join("LEFT JOIN person_preferences pp ON p.id=pp.preference_id")
+                .leftJoin("person_preferences pp ON p.id=pp.preference_id")
                 .where("p.object_type='PERSON'").where("pp.person_id=?", personId)
                 .inOrg("p.org_id");
         return getPreferencesFromQuery(query);
@@ -155,6 +159,10 @@ public class PreferenceDB extends DBAccess {
         } catch (SQLException e) {
             throw new RuntimeException("Could not store preferences for person: " + personId, e);
         }
+    }
+
+    public Map<String, String> getFamilialPreferencesTemplate() {
+        return getPreferencesTemplate("FAMILY");
     }
 
     public Map<String, String> getFamilialPreferences(int familyId) {
@@ -197,6 +205,12 @@ public class PreferenceDB extends DBAccess {
             }
             return preferences;
         }
+    }
+
+    private Map<String, String> getPreferencesTemplate(String type) {
+        QueryBuilder query = select("name", "default_value AS value").from("preferences")
+                .with("object_type", type).inOrg();
+        return getPreferencesFromQuery(query);
     }
 
     private Map<String, String> getPreferencesFromQuery(QueryBuilder query) {

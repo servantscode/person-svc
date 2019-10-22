@@ -104,6 +104,7 @@ public class FamilySvc extends SCServiceBase {
             throw t;
         }
     }
+
     @GET @Path("/{id}/preferences") @Produces(APPLICATION_JSON)
     public Map<String, String> getPreferences(@PathParam("id") int id) {
         verifyUserAccess("preference.read");
@@ -202,6 +203,6 @@ public class FamilySvc extends SCServiceBase {
 
     // ----- Private -----
     private FamilyReconciler getReconciler() {
-        return new FamilyReconciler(new PersonDB(), db);
+        return new FamilyReconciler(new PersonDB(), db, prefDb);
     }
 }

@@ -232,9 +232,7 @@ public class PersonSvc extends SCServiceBase {
     public List<String> getPhoneNumberTypes() { return EnumUtils.listValues(PhoneNumber.PhoneNumberType.class); }
 
     // ----- Private -----
-    private FamilyReconciler getReconciler() {
-        return new FamilyReconciler(db, new FamilyDB());
-    }
+    private FamilyReconciler getReconciler() { return new FamilyReconciler(db, new FamilyDB(), prefDb); }
 
     private void verifyPrimaryPhone(Person person) {
         if(person.getPhoneNumbers() == null)

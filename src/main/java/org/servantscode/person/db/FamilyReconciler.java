@@ -9,15 +9,20 @@ import java.util.stream.Collectors;
 public class FamilyReconciler {
     private PersonDB personDb;
     private FamilyDB familyDb;
+    private PreferenceDB prefDb;
 
-    public FamilyReconciler(PersonDB personDb, FamilyDB familyDb) {
+    public FamilyReconciler(PersonDB personDb, FamilyDB familyDb, PreferenceDB preferencesDb) {
         this.personDb = personDb;
         this.familyDb = familyDb;
+        this.prefDb = preferencesDb;
     }
 
     public Person createPerson(Person person) {
         resolveFamily(person.getFamily());
         personDb.create(person);
+        if(person.getPreferences() != null && !person.getPreferences().isEmpty())
+            prefDb.updatePersonalPreferences(person.getId(), person.getPreferences());
+
         return person;
     }
 
@@ -31,6 +36,9 @@ public class FamilyReconciler {
         }
 
         personDb.update(person);
+        if(person.getPreferences() != null && !person.getPreferences().isEmpty())
+            prefDb.updatePersonalPreferences(person.getId(), person.getPreferences());
+
         return getPerson(person.getId(), false);
     }
 
@@ -69,10 +77,15 @@ public class FamilyReconciler {
 
     public Family createFamily(Family family) {
         familyDb.create(family);
+        if(family.getPreferences() != null && !family.getPreferences().isEmpty())
+            prefDb.updateFamilialPreferences(family.getId(), family.getPreferences());
+
         if(family.getMembers() != null) {
             for (Person person : family.getMembers()) {
                 person.setFamilyId(family.getId());
                 personDb.create(person);
+                if(person.getPreferences() != null && !person.getPreferences().isEmpty())
+                    prefDb.updatePersonalPreferences(person.getId(), person.getPreferences());
             }
         }
         return family;
@@ -81,6 +94,8 @@ public class FamilyReconciler {
     //Does not presume that missing members should be removed.
     public Family updateFamily(Family family) {
         familyDb.update(family);
+        if(family.getPreferences() != null && !family.getPreferences().isEmpty())
+            prefDb.updateFamilialPreferences(family.getId(), family.getPreferences());
         if(family.getMembers() != null) {
             for (Person person : family.getMembers()) {
                 person.setFamilyId(family.getId());
@@ -88,6 +103,9 @@ public class FamilyReconciler {
                     personDb.update(person);
                 else
                     personDb.create(person);
+
+                if(person.getPreferences() != null && !person.getPreferences().isEmpty())
+                    prefDb.updatePersonalPreferences(person.getId(), person.getPreferences());
             }
         }
         return getFamily(family.getId(), false);
@@ -98,9 +116,8 @@ public class FamilyReconciler {
     }
 
     public void populateFamilyMembers(List<Family> families, boolean includeInactive) {
-        for(Family fam: families) {
+        for(Family fam: families)
             fam.setMembers(personDb.getFamilyMembers(fam.getId(), includeInactive | fam.isInactive()));
-        }
     }
 
     public boolean deleteFamily(Family family) {
@@ -119,6 +136,9 @@ public class FamilyReconciler {
         } else {
             familyDb.create(family);
         }
+
+        if(family.getPreferences() != null && !family.getPreferences().isEmpty())
+            prefDb.updateFamilialPreferences(family.getId(), family.getPreferences());
     }
 
     private Family retrieveFamilyWithMembers(int familyId, boolean includeInactive) {

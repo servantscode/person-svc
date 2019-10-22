@@ -30,8 +30,6 @@ public class PreferenceSvc extends SCServiceBase {
                                                         @QueryParam("sort_field") @DefaultValue("name") String sortField,
                                                         @QueryParam("search") @DefaultValue("") String search) {
 
-        verifyUserAccess("preference.list");
-
         try {
             int totalPreferences = db.getCount(search);
             List<Preference> results = db.getPreferences(search, sortField, start, count);
