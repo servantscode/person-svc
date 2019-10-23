@@ -1,11 +1,9 @@
 package org.servantscode.person.db;
 
-import org.servantscode.commons.db.DBAccess;
 import org.servantscode.commons.db.EasyDB;
 import org.servantscode.commons.db.ReportStreamingOutput;
 import org.servantscode.commons.search.InsertBuilder;
 import org.servantscode.commons.search.QueryBuilder;
-import org.servantscode.commons.search.SearchParser;
 import org.servantscode.commons.search.UpdateBuilder;
 import org.servantscode.commons.security.OrganizationContext;
 import org.servantscode.person.Address;
@@ -18,7 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,22 +35,33 @@ public class FamilyDB extends EasyDB<Family> {
         super(Family.class, "surname", FIELD_MAP);
     }
 
-    public int getCount(String search, boolean includeInactive) {
-        QueryBuilder query = count().from("families").search(searchParser.parse(search)).inOrg();
-        if(!includeInactive)
-            query.where("inactive=false");
+    private QueryBuilder all() {
+        return select("f.*", "h.name AS head_name", "s.name AS spouse_name");
+    }
 
+    private QueryBuilder select(QueryBuilder select, boolean includeInactive) {
+        QueryBuilder query = select.from("families f").
+                leftJoin("people h ON h.family_id=f.id AND h.head_of_house=true" + (includeInactive? "": " AND h.inactive=false")).
+                leftJoin("relationships r ON r.other_id=h.id AND r.relationship='SPOUSE'").
+                leftJoin("people s ON s.id=r.subject_id" + (includeInactive? "": " AND s.inactive=false")).inOrg("f.org_id");
+
+        if(!includeInactive)
+            query.where("f.inactive=false");
+
+        return query;
+    }
+
+    public int getCount(String search, boolean includeInactive) {
+        QueryBuilder query = select(count(), includeInactive).search(searchParser.parse(search));
         return getCount(query);
     }
 
     public StreamingOutput getReportReader(String search, boolean includeInactive, final List<String> fields) {
-        final QueryBuilder query = selectAll().from("families").search(searchParser.parse(search)).inOrg();
-        if(!includeInactive)
-            query.where("inactive=false");
+        final QueryBuilder query = select(all(), includeInactive).search(searchParser.parse(search));
 
         return new ReportStreamingOutput(fields) {
             @Override
-            public void write(OutputStream output) throws IOException, WebApplicationException {
+            public void write(OutputStream output) throws WebApplicationException {
                 try ( Connection conn = getConnection();
                       PreparedStatement stmt = query.prepareStatement(conn);
                       ResultSet rs = stmt.executeQuery()) {
@@ -67,16 +75,13 @@ public class FamilyDB extends EasyDB<Family> {
     }
 
     public List<Family> getFamilies(String search, String sortField, int start, int count, boolean includeInactive) {
-        QueryBuilder query = selectAll().from("families").search(searchParser.parse(search)).inOrg();
-        if(!includeInactive)
-            query.where("inactive=false");
-        query.page(sortField, start, count);
+        QueryBuilder query = select(all(), includeInactive).search(searchParser.parse(search)).
+                page(sortField, start, count);
         return get(query);
     }
 
     public List<Family> getPossibleMatches(Family family) {
-        QueryBuilder query = selectAll().from("families").inOrg()
-                .with("surname", family.getSurname());
+        QueryBuilder query = select(all(), false).with("surname", family.getSurname());
         if(family.getAddress() != null)
             query.or()
                  .with("addr_street1", family.getAddress().getStreet1())
@@ -86,7 +91,7 @@ public class FamilyDB extends EasyDB<Family> {
     }
 
     public Family getFamily(int id) {
-        QueryBuilder query = selectAll().from("families").where("id=?", id).inOrg();
+        QueryBuilder query = select(all(), true).with("f.id", id);
         return getOne(query);
     }
 
@@ -176,6 +181,8 @@ public class FamilyDB extends EasyDB<Family> {
         family.setPhotoGuid(rs.getString("photo_guid"));
         family.setInactive(rs.getBoolean("inactive"));
         family.setInactiveSince(convert(rs.getDate("inactive_since")));
+        family.setHeadName(rs.getString("head_name"));
+        family.setSpouseName(rs.getString("spouse_name"));
         return family;
     }
 }

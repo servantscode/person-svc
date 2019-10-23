@@ -36,9 +36,10 @@ public class FamilySvc extends SCServiceBase {
 
     @GET @Produces(MediaType.APPLICATION_JSON)
     public PaginatedResponse<Family> getFamilies(@QueryParam("start") @DefaultValue("0") int start,
-                                         @QueryParam("count") @DefaultValue("100") int count,
+                                         @QueryParam("count") @DefaultValue("10") int count,
                                          @QueryParam("sort_field") @DefaultValue("surname") String sortField,
                                          @QueryParam("search") @DefaultValue("") String nameSearch,
+                                         @QueryParam("members") @DefaultValue("false") boolean includeFamilyMembers,
                                          @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
 
         verifyUserAccess("family.list");
@@ -46,6 +47,9 @@ public class FamilySvc extends SCServiceBase {
             LOG.trace(String.format("Retrieving families (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
             int totalFamilies = db.getCount(nameSearch, includeInactive);
             List<Family> results = db.getFamilies(nameSearch, sortField, start, count, includeInactive);
+            if(includeFamilyMembers)
+                getReconciler().populateFamilyMembers(results, includeInactive);
+
             return new PaginatedResponse<>(start, results.size(), totalFamilies, results);
         } catch (Throwable t) {
             LOG.error("Retrieving families failed:", t);

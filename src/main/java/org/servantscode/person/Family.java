@@ -15,6 +15,8 @@ public class Family {
     private boolean inactive;
     private LocalDate inactiveSince;
     private Map<String, String> preferences;
+    private String headName;
+    private String spouseName;
 
     public Family() {}
 
@@ -53,4 +55,10 @@ public class Family {
 
     public Map<String, String> getPreferences() { return preferences; }
     public void setPreferences(Map<String, String> preferences) { this.preferences = preferences; }
+
+    public String getHeadName() { return headName; }
+    public void setHeadName(String headName) { this.headName = headName; }
+
+    public String getSpouseName() { return spouseName; }
+    public void setSpouseName(String spouseName) { this.spouseName = spouseName; }
 }
