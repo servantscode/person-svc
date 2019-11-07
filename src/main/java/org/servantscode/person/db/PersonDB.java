@@ -2,6 +2,7 @@ package org.servantscode.person.db;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.servantscode.commons.Address;
 import org.servantscode.commons.db.EasyDB;
 import org.servantscode.commons.db.ReportStreamingOutput;
 import org.servantscode.commons.search.DeleteBuilder;
@@ -9,7 +10,6 @@ import org.servantscode.commons.search.InsertBuilder;
 import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.commons.search.UpdateBuilder;
 import org.servantscode.commons.security.OrganizationContext;
-import org.servantscode.person.Address;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
 import org.servantscode.person.PhoneNumber;

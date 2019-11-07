@@ -1,5 +1,7 @@
 package org.servantscode.person;
 
+import org.servantscode.commons.Address;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
