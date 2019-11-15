@@ -24,7 +24,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class FamilySvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(FamilySvc.class);
 
-    private static List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "surname", "home_phone", "envelope_number", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip", "inactive");
+    private static List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "surname", "head_name", "spouse_name", "home_phone", "envelope_number", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip", "inactive");
 
     private FamilyDB db;
     private PreferenceDB prefDb;
