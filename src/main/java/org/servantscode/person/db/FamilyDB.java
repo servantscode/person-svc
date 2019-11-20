@@ -39,7 +39,12 @@ public class FamilyDB extends EasyDB<Family> {
     }
 
     private QueryBuilder all() {
-        return select("f.*", "h.name AS head_name", "s.name AS spouse_name");
+        return select("f.*", "h.name AS head_name", "s.name AS spouse_name")
+                .select("CASE WHEN h.id is null THEN concat(f.surname, ' family') " +
+                        "WHEN s.id is null THEN concat(h.salutation, ' ', f.surname) " +
+                        "WHEN regexp_replace(h.name, '^.* ', '') <> regexp_replace(s.name, '^.* ', '') THEN " +
+                            "concat(h.salutation, ' ', regexp_replace(h.name, '^.* ', ''), ' and ', s.salutation, ' ', regexp_replace(s.name, '^.* ', '')) " +
+                        "ELSE concat(h.salutation, ' and ', s.salutation, ' ', f.surname) END AS formal_greeting");
     }
 
     private QueryBuilder select(QueryBuilder select, boolean includeInactive) {
@@ -186,6 +191,7 @@ public class FamilyDB extends EasyDB<Family> {
         family.setInactiveSince(convert(rs.getDate("inactive_since")));
         family.setHeadName(rs.getString("head_name"));
         family.setSpouseName(rs.getString("spouse_name"));
+        family.setFormalGreeting(rs.getString("formal_greeting"));
         return family;
     }
 }

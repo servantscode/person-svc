@@ -19,6 +19,7 @@ public class Family {
     private Map<String, String> preferences;
     private String headName;
     private String spouseName;
+    private String formalGreeting;
 
     public Family() {}
 
@@ -63,4 +64,7 @@ public class Family {
 
     public String getSpouseName() { return spouseName; }
     public void setSpouseName(String spouseName) { this.spouseName = spouseName; }
+
+    public String getFormalGreeting() { return formalGreeting; }
+    public void setFormalGreeting(String formalGreeting) { this.formalGreeting = formalGreeting; }
 }

@@ -5,10 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.Address;
 import org.servantscode.commons.db.EasyDB;
 import org.servantscode.commons.db.ReportStreamingOutput;
-import org.servantscode.commons.search.DeleteBuilder;
-import org.servantscode.commons.search.InsertBuilder;
-import org.servantscode.commons.search.QueryBuilder;
-import org.servantscode.commons.search.UpdateBuilder;
+import org.servantscode.commons.search.*;
 import org.servantscode.commons.security.OrganizationContext;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
@@ -20,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -31,15 +29,17 @@ import static org.servantscode.commons.StringUtils.isEmpty;
 public class PersonDB extends EasyDB<Person> {
     private static final Logger LOG = LogManager.getLogger(PersonDB.class);
 
-    static HashMap<String, String> FIELD_MAP = new HashMap<>(8);
+    static FieldTransformer FIELD_TRANSFORMER = new FieldTransformer();
 
     static {
-        FIELD_MAP.put("lastName","f.surname");
-        FIELD_MAP.put("memberSince","member_since");
+        FIELD_TRANSFORMER.put("lastName","f.surname");
+        FIELD_TRANSFORMER.put("memberSince","member_since");
+        FIELD_TRANSFORMER.put("birthMonth", "date_part('month', birthdate)", (String val) -> Month.valueOf(val).getValue());
+        FIELD_TRANSFORMER.put("birthDayOfMonth", "date_part('day', birthdate)", Integer:: parseInt);
     }
 
     public PersonDB() {
-        super(Person.class, "name", FIELD_MAP);
+        super(Person.class, "name", FIELD_TRANSFORMER);
     }
 
     public int getCount(String search, boolean includeInactive) {
@@ -53,7 +53,7 @@ public class PersonDB extends EasyDB<Person> {
         QueryBuilder query = selectAll().from("people p").search(searchParser.parse(search)).inOrg();
         if(!includeInactive)
             query.where("p.inactive=false");
-        query.sort(FIELD_MAP.getOrDefault(sortField, sortField)).limit(count).offset(start);
+        query.sort(FIELD_TRANSFORMER.transformFieldName(sortField)).limit(count).offset(start);
         return get(query);
     }
 
@@ -64,7 +64,7 @@ public class PersonDB extends EasyDB<Person> {
                 .search(searchParser.parse(search)).inOrg("p.org_id");
         if(!includeInactive)
             query.where("p.inactive=false");
-        query.sort(FIELD_MAP.getOrDefault(sortField, sortField)).limit(count).offset(start);
+        query.sort(FIELD_TRANSFORMER.transformFieldName(sortField)).limit(count).offset(start);
 
         try ( Connection conn = getConnection();
               PreparedStatement stmt = query.prepareStatement(conn)
