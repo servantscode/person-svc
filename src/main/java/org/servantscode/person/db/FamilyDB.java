@@ -41,10 +41,12 @@ public class FamilyDB extends EasyDB<Family> {
     private QueryBuilder all() {
         return select("f.*", "h.name AS head_name", "s.name AS spouse_name")
                 .select("CASE WHEN h.id is null THEN concat(f.surname, ' family') " +
-                        "WHEN s.id is null THEN concat(h.salutation, ' ', f.surname) " +
+                        "WHEN s.id is null THEN trim(concat(h.salutation, ' ', h.name)) " +
                         "WHEN regexp_replace(h.name, '^.* ', '') <> regexp_replace(s.name, '^.* ', '') THEN " +
-                            "concat(h.salutation, ' ', regexp_replace(h.name, '^.* ', ''), ' and ', s.salutation, ' ', regexp_replace(s.name, '^.* ', '')) " +
-                        "ELSE concat(h.salutation, ' and ', s.salutation, ' ', f.surname) END AS formal_greeting");
+//                            "concat(h.salutation, ' ', regexp_replace(h.name, '^.* ', ''), ' and ', s.salutation, ' ', regexp_replace(s.name, '^.* ', '')) " + //Just the last names
+                            "concat(trim(concat(h.salutation, ' ', h.name)), ' and ', trim(concat(s.salutation, ' ', s.name))) " +
+                        "WHEN h.salutation IS NULL OR s.salutation IS NULL THEN concat(h.name, ' family') " +
+                        "ELSE concat(h.salutation, ' and ', s.salutation, ' ', h.name) END AS formal_greeting");
     }
 
     private QueryBuilder select(QueryBuilder select, boolean includeInactive) {
