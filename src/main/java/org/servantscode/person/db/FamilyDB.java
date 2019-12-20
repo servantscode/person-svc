@@ -3,6 +3,7 @@ package org.servantscode.person.db;
 import org.servantscode.commons.Address;
 import org.servantscode.commons.db.EasyDB;
 import org.servantscode.commons.db.ReportStreamingOutput;
+import org.servantscode.commons.search.FieldTransformer;
 import org.servantscode.commons.search.InsertBuilder;
 import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.commons.search.UpdateBuilder;
@@ -19,23 +20,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 
 public class FamilyDB extends EasyDB<Family> {
 
-    static HashMap<String, String> FIELD_MAP = new HashMap<>(8);
+    static FieldTransformer TRANSFORMER = new FieldTransformer();
 
     static {
-        FIELD_MAP.put("envelopeNumber","envelope_number");
-        FIELD_MAP.put("address.street1","addr_street1");
-        FIELD_MAP.put("address.city","addr_city");
-        FIELD_MAP.put("address.state","addr_state");
-        FIELD_MAP.put("address.zip","addr_zip");
+        TRANSFORMER.put("envelopeNumber","envelope_number");
+        TRANSFORMER.put("address.street1","addr_street1");
+        TRANSFORMER.put("address.city","addr_city");
+        TRANSFORMER.put("address.state","addr_state");
+        TRANSFORMER.put("address.zip","addr_zip");
+        TRANSFORMER.put("parishioners", "h.parishioner", Boolean::parseBoolean);
+
     }
 
     public FamilyDB() {
-        super(Family.class, "surname", FIELD_MAP);
+        super(Family.class, "surname", TRANSFORMER);
     }
 
     private QueryBuilder all() {
