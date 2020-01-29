@@ -82,6 +82,19 @@ public class RegistrationSvc extends SCServiceBase {
         }
     }
 
+    @PUT @Produces(MediaType.APPLICATION_JSON)
+    public RegistrationRequest updateRequest(RegistrationRequest request) {
+        verifyUserAccess("registration.request.approve");
+
+        try {
+            db.update(request);
+            return request;
+        } catch (Throwable t) {
+            LOG.error("Updating registration request failed:", t);
+            throw t;
+        }
+    }
+
     @PUT @Path("/{id}/status/{status}") @Produces(MediaType.APPLICATION_JSON)
     public RegistrationRequest updateApproval(@PathParam("id") int id,
                                               @PathParam("status") ApprovalStatus status) {
