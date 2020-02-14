@@ -3,6 +3,7 @@ package org.servantscode.person.db;
 import org.servantscode.person.Family;
 import org.servantscode.person.Person;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,14 @@ public class FamilyReconciler {
 
             family.setMembers(personDb.getFamilyMembers(family.getId(), false));
             family.getMembers().removeIf((p) -> p.getId() == person.getId()); //Remove the returned person
+        }
+
+        if(person.isDeceased()) {
+            if(person.getDeathDate() == null)
+                person.setDeathDate(LocalDate.now());
+
+            person.setInactive(true);
+            person.setInactiveSince(person.getDeathDate());
         }
 
         personDb.update(person);
