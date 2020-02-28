@@ -62,6 +62,7 @@ public class DBUpgrade extends AbstractDBUpgrade {
                                         "religion TEXT, " +
                                         "special_needs TEXT, " +
                                         "occupation TEXT, " +
+                                        "allergies TEXT, " +
                                         "org_id INTEGER references organizations(id) ON DELETE CASCADE)");
         }
 
@@ -128,5 +129,7 @@ public class DBUpgrade extends AbstractDBUpgrade {
                                                        "approval_status TEXT NOT NULL," +
                                                        "org_id INTEGER REFERENCES organizations(id) ON DELETE CASCADE)");
         }
+
+        ensureColumn("people", "allergies", "TEXT");
     }
 }

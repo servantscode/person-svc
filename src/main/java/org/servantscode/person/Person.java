@@ -87,6 +87,7 @@ public class Person {
     private Religion religion;
     private List<SpecialNeeds> specialNeeds;
     private String occupation;
+    private List<String> allergies;
 
     @JsonIgnore
     private int familyId;
@@ -195,6 +196,9 @@ public class Person {
 
     public String getOccupation() { return occupation; }
     public void setOccupation(String occupation) { this.occupation = occupation; }
+
+    public List<String> getAllergies() { return allergies; }
+    public void setAllergies(List<String> allergies) { this.allergies = allergies; }
 
     public Map<String, String> getPreferences() { return preferences; }
     public void setPreferences(Map<String, String> preferences) { this.preferences = preferences; }

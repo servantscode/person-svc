@@ -156,6 +156,7 @@ public class PersonDB extends EasyDB<Person> {
                 .value("inactive_since", convert(person.getInactiveSince()))
                 .value("deceased", person.isDeceased())
                 .value("death_date", convert(person.getDeathDate()))
+                .value("allergies", encodeList(person.getAllergies()))
                 .value("org_id", OrganizationContext.orgId());
         person.setId(createAndReturnKey(cmd));
 
@@ -199,6 +200,7 @@ public class PersonDB extends EasyDB<Person> {
                 .value("inactive_since", convert(person.getInactiveSince()))
                 .value("deceased", person.isDeceased())
                 .value("death_date", convert(person.getDeathDate()))
+                .value("allergies", encodeList(person.getAllergies()))
                 .withId(person.getId()).inOrg();
         if(!update(cmd))
             throw new RuntimeException("Could not update person: " + person.getName());
@@ -288,6 +290,7 @@ public class PersonDB extends EasyDB<Person> {
         person.setSuffix(rs.getString("suffix"));
         person.setMaidenName(rs.getString("maiden_name"));
         person.setNickname(rs.getString("nickname"));
+        person.setAllergies(decodeList(rs.getString("allergies")));
 
         person.setPhoneNumbers(getPhoneNumbers(person.getId(), rs.getStatement().getConnection()));
         return person;
