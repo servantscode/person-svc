@@ -24,7 +24,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class FamilySvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(FamilySvc.class);
 
-    private static List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "surname", "formal_greeting", "head_name", "spouse_name", "home_phone", "envelope_number", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip", "parishioners", "inactive");
+    private static List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "surname", "formal_greeting", "head_name", "spouse_name", "home_phone", "envelope_number", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip", "inactive");
 
     private FamilyDB db;
     private PreferenceDB prefDb;
@@ -38,15 +38,15 @@ public class FamilySvc extends SCServiceBase {
     public PaginatedResponse<Family> getFamilies(@QueryParam("start") @DefaultValue("0") int start,
                                          @QueryParam("count") @DefaultValue("10") int count,
                                          @QueryParam("sort_field") @DefaultValue("surname") String sortField,
-                                         @QueryParam("search") @DefaultValue("") String nameSearch,
+                                         @QueryParam("search") @DefaultValue("") String search,
                                          @QueryParam("members") @DefaultValue("false") boolean includeFamilyMembers,
                                          @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
 
         verifyUserAccess("family.list");
         try {
-            LOG.trace(String.format("Retrieving families (%s, %s, page: %d; %d)", nameSearch, sortField, start, count));
-            int totalFamilies = db.getCount(nameSearch, includeInactive);
-            List<Family> results = db.getFamilies(nameSearch, sortField, start, count, includeInactive);
+            LOG.trace(String.format("Retrieving families (%s, %s, page: %d; %d)", search, sortField, start, count));
+            int totalFamilies = db.getCount(search, includeInactive);
+            List<Family> results = db.getFamilies(search, sortField, start, count, includeInactive);
             if(includeFamilyMembers)
                 getReconciler().populateFamilyMembers(results, includeInactive);
 
@@ -58,13 +58,13 @@ public class FamilySvc extends SCServiceBase {
     }
 
     @GET @Path("/report") @Produces(MediaType.TEXT_PLAIN)
-    public Response getFamilyReport(@QueryParam("search") @DefaultValue("") String nameSearch,
+    public Response getFamilyReport(@QueryParam("search") @DefaultValue("") String search,
                                     @QueryParam("include_inactive") @DefaultValue("false") boolean includeInactive) {
         verifyUserAccess("family.export");
 
         try {
-            LOG.trace(String.format("Retrieving family report(%s)", nameSearch));
-            return Response.ok(db.getReportReader(nameSearch, includeInactive, EXPORTABLE_FIELDS)).build();
+            LOG.trace(String.format("Retrieving family report(%s)", search));
+            return Response.ok(db.getReportReader(search, includeInactive, EXPORTABLE_FIELDS)).build();
         } catch (Throwable t) {
             LOG.error("Retrieving family report failed:", t);
             throw t;
