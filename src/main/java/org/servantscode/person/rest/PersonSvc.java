@@ -3,6 +3,7 @@ package org.servantscode.person.rest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.servantscode.commons.EnumUtils;
+import org.servantscode.commons.rest.AuthFilter;
 import org.servantscode.commons.rest.PaginatedResponse;
 import org.servantscode.commons.rest.SCServiceBase;
 import org.servantscode.person.Person;

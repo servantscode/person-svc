@@ -14,4 +14,8 @@
     <listener>
         <listener-class>org.servantscode.person.db.DBUpgrade</listener-class>
     </listener>
+
+    <listener>
+        <listener-class>org.servantscode.person.rest.ServiceConfiguration</listener-class>
+    </listener>
 </web-app>

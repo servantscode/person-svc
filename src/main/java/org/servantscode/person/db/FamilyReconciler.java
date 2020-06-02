@@ -151,9 +151,11 @@ public class FamilyReconciler {
 
     private Family retrieveFamilyWithMembers(int familyId, boolean includeInactive) {
         Family family = familyDb.getFamily(familyId);
-        if(family != null)
-            family.setMembers(personDb.getFamilyMembers(family.getId(), includeInactive | family.isInactive()));
 
+        if(family == null)
+            return null;
+
+        family.setMembers(personDb.getFamilyMembers(family.getId(), includeInactive | family.isInactive()));
         family.setPreferences(prefDb.getFamilialPreferences(familyId));
         return family;
     }
