@@ -1,9 +1,14 @@
 package org.servantscode.person.db;
 
 import org.servantscode.commons.db.DBAccess;
+import org.servantscode.commons.db.ReportStreamingOutput;
 import org.servantscode.commons.search.QueryBuilder;
 import org.servantscode.person.Relationship;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,6 +29,26 @@ public class RelationshipDB extends DBAccess {
         } catch (SQLException e) {
             throw new RuntimeException("Could not retrive relationship information for: " + personId, e);
         }
+    }
+
+    public StreamingOutput getReportReader(final List<String> fields) {
+        final QueryBuilder query = select("r.*", "p1.name AS subject", "p1.family_id AS family_id", "p2.name AS other").from("relationships r")
+                .join("LEFT JOIN people p1 ON r.subject_id=p1.id")
+                .join("LEFT JOIN people p2 ON r.other_id=p2.id").inOrg("p1.org_id");
+
+        return new ReportStreamingOutput(fields) {
+            @Override
+            public void write(OutputStream output) throws WebApplicationException {
+                try ( Connection conn = getConnection();
+                      PreparedStatement stmt = query.prepareStatement(conn);
+                      ResultSet rs = stmt.executeQuery()) {
+
+                    writeCsv(output, rs);
+                } catch (SQLException | IOException e) {
+                    throw new RuntimeException("Could not retrieve relationships", e);
+                }
+            }
+        };
     }
 
     public void upsertRelationship(Relationship r) {

@@ -104,6 +104,27 @@ public class PersonDB extends EasyDB<Person> {
         };
     }
 
+    public StreamingOutput getPhoneReportReader(final List<String> fields) {
+        final QueryBuilder query = select("pn.*")
+                .from("people p")
+                .leftJoin("person_phone_numbers pn ON p.id=pn.person_id")
+                .inOrg("p.org_id");
+
+        return new ReportStreamingOutput(fields) {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                try ( Connection conn = getConnection();
+                      PreparedStatement stmt = query.prepareStatement(conn);
+                      ResultSet rs = stmt.executeQuery()) {
+
+                    writeCsv(output, rs);
+                } catch (SQLException | IOException e) {
+                    throw new RuntimeException("Could not retrieve phone numbers", e);
+                }
+            }
+        };
+    }
+
     public List<Person> getFamilyMembers(int familyId, boolean includeInactive) {
         QueryBuilder query = selectAll().from("people p").with("family_id", familyId).inOrg();
         if(!includeInactive)

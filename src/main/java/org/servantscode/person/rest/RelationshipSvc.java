@@ -10,6 +10,9 @@ import org.servantscode.person.db.PersonDB;
 import org.servantscode.person.db.RelationshipDB;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -17,6 +20,9 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/relationship")
 public class RelationshipSvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(RelationshipSvc.class);
+
+    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("family_id", "subject_id", "subject","other_id","other","relationship",
+            "contact_preference", "guardian");
 
     private RelationshipDB db;
     private PersonDB personDb;
@@ -41,6 +47,21 @@ public class RelationshipSvc extends SCServiceBase {
         }
     }
 
+
+    @GET @Path("/report") @Produces(MediaType.TEXT_PLAIN)
+    public Response getRelationshipReport() {
+
+        verifyUserAccess("relationship.list");
+
+        try {
+            LOG.trace(String.format("Retrieving relationship report"));
+
+            return Response.ok(db.getReportReader(EXPORTABLE_FIELDS)).build();
+        } catch (Throwable t) {
+            LOG.error("Retrieving people report failed:", t);
+            throw t;
+        }
+    }
 
     @PUT @Produces(APPLICATION_JSON) @Consumes(APPLICATION_JSON)
     public void storeRelationships(@QueryParam("addReciprocals") @DefaultValue("false") boolean addReciprocals,

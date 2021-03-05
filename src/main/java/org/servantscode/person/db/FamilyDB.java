@@ -93,7 +93,7 @@ public class FamilyDB extends EasyDB<Family> {
     }
 
     public List<Family> getPossibleMatches(Family family) {
-        QueryBuilder query = select(all(), false).with("surname", family.getSurname());
+        QueryBuilder query = select(all(), true).with("surname", family.getSurname());
         if(family.getAddress() != null)
             query.or()
                  .with("addr_street1", family.getAddress().getStreet1())

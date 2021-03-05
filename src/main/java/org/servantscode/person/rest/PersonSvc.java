@@ -29,7 +29,14 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class PersonSvc extends SCServiceBase {
     private static final Logger LOG = LogManager.getLogger(PersonSvc.class);
 
-    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "phone_number", "email", "family_id", "head_of_house", "member_since", "inactive", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip");
+//    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "phone_number", "email", "family_id", "head_of_house", "member_since", "inactive", "addr_street1", "addr_street2", "addr_city", "addr_state", "addr_zip");
+
+    private static final List<String> EXPORTABLE_FIELDS = Arrays.asList("id", "name", "birthdate", "male", "salutation","suffix","maiden_name","nickname","email","family_id","head_of_house","member_since","parishioner",
+            "baptized", "confession", "communion", "confirmed", "holy_orders", "marital_status", "ethnicity", "primary_language",
+            "religion", "special_needs", "occupation", "inactive", "inactive_since", "deceased", "death_date", "allergies");
+
+    private static final List<String> PHONE_FIELDS = Arrays.asList("person_id", "number", "type", "is_primary");
+
 
     private PersonDB db;
     private PreferenceDB prefDb;
@@ -77,6 +84,21 @@ public class PersonSvc extends SCServiceBase {
             LOG.trace(String.format("Retrieving people report(%s)", nameSearch));
 
             return Response.ok(db.getReportReader(nameSearch, includeInactive, EXPORTABLE_FIELDS)).build();
+        } catch (Throwable t) {
+            LOG.error("Retrieving people report failed:", t);
+            throw t;
+        }
+    }
+
+    @GET @Path("/phone/report") @Produces(MediaType.TEXT_PLAIN)
+    public Response getPeopleReport() {
+
+        verifyUserAccess("person.export");
+
+        try {
+            LOG.trace(String.format("Retrieving people phone number report"));
+
+            return Response.ok(db.getPhoneReportReader(PHONE_FIELDS)).build();
         } catch (Throwable t) {
             LOG.error("Retrieving people report failed:", t);
             throw t;
